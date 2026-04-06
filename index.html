@@ -839,6 +839,11 @@ const EXERCISES_DB = [
   { id:'ex14', name:'Agility Ladder Footwork', muscle:'Athletic', secondary:'Core', equipment:'Bodyweight', tip:'2 Schritte vor – 1 zurück in tiefer Abwehrposition. Volleyball-spezifisches Bewegungsmuster simulieren.', timed:true },
   { id:'ex15', name:'Medizinball Slam', muscle:'Athletic', secondary:'Core, Shoulders, Lats', equipment:'Bodyweight', tip:'Gesamte Körperspannung aufbauen, Angriffsschlag-Bewegung simulieren. Volle Überkopfstreckung, dann explosive Abwärtsbewegung.' },
   { id:'ex16', name:'Reaktionssprint + Sprünge', muscle:'Athletic', secondary:'Legs, Core', equipment:'Bodyweight', tip:'Sofort auf Timer-Signal reagieren, maximale Beschleunigung. Danach 3 Maximalsprünge. Simuliert Match-Anforderungen.', timed:true },
+  // FRANCA/JONAS — Custom
+  { id:'cm1',  name:'Schulterdrücken KH sitzend', muscle:'Shoulders', secondary:'Triceps', equipment:'Dumbbell', tip:'Sitzend, Rücken gerade. Hanteln auf Schulterhöhe, kontrolliert nach oben drücken ohne Hohlkreuz.' },
+  { id:'cm2',  name:'Abduktion / Adduktion (Maschine)', muscle:'Legs', secondary:'Glutes', equipment:'Machine', tip:'Kontrollierte Bewegung nach außen (Abduktion) und innen (Adduktion). Langsame Exzentrik für maximale Wirkung.' },
+  { id:'cm3',  name:'Einarmiges DB-Rudern', muscle:'Back', secondary:'Biceps', equipment:'Dumbbell', tip:'Eine Hand auf Bank stützen, KH nah am Körper zur Hüfte ziehen. Ellbogen führt die Bewegung. Unilateral für Symmetrie.' },
+  { id:'cm4',  name:'Bizeps Curl (Kurzhantel)', muscle:'Biceps', secondary:'Forearms', equipment:'Dumbbell', tip:'Ellbogen fest am Körper. Volle Streckung unten, volle Kontraktion oben. Neutral oder supiniert greifen.' },
 ];
 
 const STORAGE = {
@@ -932,6 +937,74 @@ const STARTER_PLANS = [
       { exerciseId:'ex11', sets:3, reps:12, time:0, weight:0 },  // Hängendes Knieheben 3×12-15
     ],
   },
+  // ── FRANCA/JONAS GEMEINSAME PLÄNE ──
+  {
+    id: 'plan_workout_a',
+    name: 'Franca/Jonas - Fitnessplan: Workout A: Kraft & Form (Mo / Do)',
+    exercises: [
+      { exerciseId:'e34',  sets:4, reps:10, time:0,  weight:0 },  // Hip Thrust 4×10
+      { exerciseId:'e25',  sets:4, reps:12, time:0,  weight:0 },  // Leg Press 4×12
+      { exerciseId:'e9',   sets:3, reps:10, time:0,  weight:0 },  // Lat Pulldown 3×10
+      { exerciseId:'cm1',  sets:3, reps:10, time:0,  weight:0 },  // Schulterdrücken KH 3×10
+      { exerciseId:'e8',   sets:3, reps:10, time:0,  weight:0 },  // Seated Cable Row 3×10
+      { exerciseId:'e29',  sets:3, reps:0,  time:45, weight:0 },  // Plank 3×45s
+      { exerciseId:'e28',  sets:3, reps:15, time:0,  weight:0 },  // Calf Raises 3×15
+    ],
+  },
+  {
+    id: 'plan_workout_b',
+    name: 'Franca/Jonas - Fitnessplan: Workout B: Ausdauer & Definition (Mi / Sa)',
+    exercises: [
+      { exerciseId:'e24',  sets:4, reps:8,  time:0, weight:0 },  // Romanian Deadlift 4×8
+      { exerciseId:'e2',   sets:4, reps:10, time:0, weight:0 },  // Schrägbank KH-Drücken 4×10
+      { exerciseId:'e26',  sets:3, reps:10, time:0, weight:0 },  // Walking Lunge 3×10/Seite
+      { exerciseId:'e8',   sets:3, reps:10, time:0, weight:0 },  // Seated Cable Row 3×10
+      { exerciseId:'e12',  sets:3, reps:12, time:0, weight:0 },  // Lateral Raise 3×12
+      { exerciseId:'cm2',  sets:3, reps:15, time:0, weight:0 },  // Abduktion/Adduktion 3×15
+      { exerciseId:'ex11', sets:3, reps:15, time:0, weight:0 },  // Hanging Knee Raises 3×15
+    ],
+  },
+  {
+    id: 'plan_training_1',
+    name: 'Franca/Jonas - Fitnessplan: Training 1: Unterkörper & Po (Mo)',
+    exercises: [
+      { exerciseId:'e34',  sets:4, reps:10, time:0, weight:0 },  // Hip Thrust 4×10
+      { exerciseId:'e25',  sets:4, reps:12, time:0, weight:0 },  // Leg Press 4×12
+      { exerciseId:'e24',  sets:4, reps:8,  time:0, weight:0 },  // Romanian Deadlift 4×8
+      { exerciseId:'e26',  sets:3, reps:10, time:0, weight:0 },  // Walking Lunge 3×10/Seite
+      { exerciseId:'cm2',  sets:3, reps:15, time:0, weight:0 },  // Abduktion 3×15
+      { exerciseId:'e27',  sets:4, reps:12, time:0, weight:0 },  // Lying Leg Curl 4×12
+      { exerciseId:'e28',  sets:3, reps:15, time:0, weight:0 },  // Calf Raises 3×15
+    ],
+  },
+  {
+    id: 'plan_training_2',
+    name: 'Franca/Jonas - Fitnessplan: Training 2: Push — Brust, Schultern & Trizeps (Mi)',
+    exercises: [
+      { exerciseId:'e2',   sets:4, reps:10, time:0, weight:0 },  // Schrägbank KH-Drücken 4×10
+      { exerciseId:'e1',   sets:4, reps:10, time:0, weight:0 },  // Flachbank Bankdrücken 4×10
+      { exerciseId:'cm1',  sets:4, reps:10, time:0, weight:0 },  // Schulterdrücken KH 4×10
+      { exerciseId:'e12',  sets:3, reps:12, time:0, weight:0 },  // Laterales Seitheben 3×12
+      { exerciseId:'e3',   sets:3, reps:12, time:0, weight:0 },  // Kabelzug Flyes 3×12
+      { exerciseId:'ex03', sets:4, reps:12, time:0, weight:0 },  // Trizeps Pushdown 4×12
+      { exerciseId:'e20',  sets:3, reps:10, time:0, weight:0 },  // Overhead Trizeps Ext. 3×10
+    ],
+  },
+  {
+    id: 'plan_training_3',
+    name: 'Franca/Jonas - Fitnessplan: Training 3: Pull — Rücken, Bizeps & Core (Fr)',
+    exercises: [
+      { exerciseId:'e9',   sets:4, reps:10, time:0, weight:0 },  // Lat Pulldown 4×10
+      { exerciseId:'e8',   sets:4, reps:10, time:0, weight:0 },  // Seated Cable Row 4×10
+      { exerciseId:'cm3',  sets:3, reps:10, time:0, weight:0 },  // Einarmiges DB-Rudern 3×10/Seite
+      { exerciseId:'e10',  sets:3, reps:15, time:0, weight:0 },  // Face Pull 3×15
+      { exerciseId:'e13',  sets:3, reps:12, time:0, weight:0 },  // Reverse Flyes 3×12
+      { exerciseId:'cm4',  sets:4, reps:10, time:0, weight:0 },  // Bizeps Curl KH 4×10
+      { exerciseId:'e32',  sets:3, reps:15, time:0, weight:0 },  // Cable Crunch 3×15
+      { exerciseId:'ex11', sets:3, reps:15, time:0, weight:0 },  // Hanging Knee Raises 3×15
+    ],
+  },
+  // ── BESTEHENDE PLÄNE ──
   {
     id: 'plan_push_b',
     name: 'Sa — Push B + Athletik (Schulter & Explosiv)',
@@ -959,6 +1032,11 @@ function load() {
     state.plans = STARTER_PLANS;
     save('plans');
   }
+  // Always ensure Franca/Jonas plans are present
+  const fjIds = ['plan_workout_a','plan_workout_b','plan_training_1','plan_training_2','plan_training_3'];
+  const existingIds = new Set(state.plans.map(p => p.id));
+  const missingFJ = STARTER_PLANS.filter(p => fjIds.includes(p.id) && !existingIds.has(p.id));
+  if (missingFJ.length > 0) { state.plans = [...state.plans, ...missingFJ]; save('plans'); }
   const aw = localStorage.getItem('ft_active_workout');
   if (aw) {
     const parsed = JSON.parse(aw);
@@ -2025,14 +2103,25 @@ function importData(e) {
     try {
       const data = JSON.parse(ev.target.result);
       if (!data.plans || !data.sessions) throw new Error('Invalid format');
-      if (!window.confirm(`Import ${data.plans.length} plans and ${data.sessions.length} sessions? This will REPLACE current data.`)) return;
-      state.plans = data.plans || [];
-      state.sessions = data.sessions || [];
-      state.activities = data.activities || [];
-      state.settings = data.settings || { weightUnit: 'kg' };
-      if (data.customExercises) localStorage.setItem(STORAGE.exercises, JSON.stringify(data.customExercises));
+      const choice = window.confirm(`${data.plans.length} Pläne importieren?\n\nOK = Hinzufügen (bestehende Daten bleiben)\nAbbrechen = Abbrechen`);
+      if (!choice) return;
+      const existingIds = new Set(state.plans.map(p => p.id));
+      const newPlans = data.plans.filter(p => !existingIds.has(p.id));
+      state.plans = [...state.plans, ...newPlans];
+      const existingSessionIds = new Set(state.sessions.map(s => s.id));
+      const newSessions = (data.sessions || []).filter(s => !existingSessionIds.has(s.id));
+      state.sessions = [...state.sessions, ...newSessions];
+      const existingActivityIds = new Set(state.activities.map(a => a.id));
+      const newActivities = (data.activities || []).filter(a => !existingActivityIds.has(a.id));
+      state.activities = [...state.activities, ...newActivities];
+      if (data.customExercises) {
+        const existing = JSON.parse(localStorage.getItem(STORAGE.exercises) || '[]');
+        const existingExIds = new Set(existing.map(e => e.id));
+        const merged = [...existing, ...data.customExercises.filter(e => !existingExIds.has(e.id))];
+        localStorage.setItem(STORAGE.exercises, JSON.stringify(merged));
+      }
       save('plans'); save('sessions'); save('activities'); save('settings');
-      toast('Imported successfully!', 'success');
+      toast(`${newPlans.length} Pläne hinzugefügt!`, 'success');
       showView('dash');
     } catch(err) {
       toast('Import failed: invalid file', 'error');
