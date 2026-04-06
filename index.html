@@ -844,6 +844,34 @@ const EXERCISES_DB = [
   { id:'cm2',  name:'Abduktion / Adduktion (Maschine)', muscle:'Legs', secondary:'Glutes', equipment:'Machine', tip:'Kontrollierte Bewegung nach außen (Abduktion) und innen (Adduktion). Langsame Exzentrik für maximale Wirkung.' },
   { id:'cm3',  name:'Einarmiges DB-Rudern', muscle:'Back', secondary:'Biceps', equipment:'Dumbbell', tip:'Eine Hand auf Bank stützen, KH nah am Körper zur Hüfte ziehen. Ellbogen führt die Bewegung. Unilateral für Symmetrie.' },
   { id:'cm4',  name:'Bizeps Curl (Kurzhantel)', muscle:'Biceps', secondary:'Forearms', equipment:'Dumbbell', tip:'Ellbogen fest am Körper. Volle Streckung unten, volle Kontraktion oben. Neutral oder supiniert greifen.' },
+  // ── AUS SHE LIFTS ──
+  // Glutes
+  { id:'fw1',  name:'Abduktion (Maschine)', muscle:'Glutes', secondary:'Outer Thighs', equipment:'Machine', tip:'Langsam nach außen drücken, nicht schwingen. Sitz aufrecht, bewusst den äußeren Po anspannen. Exzentrik kontrollieren.' },
+  { id:'fw2',  name:'Glute Bridge (Boden)', muscle:'Glutes', secondary:'Hamstrings, Core', equipment:'Bodyweight', tip:'Auf dem Boden liegend, Füße hüftbreit, Hüfte nach oben drücken. Po oben fest anspannen. Einsteigerübung für Hip Thrust.' },
+  { id:'fw7',  name:'Adduktion (Maschine)', muscle:'Legs', secondary:'Glutes', equipment:'Machine', tip:'Oberschenkel zusammendrücken, langsam öffnen. Trainiert den Innen-Oberschenkel. Langsame Exzentrik für maximalen Effekt.' },
+  { id:'act2', name:'Clamshells', muscle:'Glutes', secondary:'Outer Hip', equipment:'Bodyweight', tip:'Seitlich liegen, Knie übereinander gebeugt, oberes Knie öffnen wie eine Muschel. Aktiviert den Gluteus medius vor dem Training.' },
+  { id:'act3', name:'Donkey Kicks', muscle:'Glutes', secondary:'Core', equipment:'Bodyweight', tip:'Auf Händen und Knien, ein Bein nach hinten-oben heben. Po anspannen. Aktivierungsübung für das Aufwärmen vor Glutetraining.' },
+  // Legs
+  { id:'fw3',  name:'Goblet Squat', muscle:'Legs', secondary:'Glutes, Core', equipment:'Dumbbell', tip:'Kurzhantel vor der Brust halten, Füße schulterbreit, tief in die Knie. Aufrechter Oberkörper. Ideal zum Erlernen der Kniebeuge.' },
+  { id:'fw4',  name:'Step-Up', muscle:'Legs', secondary:'Glutes, Balance', equipment:'Dumbbell', tip:'Auf eine erhöhte Fläche steigen, Gewicht auf dem vorderen Fuß. Vollständig strecken. Trainiert Stabilität und Kraft einseitig.' },
+  { id:'fw5',  name:'Sumo Squat (KH)', muscle:'Legs', secondary:'Inner Thighs, Glutes', equipment:'Dumbbell', tip:'Füße weit auseinander, Zehen nach außen. KH zwischen den Beinen. Betont Innen-Oberschenkel und Po.' },
+  { id:'fw6',  name:'Reverse Lunge', muscle:'Legs', secondary:'Glutes, Balance', equipment:'Dumbbell', tip:'Schritt nach hinten statt nach vorne. Weniger Kniebelastung als vorwärts. Gut für Gleichgewicht und Hamstring-Aktivierung.' },
+  // Chest
+  { id:'fw11', name:'Schrägbank Drücken (KH / Maschine)', muscle:'Chest', secondary:'Shoulders, Triceps', equipment:'Dumbbell', tip:'30–45° Schrägbank, Schulterblätter zurückziehen. Volle Bewegungsamplitude unten dehnen. Trainiert die obere Brust.' },
+  { id:'fwc2', name:'Flachbank Drücken (KH / Maschine)', muscle:'Chest', secondary:'Shoulders, Triceps', equipment:'Dumbbell', tip:'Schulterblätter zurückziehen und in die Bank drücken. Volle Bewegungsamplitude. Trainiert die gesamte Brust.' },
+  // Shoulders
+  { id:'fw12', name:'Schulterdrücken sitzend (KH)', muscle:'Shoulders', secondary:'Triceps', equipment:'Dumbbell', tip:'Sitzend, Rücken gerade. Hanteln auf Schulterhöhe starten, nach oben drücken ohne Hohlkreuz. Stärkt und definiert die Schultern.' },
+  // Back
+  { id:'fw13', name:'Einarmiges DB-Rudern', muscle:'Back', secondary:'Biceps, Core', equipment:'Dumbbell', tip:'Eine Hand auf Bank stützen, KH nah am Körper Richtung Hüfte ziehen. Ellbogen führt die Bewegung. Unilateral für Symmetrie.' },
+  // Biceps
+  { id:'fw14', name:'Bizeps Curl (KH)', muscle:'Biceps', secondary:'Forearms', equipment:'Dumbbell', tip:'Ellbogen fest an Körper. Volle Streckung unten, volle Kontraktion oben. Definiert die Arme und unterstützt alle Zugbewegungen.' },
+  // Core
+  { id:'fw8',  name:'Side Plank', muscle:'Core', secondary:'Obliques, Shoulders', equipment:'Bodyweight', tip:'Seitlich auf Unterarm stützen, Hüfte gerade oben. Trainiert die seitliche Taille (Obliques). Aufbau bis 45 Sek.', timed:true },
+  { id:'fw9',  name:'Reverse Crunch', muscle:'Core', secondary:'', equipment:'Bodyweight', tip:'Auf dem Rücken liegend, Beine zur Brust ziehen und dabei Becken vom Boden heben. Trainiert den unteren Bauch.' },
+  { id:'fw10', name:'Bicycle Crunches', muscle:'Core', secondary:'Obliques', equipment:'Bodyweight', tip:'Schultern wechselseitig zum gegenüberliegenden Knie drehen. Langsam und kontrolliert — kein Schwingen mit dem Nacken.' },
+  { id:'fwc1', name:'Plank (Unterarmstütz)', muscle:'Core', secondary:'Shoulders, Glutes', equipment:'Bodyweight', tip:'Unterarme auf der Matte, Körper in einer geraden Linie. Alles anspannen: Po, Core, Oberschenkel. Dauer progressiv steigern.', timed:true },
+  // Cardio
+  { id:'act1', name:'Stepper Aufwärmen', muscle:'Cardio', secondary:'Calves, Glutes', equipment:'Machine', tip:'5–10 Minuten auf dem Stepper als Aufwärmen vor Beintraining. Aktiviert Hüfte und Po.', timed:true },
 ];
 
 const STORAGE = {
