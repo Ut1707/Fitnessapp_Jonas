@@ -1,34 +1,70 @@
-# Training — Jonas & Franca
+# 12 Wochen — Jonas & Franca
 
-Schlichter Trainings-Tracker. Eine einzelne HTML-Datei, keine Installation,
-keine Cloud. Alle Daten liegen im `localStorage` des jeweiligen Geräts.
+Trainings-Tracker für den 12-Wochen-Plan. Eine einzelne HTML-Datei, keine
+Installation, keine Cloud. Alle Daten liegen im `localStorage` des Geräts.
 
 **Öffnen:** `index.html` doppelklicken.
 
+**Start von Woche 1:** 01.08.2026, änderbar im Plan-Tab.
+
 ## Aufbau
 
-- **Profile** — oben zwischen `Franca` und `Jonas` umschalten. Beide sehen die
-  Einträge des anderen, jeder hat aber seinen eigenen Datensatz.
-- **Kalender** — Tag antippen, Training eintragen. Punkte zeigen Tage mit Training.
-- **Körper** — Gewicht, Brust, Taille, Hüfte, Oberschenkel, Arm.
-- **Dashboard** — Einheiten, Kilometer, bewegtes Gewicht, Gewichtsverlauf.
+Oben zwischen `Franca` und `Jonas` umschalten — getrennte Datensätze, beide
+sehen die Einträge des anderen.
 
-## Kategorien
+- **Kalender** — was heute ansteht, Gewicht des Tages, Ernährungshaken, Monatsübersicht
+- **Körper** — Umfänge nach Plan, Kontrollpunkte Start / Woche 4 / 8 / 12
+- **Plan** — Wochenaufteilung, alle Trainings, Progression, Ernährung, Messanleitung
+- **Auswertung** — Wochenfortschritt, Beineinheiten, Gewichtstrend, Umfänge, Kraftzuwachs
 
-- **Cardio** — Distanz, Dauer, Pace wird berechnet.
-- **Fitness** — Trainings mit Übungsliste; pro Satz Wiederholungen und Gewicht.
-  Beim nächsten Mal sind die Werte des letzten Mals vorausgefüllt.
-- **Weitere** — eigene Kategorien, Eingabeart beim Anlegen wählbar.
+## Trainingseingabe
 
-Trainings und Übungen lassen sich im Kalender unter
-„Kategorien & Übungen bearbeiten" anpassen.
+Der Plan füllt das Formular vor. Für jede Übung berechnet die App aus dem Log
+das Zielgewicht und die Ziel-Wiederholungen nach Doppelprogression:
+
+- alle Sätze erreicht, oberes Ende des Bereichs noch offen → eine Wiederholung mehr
+- oberes Ende erreicht → Gewicht plus Steigerungsschritt, Wiederholungen zurück auf das untere Ende
+- zwei Wochen keine zusätzliche Wiederholung → Hinweis, Vorschlag minus 10 %
+- Woche 7 → automatisch 60 % vom letzten Gewicht (Deload)
+- Woche 1 → keine Vorschläge, stattdessen der Startbereich aus dem Plan
+
+Das Gewicht ist vorbelegt, die Wiederholungen stehen als Vorgabe im Feld —
+`alle = 8` füllt sie mit einem Tipp. Bei gemeinsamen Einheiten schaltet der
+Umschalter oben im Formular zwischen beiden Personen um, gespeichert wird für
+beide getrennt.
+
+## Anpassen
+
+Im Plan-Tab hat jedes Training einen `Anpassen`-Knopf:
+
+- **Wochentag ändern** — verschiebt das Training dauerhaft
+- **Übungen** — rausnehmen, zurückholen, Reihenfolge ändern, eigene hinzufügen
+  (mit Sätzen, Wiederholungsbereich, Steigerungsschritt und Gewichtsart)
+
+Übungsänderungen gelten pro Person, der Wochentag für beide. Bereits erfasste
+Einträge bleiben unverändert.
+
+**Zusätzliche Einheiten:** über `+ Eintragen` lässt sich jedes Plan-Training an
+jedem Tag erfassen, dazu `Freies Krafttraining` für Einheiten außerhalb des
+Plans und eigene Cardio-Arten.
+
+## Abweichungen vom Ausgangsplan
+
+- Kniebeugen-Tag auf Dienstag, Hip-Thrust-Tag auf Freitag (Erholung nach dem Beach)
+- Sie: Beinstrecker durch Abduktion ersetzt, Hip Thrust 8–12 statt 6–10,
+  Donnerstag von 9 auf 7 Übungen gekürzt plus Po-Block am Ende
+- Er: Unterkörper auf 4 Übungen gekürzt, dafür Zug-Block dienstags und
+  Druck-Block freitags; Sonntag ist ein vollwertiger Oberkörpertag statt
+  Bodyweight-Zirkel
+- Ernährung: bei ihm Kontrolle des Gewichtstrends ab Woche 2, an Volleyballtagen
+  300–400 kcal mehr; Schlaf als eigener Punkt ergänzt
 
 ## Sicherung
 
-Im Dashboard: `Daten sichern` schreibt eine JSON-Datei, `Sicherung einlesen`
-holt sie zurück. Ohne Sicherung sind die Daten weg, wenn der Browser-Speicher
-gelöscht wird.
+Im Plan-Tab unten: `Daten sichern` schreibt eine JSON-Datei, `Sicherung einlesen`
+holt sie zurück. Auch der Weg, Daten zwischen Handy und Rechner zu übertragen.
+Ohne Sicherung sind die Daten weg, wenn der Browser-Speicher gelöscht wird.
 
 ---
 
-`index_alt.html` ist die frühere, deutlich umfangreichere Version.
+`index_alt.html` ist die ursprüngliche App vor dem Umbau.
