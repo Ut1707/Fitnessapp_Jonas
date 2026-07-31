@@ -172,6 +172,7 @@ table.t td.r{text-align:right;white-space:nowrap}
       <button data-v="cal" aria-current="page">Kalender</button>
       <button data-v="body">Körper</button>
       <button data-v="plan">Plan</button>
+      <button data-v="essen">Essen</button>
       <button data-v="dash">Auswertung</button>
     </nav>
   </div>
@@ -929,32 +930,6 @@ function renderPlan(){
       '<div class="small muted">'+esc(b.name)+'</div></td><td class="small">'+esc(b.note)+'</td></tr>').join('')+
     '</tbody></table>';
 
-  /* Ernährung */
-  const n = NUT[person];
-  const sumK = n.tag.reduce((a,x)=>a+x.kcal,0), sumP = n.tag.reduce((a,x)=>a+x.p,0);
-  h += '<h2>Ernährung</h2>'+
-    '<div class="stats"><div class="stat"><div class="v">'+fmtNum(n.kcal,0)+'</div><div class="k">kcal pro Tag</div></div>'+
-    '<div class="stat"><div class="v">'+n.protein+' g</div><div class="k">Protein</div></div>'+
-    '<div class="stat"><div class="v">'+esc(n.fett)+'</div><div class="k">Fett</div></div>'+
-    '<div class="stat"><div class="v">'+esc(n.kh)+'</div><div class="k">Kohlenhydrate</div></div></div>'+
-    '<div class="hint" style="margin-top:8px">'+esc(n.ziel)+'. '+esc(n.warum)+'</div>'+
-    '<h3 class="sub">Beispieltag</h3><table class="t"><tbody>'+
-    n.tag.map(x => '<tr><td>'+esc(x.t)+'<div class="small muted">'+esc(x.i)+'</div></td>'+
-      '<td class="r small">'+x.kcal+' kcal<div class="muted">'+x.p+' g P</div></td></tr>').join('')+
-    '<tr><td><strong>Summe Beispieltag</strong><div class="small muted">Zielwert '+fmtNum(n.kcal,0)+' kcal / '+n.protein+' g</div></td>'+
-    '<td class="r"><strong>'+fmtNum(sumK,0)+' kcal</strong><div class="small muted">'+sumP+' g P</div></td></tr>'+
-    '</tbody></table>'+
-    '<h3 class="sub">Anpassung</h3><div class="card"><div class="cmeta">'+esc(n.check)+'</div></div>'+
-    '<h3 class="sub">Protein zur Orientierung</h3><table class="t"><tbody>'+
-    PROTEIN.map(r => '<tr><td>'+esc(r[0])+'<span class="small muted"> · '+esc(r[1])+'</span></td><td class="r">'+esc(r[2])+'</td></tr>').join('')+
-    '</tbody></table><div class="hint">In jeder Hauptmahlzeit 30–40 g Protein. Damit ist das Tagesziel fast automatisch erreicht.</div>'+
-    '<h3 class="sub">Timing, Schlaf, Supplements</h3>'+
-    '<div class="card"><div class="cmeta">'+
-      '1–2 Stunden vor dem Training eine kohlenhydratbetonte Mahlzeit. Protein über 3–5 Mahlzeiten verteilen. '+
-      'Alles andere — Kohlenhydrate abends, Anabolic Window, Nüchterntraining — ist für dieses Ziel irrelevant.'+
-    '</div><div class="cmeta" style="margin-top:10px"><strong>Schlaf 7–9 Stunden.</strong> Im Ausgangsplan nicht erwähnt, für Muskelaufbau aber ein größerer Hebel als alle Supplements zusammen. Bei Trainingsende um 22 Uhr am Montag eine reale Frage.</div>'+
-    '<div class="cmeta" style="margin-top:10px">Kreatin Monohydrat 3–5 g täglich · Whey nur aus Bequemlichkeit · Vitamin D im Winter 1.000–2.000 IE. Alles andere bringt nichts.</div></div>';
-
   /* Messen */
   h += '<h2>Was gemessen wird</h2><table class="t"><thead><tr><th>Maß</th><th class="r">Ziel</th></tr></thead><tbody>'+
     MASSE.map(f => '<tr><td>'+esc(f.l)+'<div class="small muted">'+esc(f.wo)+'</div></td>'+
@@ -965,8 +940,95 @@ function renderPlan(){
       ? '<div class="card" style="margin-top:12px"><div class="cmeta">Der Zyklus verschiebt das Gewicht in der zweiten Hälfte oft um 1–2 kg nach oben. Die Auswertung vergleicht deshalb immer mit dem Durchschnitt von vor vier Wochen, nicht mit der Vorwoche.</div></div>'
       : '');
 
+  h += '<h2>Woran es meistens scheitert</h2>'+
+    '<div class="card"><div class="ctitle">1 · Fehlende Progression</div>'+
+    '<div class="cmeta">Immer dasselbe Gewicht heißt kein Reiz heißt kein Ergebnis. Deshalb wird jede Einheit hier festgehalten — ohne Aufzeichnung trainiert man unbewusst monatelang mit demselben Gewicht.</div></div>'+
+    '<div class="card"><div class="ctitle">2 · Fehlende Konstanz</div>'+
+    '<div class="cmeta">24 geplante Beineinheiten in zwölf Wochen. Wer 20 schafft, bekommt praktisch das volle Ergebnis. Wer nach drei Wochen aussetzt und neu startet, bleibt dauerhaft in der Phase, in der noch nichts sichtbar ist.<br><br>'+
+    'Wenn ein Tag eng wird: Kurzversion mit den ersten zwei bis drei Übungen statt Ausfall. Beim Essen dasselbe.</div></div>';
+
   h += '<div class="foot"><button class="btn-ghost" data-act="export">Daten sichern</button>'+
        '<button class="btn-ghost" data-act="import">Sicherung einlesen</button></div>';
+  return h;
+}
+
+/* ============================================================
+   8b · ANSICHT ESSEN
+   ============================================================ */
+
+function renderEssen(){
+  const person = pers();
+  const n = NUT[person];
+  const heute = dkey(new Date());
+  const sumK = n.tag.reduce((a,x)=>a+x.kcal,0), sumP = n.tag.reduce((a,x)=>a+x.p,0);
+  let tage = 0;
+  for(let i=0;i<7;i++) if(S.essen[S.profile+'|'+addDays(heute,-i)]) tage++;
+
+  let h = '<h2>Zielwerte '+esc(nameOf(S.profile))+'</h2>'+
+    '<div class="stats">'+
+      '<div class="stat"><div class="v">'+fmtNum(n.kcal,0)+'</div><div class="k">kcal pro Tag</div></div>'+
+      '<div class="stat"><div class="v">'+n.protein+' g</div><div class="k">Protein</div></div>'+
+      '<div class="stat"><div class="v">'+esc(n.fett)+'</div><div class="k">Fett</div></div>'+
+      '<div class="stat"><div class="v">'+esc(n.kh)+'</div><div class="k">Kohlenhydrate</div></div>'+
+    '</div>'+
+    '<div class="hint" style="margin-top:8px"><strong>'+esc(n.ziel)+'.</strong> '+esc(n.warum)+'</div>';
+
+  h += '<div class="card" style="margin-top:16px">'+
+    '<div class="spread"><strong>'+tage+' von 7 Tagen eingehalten</strong>'+
+      '<span class="small muted">letzte Woche</span></div>'+
+    '<div class="bar g"><i style="width:'+Math.round(tage/7*100)+'%"></i></div>'+
+    '<div class="chk" style="border-top:1px solid var(--line);margin-top:10px">'+
+      '<input type="checkbox" id="essen2" '+(S.essen[S.profile+'|'+heute]?'checked':'')+' data-act="essen">'+
+      '<label for="essen2">Heute eingehalten</label></div>'+
+    '<div class="hint">80 % Umsetzung über zwölf Wochen schlägt 100 % über drei.</div></div>';
+
+  h += '<h2>Beispieltag</h2><table class="t"><tbody>'+
+    n.tag.map(x => '<tr><td>'+esc(x.t)+'<div class="small muted">'+esc(x.i)+'</div></td>'+
+      '<td class="r small">'+x.kcal+' kcal<div class="muted">'+x.p+' g P</div></td></tr>').join('')+
+    '<tr><td><strong>Summe</strong><div class="small muted">Zielwert '+fmtNum(n.kcal,0)+' kcal · '+n.protein+' g Protein</div></td>'+
+    '<td class="r"><strong>'+fmtNum(sumK,0)+' kcal</strong><div class="small muted">'+sumP+' g P</div></td></tr>'+
+    '</tbody></table>'+
+    (person === 'er'
+      ? '<div class="hint">Der Beispieltag liegt etwas über dem Zielwert. Wenn 3.200 kcal schwer zu essen sind: Milch statt Wasser, mehr Öl und Nüsse, Trockenfrüchte. Flüssige Kalorien sind der einfachste Hebel.</div>'
+      : '<div class="hint">Der letzte Punkt ist optional — ohne ihn liegt der Tag bei 2.190 kcal und 119 g Protein.</div>');
+
+  h += '<h2>Anpassung an den Kontrollpunkten</h2>'+
+    '<div class="card"><div class="cmeta">'+esc(n.check)+'</div></div>';
+
+  h += '<h2>Protein zur Orientierung</h2><table class="t"><tbody>'+
+    PROTEIN.map(r => '<tr><td>'+esc(r[0])+'<span class="small muted"> · '+esc(r[1])+'</span></td>'+
+      '<td class="r">'+esc(r[2])+'</td></tr>').join('')+
+    '</tbody></table>'+
+    '<div class="hint">In jeder Hauptmahlzeit 30–40 g Protein. Damit ist das Tagesziel fast automatisch erreicht.</div>';
+
+  h += '<h2>Warum diese Verteilung</h2><div class="card"><div class="cmeta">'+
+    'Protein bei 1,8–2,0 g/kg entscheidet über Muskelerhalt und -aufbau. Alles darüber bringt keinen Zusatznutzen.<br><br>'+
+    'Fett nicht unter '+(person === 'sie' ? '60 g' : '70 g')+' — der Hormonhaushalt hängt daran.<br><br>'+
+    'Kohlenhydrate füllen den Rest. Sie sind der Treibstoff für die schweren Sätze und damit der Grund, warum das Training überhaupt greift. Größerer Anteil rund um die Einheiten.'+
+    '</div></div>';
+
+  h += '<h2>Timing</h2><div class="card"><div class="cmeta">'+
+    'Wichtig ist die Tagesmenge, nicht die Uhrzeit. Zwei Dinge helfen trotzdem: 1–2 Stunden vor dem Training eine kohlenhydratbetonte Mahlzeit — der Unterschied bei schweren Sätzen ist merkbar. Und Protein über 3–5 Mahlzeiten verteilen statt in einer großen Portion.'+
+    '</div></div>';
+
+  h += '<h2>Schlaf</h2><div class="card"><div class="cmeta">'+
+    '<strong>7–9 Stunden.</strong> Im Ausgangsplan nicht erwähnt, für Muskelaufbau aber ein größerer Hebel als Kreatin, Whey und Vitamin D zusammen. Bei Trainingsende um 22 Uhr am Montag eine reale Frage.'+
+    '</div></div>';
+
+  h += '<h2>Supplements</h2><table class="t"><tbody>'+
+    '<tr><td>Kreatin Monohydrat<div class="small muted">3–5 g täglich, Tageszeit egal. Wirkt bei beiden.'+
+      (person === 'sie' ? ' In der ersten Woche eventuell 0,5–1 kg mehr auf der Waage durch Wasser im Muskel — kein Fett.' : '')+
+      '</div></td><td class="r small">sinnvoll</td></tr>'+
+    '<tr><td>Whey<div class="small muted">nur aus Bequemlichkeit, wenn die Proteinmenge über Lebensmittel nicht zusammenkommt</div></td><td class="r small">optional</td></tr>'+
+    '<tr><td>Vitamin D<div class="small muted">im Winter, 1.000–2.000 IE</div></td><td class="r small">sinnvoll</td></tr>'+
+    '<tr><td class="muted">Fatburner, BCAA, Detox, Anti-Cellulite<div class="small muted">bringt nichts</div></td><td class="r small muted">nein</td></tr>'+
+    '</tbody></table>';
+
+  h += '<h2>Was keinen Effekt hat</h2><div class="card"><div class="cmeta">'+
+    'Gezielte Ernährung für einzelne Körperzonen existiert nicht — kein Lebensmittel beeinflusst, wo Fett abgebaut wird. '+
+    'Kohlenhydrate am Abend machen nicht dick. Low Carb ist für dieses Ziel kontraproduktiv, weil genau die schweren Sätze darunter leiden.'+
+    '</div></div>';
+
   return h;
 }
 
@@ -1623,7 +1685,7 @@ $('#main').addEventListener('change', e => {
   if(e.target.dataset.act === 'essen'){
     const k = S.profile+'|'+dkey(new Date());
     if(e.target.checked) S.essen[k] = true; else delete S.essen[k];
-    save();
+    save(); render();
   }
 });
 
@@ -1814,7 +1876,8 @@ function render(){
   $('#main').innerHTML =
     view === 'cal'  ? renderCal()  :
     view === 'body' ? renderBody() :
-    view === 'plan' ? renderPlan() : renderDash();
+    view === 'plan' ? renderPlan() :
+    view === 'essen'? renderEssen() : renderDash();
 }
 
 render();

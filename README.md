@@ -14,7 +14,9 @@ sehen die Einträge des anderen.
 
 - **Kalender** — was heute ansteht, Gewicht des Tages, Ernährungshaken, Monatsübersicht
 - **Körper** — Umfänge nach Plan, Kontrollpunkte Start / Woche 4 / 8 / 12
-- **Plan** — Wochenaufteilung, alle Trainings, Progression, Ernährung, Messanleitung
+- **Plan** — Wochenaufteilung, alle Trainings, Progression, Blöcke, Messanleitung
+- **Essen** — Zielwerte, Beispieltag, Proteinliste, Timing, Schlaf, Supplements,
+  Anpassungsregel und der Tageshaken mit Wochenquote
 - **Auswertung** — Wochenfortschritt, Beineinheiten, Gewichtstrend, Umfänge, Kraftzuwachs
 
 ## Trainingseingabe
