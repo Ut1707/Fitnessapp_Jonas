@@ -68,6 +68,13 @@ textarea{resize:vertical;min-height:60px}
 .card .ctitle{font-weight:600;margin-bottom:2px}
 .card .cmeta{font-size:13px;color:var(--muted)}
 .tagline{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+details.det{padding:0}
+details.det summary{padding:14px;cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:2px}
+details.det summary::-webkit-details-marker{display:none}
+details.det summary::after{content:'+';margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
+details.det[open] summary::after{content:'−'}
+details.det > *:not(summary){margin-left:14px;margin-right:14px}
+details.det > *:last-child{margin-bottom:14px}
 
 .bar{height:6px;background:var(--soft);border-radius:3px;overflow:hidden;margin:8px 0 4px}
 .bar i{display:block;height:100%;background:var(--fg)}
@@ -322,6 +329,89 @@ const PLAN = {
   ]
 };
 
+/* ------------------------------------------------------------
+   Zusatz-Trainings (aus den Grafiken)
+   Kein fester Wochentag — über „+ Eintragen" an jedem Tag nutzbar.
+   ------------------------------------------------------------ */
+
+const EXTRA = [
+  { id:'xPoGym', kind:'strength', ort:'Gym', name:'Po', sub:'Zusatz · Gym',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Kniebeuge Langhantel', sets:4, reps:[10,12], rest:'2 Min.', step:'grund' },
+    { n:'Hip Thrust Maschine', sets:4, reps:[12,12], rest:'2 Min.', step:'maschine' },
+    { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine' },
+    { n:'Cable Kickback', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine', perLeg:true },
+    { n:'Kreuzheben Kurzhantel', sets:3, reps:[12,12], rest:'90 Sek.', step:'kh', unit:'kgSeite' }
+  ]},
+
+  { id:'xPoHome', kind:'strength', ort:'Zuhause', name:'Po', sub:'Zusatz · Zuhause',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Sumo Squat', sets:4, reps:[20,20], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Glute Bridge', sets:4, reps:[15,20], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Donkey Kick', sets:3, reps:[15,15], rest:'45 Sek.', step:'iso', unit:'kgZusatz', perLeg:true },
+    { n:'Ausfallschritte im Wechsel', sets:3, reps:[10,10], rest:'60 Sek.', step:'iso', unit:'kgZusatz', perLeg:true },
+    { n:'Glute Bridge isometrisch halten', sets:3, reps:[30,45], rest:'45 Sek.', time:true, noWeight:true }
+  ]},
+
+  { id:'xBeineGym', kind:'strength', ort:'Gym', name:'Oberschenkel', sub:'Zusatz · Gym',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Kniebeuge Langhantel', sets:4, reps:[10,12], rest:'2 Min.', step:'grund' },
+    { n:'Beinpresse 45°', sets:4, reps:[12,12], rest:'2 Min.', step:'presse' },
+    { n:'Beinstrecker Maschine', sets:4, reps:[15,15], rest:'60 Sek.', step:'maschine', tag:'letzter Satz als Drop-Satz' },
+    { n:'Beinbeuger liegend', sets:3, reps:[12,12], rest:'90 Sek.', step:'maschine', perLeg:true },
+    { n:'Hackenschmidt- oder Smith-Kniebeuge', sets:3, reps:[10,12], rest:'2 Min.', step:'maschine' },
+    { n:'Sumo-Kniebeuge mit Kurzhantel', sets:3, reps:[15,15], rest:'60 Sek.', step:'iso' }
+  ]},
+
+  { id:'xBeineHome', kind:'strength', ort:'Zuhause', name:'Oberschenkel', sub:'Zusatz · Zuhause',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Air Squat', sets:4, reps:[20,20], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Wall Sit isometrisch', sets:4, reps:[40,40], rest:'60 Sek.', time:true, noWeight:true },
+    { n:'Ausfallschritte im Wechsel', sets:3, reps:[15,15], rest:'60 Sek.', step:'iso', unit:'kgZusatz', perLeg:true },
+    { n:'Bulgarian Split Squat', sets:3, reps:[12,12], rest:'60 Sek.', step:'iso', unit:'kgZusatz', perLeg:true },
+    { n:'Step-up auf Stuhl oder Bank', sets:3, reps:[15,15], rest:'60 Sek.', step:'iso', unit:'kgZusatz', perLeg:true },
+    { n:'Pulse Squat', sets:3, reps:[20,20], rest:'45 Sek.', step:'iso', unit:'kgZusatz' }
+  ]},
+
+  { id:'xRueckenGym', kind:'strength', ort:'Gym', name:'Rücken & Bizeps', sub:'Zusatz · Gym',
+    for:['sie','er'], note:'Cool-down: 5–10 Minuten dehnen.', warmup:[], ex:[
+    { n:'Latzug breit', sets:4, reps:[10,12], rest:'2 Min.', step:'maschine' },
+    { n:'Rudern Langhantel vorgebeugt', sets:4, reps:[10,12], rest:'2 Min.', step:'grund' },
+    { n:'Rudern Kabel sitzend', sets:3, reps:[12,12], rest:'90 Sek.', step:'maschine' },
+    { n:'Bizepscurl Langhantel', sets:3, reps:[12,12], rest:'60 Sek.', step:'iso' },
+    { n:'Hammercurl Kurzhantel', sets:3, reps:[12,12], rest:'60 Sek.', step:'kh', unit:'kgSeite' }
+  ]},
+
+  { id:'xRueckenHome', kind:'strength', ort:'Zuhause', name:'Rücken & Bizeps', sub:'Zusatz · Zuhause',
+    for:['sie','er'], note:'Cool-down: 5–10 Minuten dehnen.', warmup:[], ex:[
+    { n:'Rudern vorgebeugt mit Rucksack', sets:4, reps:[15,15], rest:'90 Sek.', step:'iso' },
+    { n:'Superman', sets:4, reps:[20,20], rest:'45 Sek.', noWeight:true },
+    { n:'Einarmiges Rudern mit Flasche oder Kanister', sets:3, reps:[12,12], rest:'60 Sek.', step:'iso', perSide:true },
+    { n:'Bizepscurl mit Rucksack', sets:3, reps:[15,15], rest:'60 Sek.', step:'iso' },
+    { n:'Hammercurl mit Wasserflasche', sets:3, reps:[15,15], rest:'60 Sek.', step:'iso' }
+  ]},
+
+  { id:'xBrustGym', kind:'strength', ort:'Gym', name:'Brust & Trizeps', sub:'Zusatz · Gym',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Bankdrücken Langhantel', sets:4, reps:[10,12], rest:'2 Min.', step:'grund' },
+    { n:'Schrägbankdrücken Kurzhantel', sets:3, reps:[10,12], rest:'90 Sek.', step:'kh', unit:'kgSeite' },
+    { n:'Cable Fly (mittlere Höhe)', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Trizepsdrücken Seil', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Trizepsstrecken liegend SZ-Stange', sets:3, reps:[10,12], rest:'60 Sek.', step:'iso' }
+  ]},
+
+  { id:'xBrustHome', kind:'strength', ort:'Zuhause', name:'Brust & Trizeps', sub:'Zusatz · Zuhause',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Liegestütze', sets:4, reps:[15,20], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Liegestütze erhöht', sets:3, reps:[12,15], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Diamant-Liegestütze', sets:3, reps:[12,15], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Bank-Dips', sets:3, reps:[12,15], rest:'60 Sek.', step:'iso', unit:'kgZusatz' },
+    { n:'Trizeps-Kickback mit Rucksack', sets:3, reps:[12,15], rest:'45 Sek.', step:'iso', perSide:true }
+  ]}
+];
+
+function allWorkouts(){ return PLAN.workouts.concat(EXTRA); }
+
 /* Messstellen aus dem Plan, mit Zielrichtung je Person */
 const MASSE = [
   { k:'po',      l:'Po / Hüfte',    wo:'breiteste Stelle',              ziel:{ sie:'gleich oder ↑', er:'↑' } },
@@ -369,6 +459,47 @@ const PROTEIN = [
   ['Rinderhack 5 %','150 g','32 g'], ['Lachs','150 g','31 g'], ['Thunfisch (Dose)','150 g','38 g'],
   ['Eier','3 Stück','19 g'], ['Linsen (gekocht)','200 g','18 g'], ['Tofu','200 g','32 g'],
   ['Whey','30 g','24 g'], ['Harzer Käse','100 g','30 g']
+];
+
+/* Mahlzeiten-Ideen aus dem Wochenplan, nach Mahlzeit sortiert */
+const MEAL_TAGE = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+const MEALS = [
+  { k:'Frühstück', l:[
+    'Rührei mit Spinat, Avocado und Vollkornbrot',
+    'Haferflocken mit Protein, Beeren und Nüssen',
+    'Schoko-Haferflocken-Smoothie-Bowl mit Banane und Erdnussbutter',
+    'Vollkorntoast mit Avocado, Tomate und Chiasamen',
+    'Omelett mit Spinat und Champignons, dazu Vollkornbrot',
+    'Haferflocken-Pancakes mit Banane, Beeren und Honig',
+    'Haferflocken mit Erdnussbutter, Banane und Kürbiskernen'
+  ]},
+  { k:'Mittagessen', l:[
+    'Gegrillte Hähnchenbrust mit braunem Reis und gedünstetem Gemüse',
+    'Mageres Rindfleisch mit Süßkartoffel und grünen Bohnen',
+    'Gegrillte Pute mit braunem Reis und gedünstetem Gemüse',
+    'Kichererbsen-Bowl mit Reis und Salat',
+    'Gegrillter Lachs mit Süßkartoffelpüree und Spargel',
+    'Hähnchen-Wrap mit Gemüse und Hummus',
+    'Gebackenes Hähnchen mit Röstkartoffeln und grünem Salat'
+  ]},
+  { k:'Zwischenmahlzeit', sub:'vor oder nach dem Training', l:[
+    'Proteinshake mit Milch, Banane und Erdnussbutter',
+    'Griechischer Joghurt mit Granola und Honig',
+    'Reiswaffeln mit Hüttenkäse und Honig',
+    'Proteinshake mit Haferflocken, Kakao und Mandeln',
+    'Banane mit Erdnussbutter',
+    'Griechischer Joghurt mit roten Beeren und Nüssen',
+    'Proteinshake mit Milch, Haferflocken und Kakao'
+  ]},
+  { k:'Abendessen', l:[
+    'Gebackener Lachs mit Quinoa und gedünstetem Brokkoli',
+    'Thunfischsalat mit Vollkornnudeln, Tomate und Avocado',
+    'Gebackenes Fischfilet mit Röstkartoffeln und grünem Salat',
+    'Gegrilltes Hähnchen mit Quinoa und sautiertem Gemüse',
+    'Rindfleisch-Pfanne mit braunem Reis und Gemüse',
+    'Gebratene Garnelen mit Quinoa und Blattgemüse',
+    'Linseneintopf mit Gemüse und Avocado'
+  ]}
 ];
 
 /* ============================================================
@@ -541,10 +672,10 @@ function exFor(w, person){
   }
   return list;
 }
-function woById(id){ return id === 'free' ? FREE : PLAN.workouts.find(w => w.id === id); }
+function woById(id){ return id === 'free' ? FREE : allWorkouts().find(w => w.id === id); }
 function planToday(dateKey, person){
   const dow = fromKey(dateKey).getDay();
-  return PLAN.workouts.filter(w => dayOf(w) === dow && w.for.includes(person));
+  return allWorkouts().filter(w => dayOf(w) === dow && w.for.includes(person));
 }
 
 function volume(e){
@@ -926,7 +1057,7 @@ function renderPlan(){
   /* Wochenaufteilung */
   h += '<h2>Woche</h2><table class="t"><tbody>';
   [1,2,3,4,5,6,0].forEach(d => {
-    const wos = PLAN.workouts.filter(x => dayOf(x) === d && x.for.includes(person));
+    const wos = allWorkouts().filter(x => dayOf(x) === d && x.for.includes(person));
     h += '<tr><td style="width:34%">'+esc(wdName(d))+'</td>'+
          '<td>'+(wos.length ? wos.map(x => esc(x.name)+'<div class="small muted">'+esc(x.sub)+'</div>').join('') : '<span class="muted">frei</span>')+'</td></tr>';
   });
@@ -955,6 +1086,29 @@ function renderPlan(){
               '<td class="r small">'+esc(stTxt)+'</td></tr>';
          }).join('')+
          '</tbody></table></div>';
+  });
+
+  /* Zusatz-Trainings */
+  h += '<h2>Zusatz-Trainings</h2>'+
+    '<div class="hint" style="margin-bottom:12px">Kein fester Wochentag. Im Kalender über „+ Eintragen" an jedem Tag nutzbar — '+
+    'oder unter Anpassen fest auf einen Tag legen. Progression, Verlauf und Auswertung laufen genauso mit wie beim Plan.</div>';
+  ['Gym','Zuhause'].forEach(ort => {
+    const list = EXTRA.filter(x => x.ort === ort && x.for.includes(person));
+    if(!list.length) return;
+    h += '<div class="sec-title">'+ort+'</div>';
+    list.forEach(x => {
+      const ex = exFor(x, person);
+      h += '<details class="card det"><summary><strong>'+esc(x.name)+'</strong>'+
+        '<span class="cmeta"> · '+ex.length+' Übungen</span></summary>'+
+        (x.note ? '<div class="cmeta" style="margin-top:8px">'+esc(x.note)+'</div>' : '')+
+        '<table class="t" style="margin-top:10px"><tbody>'+
+        ex.map((e,i) => '<tr><td>'+(i+1)+'. '+esc(e.n)+
+          (e.tag ? '<div class="small" style="color:var(--accent)">'+esc(e.tag)+'</div>' : '')+
+          '<div class="small muted">'+e.sets+' × '+repTxt(e)+' · Pause '+esc(e.rest)+'</div></td></tr>').join('')+
+        '</tbody></table>'+
+        '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'" style="margin-top:10px">Anpassen</button>'+
+        '</details>';
+    });
   });
 
   /* Progression */
@@ -1034,6 +1188,22 @@ function renderEssen(){
     (person === 'er'
       ? '<div class="hint">Der Beispieltag liegt etwas über dem Zielwert. Wenn 3.200 kcal schwer zu essen sind: Milch statt Wasser, mehr Öl und Nüsse, Trockenfrüchte. Flüssige Kalorien sind der einfachste Hebel.</div>'
       : '<div class="hint">Der letzte Punkt ist optional — ohne ihn liegt der Tag bei 2.190 kcal und 119 g Protein.</div>');
+
+  h += '<h2>Mahlzeiten-Ideen</h2>'+
+    '<div class="hint" style="margin-bottom:12px">28 Vorschläge aus dem Wochenplan, nach Mahlzeit sortiert. '+
+    'Der Wochentag dahinter ist nur die Herkunft — frei kombinierbar.</div>';
+  MEALS.forEach(m => {
+    h += '<details class="card det"><summary><strong>'+esc(m.k)+'</strong>'+
+      '<span class="cmeta"> · '+m.l.length+' Ideen</span></summary>'+
+      (m.sub ? '<div class="cmeta" style="margin-top:6px">'+esc(m.sub)+'</div>' : '')+
+      '<table class="t" style="margin-top:10px"><tbody>'+
+      m.l.map((x,i) => '<tr><td>'+esc(x)+'<div class="small muted">'+esc(MEAL_TAGE[i])+'</div></td></tr>').join('')+
+      '</tbody></table></details>';
+  });
+
+  h += '<h2>Trinken</h2><div class="card"><div class="cmeta">'+
+    '<strong>2,5–4 Liter Wasser am Tag.</strong> An Trainings- und Volleyballtagen eher am oberen Ende. '+
+    'Zu wenig Flüssigkeit kostet spürbar Leistung in den schweren Sätzen.</div></div>';
 
   h += '<h2>Anpassung an den Kontrollpunkten</h2>'+
     '<div class="card"><div class="cmeta">'+esc(n.check)+'</div></div>';
@@ -1285,7 +1455,7 @@ function buildDraft(w, profileId, dateKey, short){
   if(short) list = list.slice(0,3);
   return {
     id: uid(), profile: profileId, date: dateKey, kind:'strength',
-    planId: w.id, cat: w.name + (w.short ? ' · ' + w.short : ''), note:'',
+    planId: w.id, cat: w.name + (w.short ? ' · '+w.short : w.ort ? ' · '+w.ort : ''), note:'',
     blocks: list.map(ex => {
       const t = target(profileId, w, ex, dateKey);
       return {
@@ -1417,6 +1587,11 @@ function allCats(){
   const out = [];
   PLAN.workouts.filter(w => w.for.includes(pers()))
     .forEach(w => out.push({ id:'plan:'+w.id, name:w.name, sub:w.sub+' · sonst '+wdName(dayOf(w)), group:'Aus dem Plan' }));
+  EXTRA.filter(w => w.for.includes(pers())).forEach(w => out.push({
+    id:'plan:'+w.id, name:w.name,
+    sub: exFor(w, pers()).length+' Übungen · '+exFor(w, pers()).slice(0,2).map(x => x.n).join(', ')+' …',
+    group: w.ort === 'Gym' ? 'Zusatz · Gym' : 'Zusatz · Zuhause'
+  }));
   S.cardio.forEach(c => out.push({ id:'c:'+c.id, name:c.name, kind:'cardio', group:'Cardio' }));
   out.push({ id:'plan:free', name:FREE.name, sub:FREE.sub, group:'Weitere' });
   S.custom.forEach(c => out.push({ id:'x:'+c.id, name:c.name, kind:c.kind, group:'Weitere' }));
@@ -1426,7 +1601,7 @@ function allCats(){
 function openPicker(){
   const cats = allCats();
   let html = sheetHead('Was hast du gemacht?', dLabel(selDate));
-  ['Aus dem Plan','Cardio','Weitere'].forEach(g => {
+  ['Aus dem Plan','Zusatz · Gym','Zusatz · Zuhause','Cardio','Weitere'].forEach(g => {
     const items = cats.filter(c => c.group === g);
     if(!items.length) return;
     html += '<div class="sec-title">'+g+'</div>'+ items.map(c =>
@@ -1553,6 +1728,7 @@ function openWoEdit(wid){
 
   h += '<div class="field"><label for="wd">Wochentag</label>'+
     '<select id="wd" data-chg="setday" data-id="'+wid+'">'+
+    '<option value="-1"'+(dayOf(w)==null?' selected':'')+'>kein fester Tag</option>'+
     [1,2,3,4,5,6,0].map(d => '<option value="'+d+'"'+(dayOf(w)===d?' selected':'')+'>'+wdName(d)+'</option>').join('')+
     '</select><div class="hint">Verschiebt das Training dauerhaft. Für einen einmaligen Tausch reicht es, den Tag im Kalender zu wählen und dort über „+ Eintragen" dieses Training zu erfassen.</div></div>';
 
@@ -1900,8 +2076,9 @@ $('#sheet').addEventListener('change', e => {
   if(el.dataset.chg === 'setday'){
     const w = woById(el.dataset.id);
     const d = Number(el.value);
-    if(d === w.day) delete S.days[w.id]; else S.days[w.id] = d;
-    save(); render(); toast(w.name+' liegt jetzt am '+wdName(d));
+    if(d < 0 || d === w.day) delete S.days[w.id]; else S.days[w.id] = d;
+    save(); render();
+    toast(d < 0 ? w.name+' hat keinen festen Tag mehr' : w.name+' liegt jetzt am '+wdName(d));
   }
 });
 
