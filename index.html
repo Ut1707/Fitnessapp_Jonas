@@ -1625,6 +1625,12 @@ function renderWorkout(){
       '<button data-wp="'+p.id+'" aria-pressed="'+(wo.active===p.id)+'">'+esc(p.name)+'</button>').join('') +'</div>';
   }
 
+  h += '<div class="field"><label for="wo-date">Datum</label>'+
+       '<input id="wo-date" type="date" value="'+esc(wo.date)+'" data-chg="wodate">'+
+       (wo.date !== dkey(new Date())
+         ? '<div class="hint">Wird für '+esc(dLabel(wo.date))+' eingetragen.</div>' : '')+
+       '</div>';
+
   if(w.warmup && w.warmup.length){
     h += '<div class="warmup"><strong>Aufwärmen</strong><ul>'+
          w.warmup.map(x => '<li>'+esc(x)+'</li>').join('')+'</ul></div>';
@@ -2280,6 +2286,24 @@ $('#sheet').addEventListener('click', e => {
 
 $('#sheet').addEventListener('change', e => {
   const el = e.target;
+
+  /* Training auf ein anderes Datum legen — auch nachträglich */
+  if(el.dataset.chg === 'wodate' && wo){
+    const neu = el.value;
+    if(!neu){ el.value = wo.date; return; }
+    const hatWerte = Object.keys(wo.drafts).some(pid =>
+      wo.drafts[pid].blocks.some(b => (b.sets||[]).some(s => String(s.reps).trim() !== '')));
+    wo.date = neu;
+    if(hatWerte){
+      Object.keys(wo.drafts).forEach(pid => { wo.drafts[pid].date = neu; });
+    }else{
+      /* Noch nichts eingetippt: Empfehlungen für das neue Datum neu rechnen */
+      Object.keys(wo.drafts).forEach(pid => { wo.drafts[pid] = buildDraft(wo.w, pid, neu, wo.short); });
+    }
+    renderWorkout();
+    return;
+  }
+
   if(el.dataset.chg === 'setday'){
     const w = woById(el.dataset.id);
     const d = Number(el.value);
