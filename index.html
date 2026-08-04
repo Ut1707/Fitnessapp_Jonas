@@ -136,8 +136,15 @@ table.t td.r{text-align:right;white-space:nowrap}
 .exblock .exhead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:2px}
 .exblock .name{font-weight:600}
 .exblock .rest{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:2px}
-.ziel{font-size:13px;color:var(--accent);margin:2px 0 2px}
+.ziel{font-size:14px;font-weight:600;color:var(--accent);margin:4px 0 2px}
 .letzt{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.verlauf{background:var(--soft);border-radius:8px;padding:8px 10px;margin:0 0 10px}
+.verlauf .vh{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.verlauf .vr{display:flex;gap:10px;font-size:13px;padding:2px 0;color:var(--muted)}
+.verlauf .vr.neu{color:var(--fg);font-weight:500}
+.verlauf .vd{flex:none;width:58px;font-variant-numeric:tabular-nums}
+.verlauf .vs{min-width:0}
+.verlauf .vw{opacity:.7}
 .warn{font-size:12.5px;color:var(--danger);margin-bottom:8px}
 .setrow{display:grid;grid-template-columns:22px 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:6px}
 .setrow.nw{grid-template-columns:22px 1fr 30px}
@@ -578,18 +585,56 @@ function entrySub(e){
 function lastSessions(profileId, planId, exName, limit){
   return S.entries
     .filter(e => e.profile === profileId && (planId == null || e.planId === planId))
-    .map(e => ({ date:e.date, b:(e.blocks||[]).find(b => b.exercise === exName) }))
+    .map(e => ({ date:e.date, planId:e.planId, cat:e.cat, b:(e.blocks||[]).find(b => b.exercise === exName) }))
     .filter(x => x.b && (x.b.sets||[]).some(s => num(s.reps)))
     .sort((a,b) => a.date < b.date ? 1 : -1)
     .slice(0, limit || 3);
 }
 
-/** Ergebnis: { weight, reps, quelle, letzt, warnung } */
+/** Arbeitsgewicht einer Einheit: das am häufigsten benutzte, bei Gleichstand das schwerere */
+function workWeight(sets){
+  const ws = (sets||[]).filter(s => num(s.reps)).map(s => num(s.weight)).filter(v => v != null);
+  if(!ws.length) return null;
+  const cnt = {};
+  ws.forEach(v => cnt[v] = (cnt[v]||0) + 1);
+  let best = null, bn = 0;
+  Object.keys(cnt).forEach(k => {
+    const v = Number(k);
+    if(cnt[k] > bn || (cnt[k] === bn && v > best)){ best = v; bn = cnt[k]; }
+  });
+  return best;
+}
+
+/** "60,0 kg · 6 / 6 / 6" bei gleichem Gewicht, sonst "6×60,0 · 8×65,0" */
+function setsTxt(sets, unit){
+  const list = (sets||[]).filter(s => num(s.reps));
+  if(!list.length) return '';
+  const ws = list.map(s => num(s.weight));
+  const einheit = unit === 'kgSeite' ? 'kg je Hantel' : unit === 'kgZusatz' ? 'kg Zusatz' : 'kg';
+  if(ws.every(v => v == null)) return list.map(s => num(s.reps)).join(' / ')+' Wdh.';
+  if(ws.every(v => v != null && v === ws[0]))
+    return fmtNum(ws[0],1)+' '+einheit+' · '+list.map(s => num(s.reps)).join(' / ');
+  return list.map(s => num(s.reps)+'×'+(num(s.weight) != null ? fmtNum(num(s.weight),1) : '–')).join(' · ')+' '+einheit;
+}
+
+/** Ergebnis: { weight, reps, quelle, verlauf:[{date,txt}], fremd, warnung } */
 function target(profileId, w, ex, dateKey){
   const person = persOf(profileId);
   const week = weekOf(dateKey);
-  const hist = lastSessions(profileId, w.id, ex.n, 3);
   const [lo, hi] = ex.reps;
+
+  /* Verlauf: zuerst dieselbe Übung im selben Training, sonst dieselbe Übung woanders */
+  let hist = lastSessions(profileId, w.id, ex.n, 3).filter(x => x.date < dateKey);
+  let fremd = false;
+  if(!hist.length){
+    const any = lastSessions(profileId, null, ex.n, 3).filter(x => x.date < dateKey);
+    if(any.length){ hist = any; fremd = true; }
+  }
+  const verlauf = hist.map(x => ({
+    date: x.date,
+    txt: setsTxt(x.b.sets, ex.unit || x.b.unit),
+    wo: fremd ? (x.cat || '') : ''
+  }));
 
   const startRange = ex.start && ex.start[person];
   const startTxt = startRange
@@ -604,16 +649,14 @@ function target(profileId, w, ex, dateKey){
         ? (startTxt ? 'Testwoche · Startbereich '+startTxt+' kg, mit 3–4 Wdh. Reserve'
                     : 'Testwoche · Gewicht herantasten, 3–4 Wdh. Reserve')
         : (startTxt ? 'Erste Einheit dieser Übung · Startbereich '+startTxt+' kg' : 'Erste Einheit dieser Übung'),
-      letzt: null, warnung: null
+      verlauf: [], fremd: false, warnung: null
     };
   }
 
   const last = hist[0];
   const sets = (last.b.sets||[]).filter(s => num(s.reps));
-  const lastW = num(sets[0] && sets[0].weight);
+  const lastW = workWeight(sets);
   const minReps = Math.min.apply(null, sets.map(s => num(s.reps)));
-  const letztTxt = 'Letztes Mal am '+dShort(last.date)+': '+
-    (lastW != null ? fmtNum(lastW,1)+' kg · ' : '') + sets.map(s => num(s.reps)).join(' / ');
 
   /* Deload-Woche */
   if(week === 7){
@@ -621,7 +664,7 @@ function target(profileId, w, ex, dateKey){
       weight: lastW != null ? round25(lastW * 0.6) : null,
       reps: minReps,
       quelle: 'Deload · 60 % vom letzten Gewicht, gleiche Wiederholungen',
-      letzt: letztTxt, warnung: null
+      verlauf: verlauf, fremd: fremd, warnung: null
     };
   }
 
@@ -640,11 +683,11 @@ function target(profileId, w, ex, dateKey){
   if(hist.length >= 3){
     const r = hist.map(h => {
       const ss = (h.b.sets||[]).filter(s => num(s.reps));
-      return { w:num(ss[0] && ss[0].weight), min:Math.min.apply(null, ss.map(s => num(s.reps))) };
+      return { w:workWeight(ss), min:Math.min.apply(null, ss.map(s => num(s.reps))) };
     });
     if(r[0].w === r[1].w && r[1].w === r[2].w && r[0].min <= r[1].min && r[1].min <= r[2].min){
-      warnung = 'Zwei Wochen keine zusätzliche Wiederholung. Plan-Regel: Gewicht um 10 % senken ('+
-                (r[0].w != null ? fmtNum(round25(r[0].w*0.9),1)+' kg' : '−10 %')+') und mit mehr Reserve wieder aufbauen.';
+      warnung = 'Zwei Einheiten ohne zusätzliche Wiederholung bei gleichem Gewicht. Plan-Regel: um 10 % senken auf '+
+                (r[0].w != null ? fmtNum(round25(r[0].w*0.9),1)+' kg' : '−10 %')+' und mit mehr Reserve wieder aufbauen.';
     }
   }
 
@@ -652,9 +695,9 @@ function target(profileId, w, ex, dateKey){
     weight: nw,
     reps: nr,
     quelle: minReps >= hi
-      ? 'Oberes Ende erreicht → Gewicht +'+fmtNum(step,1)+' kg, Wdh. zurück auf '+lo
-      : 'Alle Sätze standen → eine Wiederholung mehr',
-    letzt: letztTxt, warnung: warnung
+      ? 'Oberes Ende des Bereichs stand in allen Sätzen → Gewicht +'+fmtNum(step,1)+' kg, Wdh. zurück auf '+lo
+      : 'Beim letzten Mal standen alle Sätze mit '+minReps+' → eine Wiederholung mehr',
+    verlauf: verlauf, fremd: fremd, warnung: warnung
   };
 }
 
@@ -1317,11 +1360,18 @@ function renderBlocks(){
     return '<div class="exblock">'+
       '<div class="exhead"><div><span class="name">'+esc(b.exercise)+'</span></div>'+
         (b.rest ? '<span class="rest">'+esc(b.rest)+'</span>' : '')+'</div>'+
-      (t.reps ? '<div class="ziel">Ziel: '+b.sets.length+' × '+t.reps+' '+esc(unitLbl)+
+      (t.reps ? '<div class="ziel">Empfehlung: '+b.sets.length+' × '+t.reps+' '+esc(unitLbl)+
                 (zielW && !nw ? ' bei '+esc(zielW) : '')+'</div>' : '')+
       (t.quelle ? '<div class="letzt">'+esc(t.quelle)+'</div>' : '')+
-      (t.letzt ? '<div class="letzt">'+esc(t.letzt)+'</div>' : '')+
       (t.warnung ? '<div class="warn">'+esc(t.warnung)+'</div>' : '')+
+      (t.verlauf && t.verlauf.length
+        ? '<div class="verlauf"><div class="vh">'+
+          (t.fremd ? 'Dieselbe Übung zuletzt in einem anderen Training' : 'Zuletzt')+'</div>'+
+          t.verlauf.map((v,vi) => '<div class="vr'+(vi?'':' neu')+'">'+
+            '<span class="vd">'+esc(dShort(v.date))+'</span>'+
+            '<span class="vs">'+esc(v.txt)+(v.wo ? ' <span class="vw">'+esc(v.wo)+'</span>' : '')+'</span>'+
+          '</div>').join('')+'</div>'
+        : '')+
       '<div class="setlabels'+(nw?' nw':'')+'"><span></span><span>'+esc(unitLbl)+'</span>'+
         (nw?'':'<span>'+esc(wLbl)+'</span>')+'<span></span></div>'+
       b.sets.map((s,si) =>
@@ -1729,13 +1779,14 @@ $('#sheet').addEventListener('click', e => {
       const n = window.prompt('Name der Übung');
       if(n && n.trim()){
         const name = n.trim();
-        const hist = lastSessions(wo.active, null, name, 1);
+        const hist = lastSessions(wo.active, null, name, 3).filter(x => x.date < d.date);
         let t = {};
         if(hist.length){
-          const sets = (hist[0].b.sets||[]).filter(s => num(s.reps));
-          const lw = num(sets[0] && sets[0].weight);
-          t = { weight:lw, letzt:'Letztes Mal am '+dShort(hist[0].date)+': '+
-                (lw != null ? fmtNum(lw,1)+' kg · ' : '')+sets.map(s => num(s.reps)).join(' / ') };
+          t = {
+            weight: workWeight(hist[0].b.sets),
+            verlauf: hist.map(x => ({ date:x.date, txt:setsTxt(x.b.sets, x.b.unit), wo:x.cat || '' })),
+            fremd: true
+          };
         }
         d.blocks.push({ exercise:name, t:t,
           sets:[{ reps:'', weight: t.weight != null ? String(t.weight).replace('.',',') : '' }] });
