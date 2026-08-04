@@ -53,13 +53,29 @@ Plans und eigene Cardio-Arten.
 ## Abweichungen vom Ausgangsplan
 
 - Kniebeugen-Tag auf Dienstag, Hip-Thrust-Tag auf Freitag (Erholung nach dem Beach)
-- Sie: Beinstrecker durch Abduktion ersetzt, Hip Thrust 8–12 statt 6–10,
-  Donnerstag von 9 auf 7 Übungen gekürzt plus Po-Block am Ende
-- Er: Unterkörper auf 4 Übungen gekürzt, dafür Zug-Block dienstags und
-  Druck-Block freitags; Sonntag ist ein vollwertiger Oberkörpertag statt
-  Bodyweight-Zirkel
+- **Dienstag und Freitag sind für beide identisch** — gleiche Übungen, gleiche
+  Reihenfolge, nur die Gewichte unterscheiden sich
+- Beinstrecker durch Abduktion ersetzt, Hip Thrust 8–12 statt 6–10,
+  Beinbeuger auf 4 Sätze
+- Zug-Block dienstags (Klimmzüge/Latzug, Rudern) und Druck-Block freitags
+  (Bankdrücken, Schulterdrücken) — bringt den Oberkörper bei beiden auf
+  zweimal pro Woche
+- Sie: Donnerstag mit Bizeps, Trizeps und Po-Block am Ende
+- Er: Sonntag ist ein vollwertiger Oberkörpertag statt Bodyweight-Zirkel,
+  mit Schrägbankdrücken für 10 Brustsätze pro Woche
 - Ernährung: bei ihm Kontrolle des Gewichtstrends ab Woche 2, an Volleyballtagen
   300–400 kcal mehr; Schlaf als eigener Punkt ergänzt
+
+### Wochenvolumen nach den Änderungen
+
+| Muskel | Franca | Jonas |
+|---|---|---|
+| Gesäß | ~17 Sätze, 3× | ~14 Sätze, 2× |
+| Quadrizeps | 13, 2× | 13, 2× |
+| Beinbeuger | 8,5, 2× | 8,5, 2× |
+| Rücken | 12, 2× | 13, 2× |
+| Brust | 6, 2× | 10, 2× |
+| Schultern | 9, 2× | 9, 2× |
 
 ## Sicherung
 

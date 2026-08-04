@@ -145,6 +145,7 @@ table.t td.r{text-align:right;white-space:nowrap}
 .exblock .rest{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:2px}
 .ziel{font-size:14px;font-weight:600;color:var(--accent);margin:4px 0 2px}
 .letzt{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.naechst{font-size:12.5px;color:var(--good);margin:-4px 0 8px}
 .verlauf{background:var(--soft);border-radius:8px;padding:8px 10px;margin:0 0 10px}
 .verlauf .vh{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
 .verlauf .vr{display:flex;gap:10px;font-size:13px;padding:2px 0;color:var(--muted)}
@@ -236,7 +237,7 @@ const PLAN = {
       id:'ukB', day:2, kind:'strength',
       name:'Unterkörper B', short:'Kniebeuge-Tag', sub:'Kniebeuge-Tag · Oberschenkel-dominant',
       for:['sie','er'],
-      note:'Schwerster Tag der Woche. Liegt 48 h vor dem Beach — deshalb wurde er vom Freitag hierher getauscht.',
+      note:'Für beide identisch, nur die Gewichte unterscheiden sich. Liegt 48 h vor dem Beach — deshalb wurde der schwere Tag vom Freitag hierher getauscht. Wenn die Zeit eng wird, fallen die letzten beiden Übungen weg.',
       warmup:['5 Min. Rad','10× Bodyweight Squat','10× Ausfallschritt je Bein','15× Miniband-Abduktion','2–3 Kniebeuge-Aufwärmsätze mit leerer Stange'],
       ex:[
         { n:'Kniebeuge Langhantel', sets:4, reps:[6,10], rest:'2–3 Min.', step:'grund',
@@ -247,14 +248,14 @@ const PLAN = {
           unit:'kgSeite', perLeg:true, start:{ sie:[6,6], er:[14,14] } },
         { n:'Hyperextension glute-fokussiert', sets:3, reps:[12,15], rest:'90 Sek.', step:'iso',
           unit:'kgZusatz', start:{ sie:[0,0], er:[10,10] } },
-        { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
-          for:['sie'], start:{ sie:[30,40] }, tag:'ersetzt den Beinstrecker' },
-        { n:'Wadenheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine',
-          for:['sie'], start:{ sie:[30,40] } },
-        { n:'Klimmzüge oder Latzug', sets:3, reps:[6,10], rest:'2 Min.', step:'maschine',
-          for:['er'], unit:'kgZusatz', tag:'Zug-Block' },
+        { n:'Klimmzüge oder Latzug', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine',
+          unit:'kgZusatz', tag:'Zug-Block' },
         { n:'Rudern Langhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'grund',
-          for:['er'], tag:'Zug-Block' }
+          tag:'Zug-Block' },
+        { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
+          start:{ sie:[30,40], er:[45,55] }, tag:'ersetzt den Beinstrecker' },
+        { n:'Wadenheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine',
+          start:{ sie:[30,40], er:[60,80] } }
       ]
     },
 
@@ -263,7 +264,7 @@ const PLAN = {
       id:'ob', day:4, kind:'strength',
       name:'Oberkörper', sub:'Stützprogramm · mit Po-Block am Ende',
       for:['sie'],
-      note:'Gekürzt von 9 auf 7 Übungen. Der Po-Block am Schluss macht daraus die dritte Po-Einheit der Woche.',
+      note:'Zweite Oberkörpereinheit der Woche — Rücken und Brust kommen zusätzlich am Dienstag und Freitag. Der Po-Block am Schluss macht daraus die dritte Po-Einheit. Wenn die Zeit eng wird, fallen Bizeps, Trizeps und Plank weg.',
       warmup:['5 Min. Rudergerät','15× Bandzug Außenrotation','10× Scapula Pull'],
       ex:[
         { n:'Latzug breit', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine', start:{ sie:[25,30] } },
@@ -271,6 +272,8 @@ const PLAN = {
         { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh', unit:'kgSeite', start:{ sie:[6,8] } },
         { n:'Brustpresse', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine', start:{ sie:[15,20] } },
         { n:'Seitheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'kh', unit:'kgSeite', start:{ sie:[4,5] } },
+        { n:'Bizepscurl Kurzhantel', sets:2, reps:[10,12], rest:'60 Sek.', step:'kh', unit:'kgSeite', start:{ sie:[6,8] } },
+        { n:'Trizepsdrücken Kabel', sets:2, reps:[12,15], rest:'60 Sek.', step:'maschine', start:{ sie:[10,15] } },
         { n:'Pallof Press', sets:3, reps:[12,12], rest:'45 Sek.', step:'iso', perSide:true, start:{ sie:[10,10] } },
         { n:'Plank', sets:3, reps:[30,45], rest:'45 Sek.', time:true, noWeight:true },
         { n:'Abduktion Maschine', sets:3, reps:[20,20], rest:'60 Sek.', step:'maschine',
@@ -283,7 +286,7 @@ const PLAN = {
       id:'ukA', day:5, kind:'strength',
       name:'Unterkörper A', short:'Hip-Thrust-Tag', sub:'Hip-Thrust-Tag · Po-dominant',
       for:['sie','er'],
-      note:'Liegt bewusst nach dem Beach: Hip Thrust belastet Knie und Sprunggelenk kaum.',
+      note:'Für beide identisch, nur die Gewichte unterscheiden sich. Liegt bewusst nach dem Beach: Hip Thrust belastet Knie und Sprunggelenk kaum.',
       warmup:['5 Min. Rad oder Crosstrainer','10× Glute Bridge','15× Miniband-Abduktion','10× Bodyweight Squat','2 leichte Aufwärmsätze Hip Thrust'],
       ex:[
         { n:'Hip Thrust Langhantel', sets:4, reps:[8,12], rest:'2–3 Min.', step:'grund',
@@ -292,14 +295,14 @@ const PLAN = {
           start:{ sie:[30,40], er:[60,70] } },
         { n:'Bulgarian Split Squat', sets:3, reps:[8,10], rest:'90 Sek.', step:'kh',
           unit:'kgSeite', perLeg:true, start:{ sie:[8,8], er:[16,16] } },
-        { n:'Beinbeuger sitzend', sets:3, reps:[10,12], rest:'90 Sek.', step:'maschine',
-          start:{ sie:[20,25], er:[40,50] } },
-        { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
-          for:['sie'], start:{ sie:[30,40] } },
+        { n:'Beinbeuger sitzend', sets:4, reps:[10,12], rest:'90 Sek.', step:'maschine',
+          start:{ sie:[20,25], er:[40,50] }, tag:'4 statt 3 Sätze' },
         { n:'Bankdrücken', sets:3, reps:[6,10], rest:'2 Min.', step:'grund',
-          for:['er'], tag:'Druck-Block' },
+          tag:'Druck-Block' },
         { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh',
-          unit:'kgSeite', for:['er'], tag:'Druck-Block' }
+          unit:'kgSeite', start:{ sie:[6,8] }, tag:'Druck-Block' },
+        { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
+          start:{ sie:[30,40], er:[45,55] } }
       ]
     },
 
@@ -313,6 +316,8 @@ const PLAN = {
       ex:[
         { n:'Klimmzüge', sets:4, reps:[6,10], rest:'2 Min.', step:'iso', unit:'kgZusatz' },
         { n:'Bankdrücken', sets:4, reps:[6,10], rest:'2 Min.', step:'grund' },
+        { n:'Schrägbankdrücken Kurzhantel', sets:3, reps:[10,12], rest:'90 Sek.', step:'kh',
+          unit:'kgSeite', tag:'neu · Brust auf 10 Sätze pro Woche' },
         { n:'Rudern Langhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'grund' },
         { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh', unit:'kgSeite' },
         { n:'Seitheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'kh', unit:'kgSeite' },
@@ -736,6 +741,10 @@ function workWeight(sets){
   return best;
 }
 
+function wLabelOf(unit){
+  return unit === 'kgSeite' ? 'kg je Hantel' : unit === 'kgZusatz' ? 'kg Zusatz' : 'kg';
+}
+
 /** "60,0 kg · 6 / 6 / 6" bei gleichem Gewicht, sonst "6×60,0 · 8×65,0" */
 function setsTxt(sets, unit){
   const list = (sets||[]).filter(s => num(s.reps));
@@ -780,6 +789,9 @@ function target(profileId, w, ex, dateKey){
         ? (startTxt ? 'Testwoche · Startbereich '+startTxt+' kg, mit 3–4 Wdh. Reserve'
                     : 'Testwoche · Gewicht herantasten, 3–4 Wdh. Reserve')
         : (startTxt ? 'Erste Einheit dieser Übung · Startbereich '+startTxt+' kg' : 'Erste Einheit dieser Übung'),
+      naechst: (!ex.noWeight && ex.step)
+        ? 'Ab dann: '+hi+' Wdh. in allen Sätzen → +'+fmtNum(PLAN.steps[ex.step][person],1)+' kg'
+        : null,
       verlauf: [], fremd: false, warnung: null
     };
   }
@@ -822,13 +834,23 @@ function target(profileId, w, ex, dateKey){
     }
   }
 
+  /* Nächster Gewichtssprung: sichtbar machen, worauf man hinarbeitet */
+  let naechst = null;
+  if(!ex.noWeight && step && nw != null){
+    naechst = minReps >= hi
+      ? 'Danach '+fmtNum(nw + step,1)+' '+wLabelOf(ex.unit)+', sobald wieder '+hi+
+        (hi === lo ? '' : ' Wdh.')+' in allen Sätzen stehen'
+      : 'Nächster Gewichtssprung auf '+fmtNum(nw + step,1)+' '+wLabelOf(ex.unit)+
+        ', sobald '+hi+' Wdh. in allen Sätzen stehen';
+  }
+
   return {
     weight: nw,
     reps: nr,
     quelle: minReps >= hi
       ? 'Oberes Ende des Bereichs stand in allen Sätzen → Gewicht +'+fmtNum(step,1)+' kg, Wdh. zurück auf '+lo
       : 'Beim letzten Mal standen alle Sätze mit '+minReps+' → eine Wiederholung mehr',
-    verlauf: verlauf, fremd: fremd, warnung: warnung
+    naechst: naechst, verlauf: verlauf, fremd: fremd, warnung: warnung
   };
 }
 
@@ -1525,7 +1547,7 @@ function renderBlocks(){
     const t = b.t || {};
     const nw = b.noWeight;
     const unitLbl = b.time ? 'Sek.' : 'Wdh.'+(b.perLeg?' /Bein':b.perSide?' /Seite':'');
-    const wLbl = b.unit === 'kgSeite' ? 'kg je Hantel' : b.unit === 'kgZusatz' ? 'kg Zusatz' : 'kg';
+    const wLbl = wLabelOf(b.unit);
     const zielW = t.weight != null ? fmtNum(t.weight,1)+' '+wLbl : null;
     return '<div class="exblock">'+
       '<div class="exhead"><div><span class="name">'+esc(b.exercise)+'</span></div>'+
@@ -1533,6 +1555,7 @@ function renderBlocks(){
       (t.reps ? '<div class="ziel">Empfehlung: '+b.sets.length+' × '+t.reps+' '+esc(unitLbl)+
                 (zielW && !nw ? ' bei '+esc(zielW) : '')+'</div>' : '')+
       (t.quelle ? '<div class="letzt">'+esc(t.quelle)+'</div>' : '')+
+      (t.naechst ? '<div class="naechst">↗ '+esc(t.naechst)+'</div>' : '')+
       (t.warnung ? '<div class="warn">'+esc(t.warnung)+'</div>' : '')+
       (t.verlauf && t.verlauf.length
         ? '<div class="verlauf"><div class="vh">'+
