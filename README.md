@@ -7,12 +7,37 @@ Installation, keine Cloud. Alle Daten liegen im `localStorage` des Geräts.
 
 **Start von Woche 1:** 01.08.2026, änderbar im Plan-Tab.
 
+## Trainingswoche
+
+Umschaltbar im Plan-Tab, jederzeit und ohne Datenverlust:
+
+| | 4 Einheiten (Standard) | 3 Einheiten |
+|---|---|---|
+| 1 | Unterkörper B · Kniebeuge-Tag · ~60 Min | Unterkörper B · ~75 Min |
+| 2 | Oberkörper 1 · Grundübungen · ~50 Min | Oberkörper · ~70 Min |
+| 3 | Unterkörper A · Hip-Thrust-Tag · ~55 Min | Unterkörper A · ~70 Min |
+| 4 | Oberkörper 2 · Ergänzung · ~55 Min | — |
+
+Im Vierer mischt jeder Oberkörpertag Zug und Druck, damit Rücken, Brust und
+Schultern zweimal pro Woche drankommen. Das Wochenvolumen ist in beiden
+Varianten gleich, nur anders verteilt.
+
+**Keine festen Wochentage.** Der Kalender zeigt die Einheiten der laufenden
+Woche als Liste mit Erledigt-Stand — abgearbeitet wird, wann es passt. Die
+Reihenfolge ist ein Vorschlag; zwischen den beiden Beintagen sollte ein Tag
+liegen. Wer eine Einheit doch fest auf einen Wochentag legen will, macht das
+unter Plan → Anpassen. Volleyball und Beach bleiben auf Montag und Donnerstag.
+
+Beim Wechsel zwischen Vierer und Dreier bleiben Gewichte und Progression
+erhalten — die App findet die Übung auch in einem anderen Training wieder.
+
 ## Aufbau
 
 Oben zwischen `Franca` und `Jonas` umschalten — getrennte Datensätze, beide
 sehen die Einträge des anderen.
 
-- **Kalender** — was heute ansteht, Gewicht des Tages, Ernährungshaken, Monatsübersicht
+- **Kalender** — die Einheiten dieser Woche mit Erledigt-Stand, Gewicht des Tages,
+  Ernährungshaken, Monatsübersicht
 - **Körper** — Umfänge nach Plan, Kontrollpunkte Start / Woche 4 / 8 / 12
 - **Plan** — Wochenaufteilung, alle Trainings, Progression, Blöcke, Messanleitung
 - **Essen** — Zielwerte, Beispieltag, Proteinliste, Timing, Schlaf, Supplements,

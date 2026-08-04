@@ -97,6 +97,12 @@ details.det > *:last-child{margin-bottom:14px}
 .dots{position:absolute;bottom:6px;display:flex;gap:3px}
 .dots i{width:4px;height:4px;border-radius:50%;background:var(--accent);display:block}
 .day-panel{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.worow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.worow:first-of-type{border-top:1px solid var(--line);margin-top:10px}
+.worow .wotxt{min-width:0}
+.worow .won{font-weight:600;font-size:15px}
+.worow .wom{font-size:12.5px;color:var(--muted);margin-top:1px}
+.worow.fertig .won{font-weight:500;color:var(--muted)}
 
 .item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .item:last-child{border-bottom:0}
@@ -232,12 +238,12 @@ const PLAN = {
 
   workouts: [
 
-    /* ---- Dienstag: Kniebeuge-Tag (getauscht, war Freitag) ---- */
+    /* ---- Beintag 1 · in beiden Varianten ---- */
     {
-      id:'ukB', day:2, kind:'strength',
+      id:'ukB', kind:'strength', modus:['3','4'], ord:1,
       name:'Unterkörper B', short:'Kniebeuge-Tag', sub:'Kniebeuge-Tag · Oberschenkel-dominant',
       for:['sie','er'],
-      note:'Für beide identisch, nur die Gewichte unterscheiden sich. Liegt 48 h vor dem Beach — deshalb wurde der schwere Tag vom Freitag hierher getauscht. Wenn die Zeit eng wird, fallen die letzten beiden Übungen weg.',
+      note:'Für beide identisch, nur die Gewichte unterscheiden sich. Schwerster Tag der Woche — mindestens ein Tag Abstand zum Hip-Thrust-Tag.',
       warmup:['5 Min. Rad','10× Bodyweight Squat','10× Ausfallschritt je Bein','15× Miniband-Abduktion','2–3 Kniebeuge-Aufwärmsätze mit leerer Stange'],
       ex:[
         { n:'Kniebeuge Langhantel', sets:4, reps:[6,10], rest:'2–3 Min.', step:'grund',
@@ -249,9 +255,9 @@ const PLAN = {
         { n:'Hyperextension glute-fokussiert', sets:3, reps:[12,15], rest:'90 Sek.', step:'iso',
           unit:'kgZusatz', start:{ sie:[0,0], er:[10,10] } },
         { n:'Klimmzüge oder Latzug', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine',
-          unit:'kgZusatz', tag:'Zug-Block' },
+          unit:'kgZusatz', modus:['3'], tag:'Zug-Block' },
         { n:'Rudern Langhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'grund',
-          tag:'Zug-Block' },
+          modus:['3'], tag:'Zug-Block' },
         { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
           start:{ sie:[30,40], er:[45,55] }, tag:'ersetzt den Beinstrecker' },
         { n:'Wadenheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine',
@@ -259,12 +265,76 @@ const PLAN = {
       ]
     },
 
-    /* ---- Donnerstag: Oberkörper (sie) ---- */
+    /* ---- Oberkörper 1 · nur im Vierer ---- */
     {
-      id:'ob', day:4, kind:'strength',
-      name:'Oberkörper', sub:'Stützprogramm · mit Po-Block am Ende',
+      id:'ok1', kind:'strength', modus:['4'], ord:2,
+      name:'Oberkörper 1', short:'Grundübungen', sub:'Zug und Druck · Grundübungen',
+      for:['sie','er'],
+      note:'Zug und Druck bewusst gemischt, damit Rücken, Brust und Schultern zweimal pro Woche drankommen. Bizeps und Trizeps am Ende im Wechsel.',
+      warmup:['5 Min. Rudergerät','15× Bandzug Außenrotation','10× Scapula Pull'],
+      ex:[
+        { n:'Klimmzüge oder Latzug', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine',
+          unit:'kgZusatz', start:{ sie:[25,30] } },
+        { n:'Bankdrücken', sets:3, reps:[6,10], rest:'2 Min.', step:'grund' },
+        { n:'Rudern Langhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'grund' },
+        { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh',
+          unit:'kgSeite', start:{ sie:[6,8] } },
+        { n:'Bizepscurl Kurzhantel', sets:2, reps:[10,12], rest:'60 Sek.', step:'kh',
+          unit:'kgSeite', start:{ sie:[6,8] }, tag:'im Wechsel mit Trizeps' },
+        { n:'Trizepsdrücken Kabel', sets:2, reps:[12,15], rest:'60 Sek.', step:'maschine',
+          start:{ sie:[10,15] }, tag:'im Wechsel mit Bizeps' }
+      ]
+    },
+
+    /* ---- Beintag 2 · in beiden Varianten ---- */
+    {
+      id:'ukA', kind:'strength', modus:['3','4'], ord:3,
+      name:'Unterkörper A', short:'Hip-Thrust-Tag', sub:'Hip-Thrust-Tag · Po-dominant',
+      for:['sie','er'],
+      note:'Für beide identisch. Belastet Knie und Sprunggelenk kaum — passt deshalb gut nach einem Volleyballtag.',
+      warmup:['5 Min. Rad oder Crosstrainer','10× Glute Bridge','15× Miniband-Abduktion','10× Bodyweight Squat','2 leichte Aufwärmsätze Hip Thrust'],
+      ex:[
+        { n:'Hip Thrust Langhantel', sets:4, reps:[8,12], rest:'2–3 Min.', step:'grund',
+          start:{ sie:[40,50], er:[80,90] } },
+        { n:'Rumänisches Kreuzheben', sets:3, reps:[8,10], rest:'2 Min.', step:'grund',
+          start:{ sie:[30,40], er:[60,70] } },
+        { n:'Bulgarian Split Squat', sets:3, reps:[8,10], rest:'90 Sek.', step:'kh',
+          unit:'kgSeite', perLeg:true, start:{ sie:[8,8], er:[16,16] } },
+        { n:'Beinbeuger sitzend', sets:4, reps:[10,12], rest:'90 Sek.', step:'maschine',
+          start:{ sie:[20,25], er:[40,50] } },
+        { n:'Bankdrücken', sets:3, reps:[6,10], rest:'2 Min.', step:'grund',
+          modus:['3'], tag:'Druck-Block' },
+        { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh',
+          unit:'kgSeite', start:{ sie:[6,8] }, modus:['3'], tag:'Druck-Block' },
+        { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
+          start:{ sie:[30,40], er:[45,55] } }
+      ]
+    },
+
+    /* ---- Oberkörper 2 · nur im Vierer ---- */
+    {
+      id:'ok2', kind:'strength', modus:['4'], ord:4,
+      name:'Oberkörper 2', short:'Ergänzung', sub:'Zug und Druck · Ergänzung und Rumpf',
+      for:['sie','er'],
+      note:'Andere Winkel als in Oberkörper 1, dazu der Rumpf. Pallof und Plank am Ende im Wechsel.',
+      warmup:['5 Min. Rudergerät','15× Bandzug Außenrotation','10× Scapula Pull'],
+      ex:[
+        { n:'Rudern Kabel eng', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine', start:{ sie:[25,30] } },
+        { n:'Schrägbankdrücken Kurzhantel', sets:3, reps:[10,12], rest:'90 Sek.', step:'kh', unit:'kgSeite' },
+        { n:'Latzug breit', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine', start:{ sie:[25,30] } },
+        { n:'Brustpresse', sets:3, reps:[10,12], rest:'90 Sek.', step:'maschine', start:{ sie:[15,20] } },
+        { n:'Seitheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'kh', unit:'kgSeite', start:{ sie:[4,5] } },
+        { n:'Pallof Press', sets:3, reps:[12,12], rest:'45 Sek.', step:'iso', perSide:true, start:{ sie:[10,10] }, tag:'im Wechsel mit Plank' },
+        { n:'Plank', sets:3, reps:[30,45], rest:'45 Sek.', time:true, noWeight:true, tag:'im Wechsel mit Pallof' }
+      ]
+    },
+
+    /* ---- Nur im Dreier: getrennte Oberkörpertage ---- */
+    {
+      id:'ob', kind:'strength', modus:['3'], ord:2,
+      name:'Oberkörper', short:'Stützprogramm', sub:'Stützprogramm · mit Po-Block am Ende',
       for:['sie'],
-      note:'Zweite Oberkörpereinheit der Woche — Rücken und Brust kommen zusätzlich am Dienstag und Freitag. Der Po-Block am Schluss macht daraus die dritte Po-Einheit. Wenn die Zeit eng wird, fallen Bizeps, Trizeps und Plank weg.',
+      note:'Zweite Oberkörpereinheit der Woche — Rücken und Brust kommen zusätzlich an den Beintagen. Der Po-Block am Schluss macht daraus die dritte Po-Einheit.',
       warmup:['5 Min. Rudergerät','15× Bandzug Außenrotation','10× Scapula Pull'],
       ex:[
         { n:'Latzug breit', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine', start:{ sie:[25,30] } },
@@ -276,48 +346,19 @@ const PLAN = {
         { n:'Trizepsdrücken Kabel', sets:2, reps:[12,15], rest:'60 Sek.', step:'maschine', start:{ sie:[10,15] } },
         { n:'Pallof Press', sets:3, reps:[12,12], rest:'45 Sek.', step:'iso', perSide:true, start:{ sie:[10,10] } },
         { n:'Plank', sets:3, reps:[30,45], rest:'45 Sek.', time:true, noWeight:true },
-        { n:'Abduktion Maschine', sets:3, reps:[20,20], rest:'60 Sek.', step:'maschine',
-          start:{ sie:[30,40] }, tag:'Po-Block' }
+        { n:'Abduktion Maschine', sets:3, reps:[20,20], rest:'60 Sek.', step:'maschine', start:{ sie:[30,40] }, tag:'Po-Block' }
       ]
     },
-
-    /* ---- Freitag: Hip-Thrust-Tag (getauscht, war Dienstag) ---- */
     {
-      id:'ukA', day:5, kind:'strength',
-      name:'Unterkörper A', short:'Hip-Thrust-Tag', sub:'Hip-Thrust-Tag · Po-dominant',
-      for:['sie','er'],
-      note:'Für beide identisch, nur die Gewichte unterscheiden sich. Liegt bewusst nach dem Beach: Hip Thrust belastet Knie und Sprunggelenk kaum.',
-      warmup:['5 Min. Rad oder Crosstrainer','10× Glute Bridge','15× Miniband-Abduktion','10× Bodyweight Squat','2 leichte Aufwärmsätze Hip Thrust'],
-      ex:[
-        { n:'Hip Thrust Langhantel', sets:4, reps:[8,12], rest:'2–3 Min.', step:'grund',
-          start:{ sie:[40,50], er:[80,90] }, tag:'Wdh.-Bereich angepasst, vorher 6–10' },
-        { n:'Rumänisches Kreuzheben', sets:3, reps:[8,10], rest:'2 Min.', step:'grund',
-          start:{ sie:[30,40], er:[60,70] } },
-        { n:'Bulgarian Split Squat', sets:3, reps:[8,10], rest:'90 Sek.', step:'kh',
-          unit:'kgSeite', perLeg:true, start:{ sie:[8,8], er:[16,16] } },
-        { n:'Beinbeuger sitzend', sets:4, reps:[10,12], rest:'90 Sek.', step:'maschine',
-          start:{ sie:[20,25], er:[40,50] }, tag:'4 statt 3 Sätze' },
-        { n:'Bankdrücken', sets:3, reps:[6,10], rest:'2 Min.', step:'grund',
-          tag:'Druck-Block' },
-        { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh',
-          unit:'kgSeite', start:{ sie:[6,8] }, tag:'Druck-Block' },
-        { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
-          start:{ sie:[30,40], er:[45,55] } }
-      ]
-    },
-
-    /* ---- Sonntag: Oberkörper (er) ---- */
-    {
-      id:'okEr', day:0, kind:'strength',
-      name:'Oberkörper', sub:'Ganzer Oberkörper im Gym',
+      id:'okEr', kind:'strength', modus:['3'], ord:4,
+      name:'Oberkörper', short:'ganzer Oberkörper', sub:'Ganzer Oberkörper im Gym',
       for:['er'],
-      note:'Ersetzt den Bodyweight-Zirkel, weil dieser keine Progression hatte. Optional davor 15–20 Min. locker laufen.',
+      note:'Optional davor 15–20 Min. locker laufen.',
       warmup:['5 Min. Rudergerät','15× Bandzug Außenrotation','10× Scapula Pull'],
       ex:[
         { n:'Klimmzüge', sets:4, reps:[6,10], rest:'2 Min.', step:'iso', unit:'kgZusatz' },
         { n:'Bankdrücken', sets:4, reps:[6,10], rest:'2 Min.', step:'grund' },
-        { n:'Schrägbankdrücken Kurzhantel', sets:3, reps:[10,12], rest:'90 Sek.', step:'kh',
-          unit:'kgSeite', tag:'neu · Brust auf 10 Sätze pro Woche' },
+        { n:'Schrägbankdrücken Kurzhantel', sets:3, reps:[10,12], rest:'90 Sek.', step:'kh', unit:'kgSeite' },
         { n:'Rudern Langhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'grund' },
         { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh', unit:'kgSeite' },
         { n:'Seitheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'kh', unit:'kgSeite' },
@@ -328,9 +369,9 @@ const PLAN = {
     },
 
     /* ---- Feste Termine ---- */
-    { id:'volley', day:1, kind:'simple', name:'Volleyball indoor', sub:'20–22 Uhr', for:['er'], dur:120 },
-    { id:'beach',  day:4, kind:'simple', name:'Beachvolleyball',   sub:'18–20 Uhr', for:['er'], dur:120 },
-    { id:'jogSie', day:0, kind:'cardio', name:'Joggen locker',     sub:'optional',  for:['sie'], optional:true }
+    { id:'volley', day:1, kind:'simple', modus:['3','4'], name:'Volleyball indoor', sub:'20–22 Uhr', for:['er'], dur:120 },
+    { id:'beach',  day:4, kind:'simple', modus:['3','4'], name:'Beachvolleyball',   sub:'18–20 Uhr', for:['er'], dur:120 },
+    { id:'jogSie', kind:'cardio', modus:['3','4'], name:'Joggen locker', sub:'optional', for:['sie'], optional:true }
   ]
 };
 
@@ -415,7 +456,16 @@ const EXTRA = [
   ]}
 ];
 
-function allWorkouts(){ return PLAN.workouts.concat(EXTRA); }
+/** Nur die Trainings der aktuell gewählten Wochenvariante, plus die Zusatz-Trainings */
+function allWorkouts(){
+  return PLAN.workouts.filter(w => !w.modus || w.modus.indexOf(S.modus) >= 0).concat(EXTRA);
+}
+/** Die Einheiten der Woche, in vorgeschlagener Reihenfolge */
+function wocheEinheiten(person){
+  return PLAN.workouts
+    .filter(w => w.kind === 'strength' && (!w.modus || w.modus.indexOf(S.modus) >= 0) && w.for.indexOf(person) >= 0)
+    .sort((a,b) => (a.ord || 9) - (b.ord || 9));
+}
 
 /* Messstellen aus dem Plan, mit Zielrichtung je Person */
 const MASSE = [
@@ -517,6 +567,7 @@ function defaults(){
   return {
     version: 2,
     profile: 'jonas',
+    modus: '4',           // '4' = vier Einheiten pro Woche, '3' = drei
     start: '2026-08-01',  // erster Tag von Woche 1
     entries: [],          // Trainingseinträge
     masse: [],            // { id, profile, date, po, oberL, ... }
@@ -661,7 +712,9 @@ function modKey(wid, person){ return wid+'|'+person; }
 
 /** Alle Übungen eines Trainings für eine Person, inklusive eigener */
 function allEx(w, person){
-  return (w.ex || []).filter(x => !x.for || x.for.includes(person)).concat(S.exAdd[modKey(w.id, person)] || []);
+  return (w.ex || [])
+    .filter(x => (!x.for || x.for.includes(person)) && (!x.modus || x.modus.indexOf(S.modus) >= 0))
+    .concat(S.exAdd[modKey(w.id, person)] || []);
 }
 /** Nur die aktiven, in der eingestellten Reihenfolge */
 function exFor(w, person){
@@ -882,11 +935,10 @@ function heuteKarte(){
   const heute = dkey(new Date());
   if(!S.start){
     return '<div class="card accent"><div class="ctitle">Der Plan läuft noch nicht</div>'+
-      '<div class="cmeta" style="margin-bottom:10px">Leg fest, wann Woche 1 beginnt — danach zeigt die App jeden Tag an, was ansteht.</div>'+
+      '<div class="cmeta" style="margin-bottom:10px">Leg fest, wann Woche 1 beginnt — danach zeigt die App, was in der Woche ansteht.</div>'+
       '<button class="btn btn-primary" data-act="setstart">Startdatum festlegen</button></div>';
   }
   const w = weekOf(heute);
-  const blk = blockOf(w);
   if(w === 0){
     const tage = daysBetween(heute, S.start);
     return '<div class="card"><div class="ctitle">Woche 1 beginnt in '+tage+' Tag'+(tage===1?'':'en')+'</div>'+
@@ -898,35 +950,60 @@ function heuteKarte(){
            '<button class="btn btn-sm" data-act="setstart" style="margin-top:10px">Neuen Zyklus starten</button></div>';
   }
 
-  const wos = planToday(heute, pers());
-  const done = entriesOn(heute).map(e => e.planId).filter(Boolean);
+  const blk = blockOf(w);
+  const von = weekStartKey(w), bis = addDays(von, 6);
+  const liste = wocheEinheiten(pers());
 
-  let inner = '<div class="tagline">'+esc(wdName(fromKey(heute).getDay()))+' · Woche '+w+' von 12 · '+esc(blk.name)+'</div>';
+  /* Welche Einheit wurde in dieser Woche schon erledigt? */
+  const done = {};
+  myEntries().filter(e => e.date >= von && e.date <= bis && e.planId)
+             .forEach(e => { if(!done[e.planId] || e.date > done[e.planId]) done[e.planId] = e.date; });
+  const fertig = liste.filter(x => done[x.id]).length;
 
-  if(!wos.length){
-    inner += '<div class="ctitle">Heute steht nichts an</div><div class="cmeta">'+esc(blk.note)+'</div>';
-    return '<div class="card">'+inner+'</div>';
-  }
+  let h = '<div class="card accent">'+
+    '<div class="tagline">Woche '+w+' von 12 · '+esc(blk.name)+' · '+esc(dShort(von))+'–'+esc(dShort(bis))+'</div>'+
+    '<div class="ctitle">'+fertig+' von '+liste.length+' Einheiten erledigt</div>'+
+    '<div class="bar g"><i style="width:'+Math.round(fertig/liste.length*100)+'%"></i></div>';
 
-  inner += wos.map(x => {
-    const erledigt = done.includes(x.id);
-    const n = x.kind === 'strength' ? exFor(x, pers()).length : 0;
-    return '<div style="margin-bottom:10px">'+
-      '<div class="ctitle">'+esc(x.name)+(erledigt?' ✓':'')+'</div>'+
-      '<div class="cmeta">'+esc(x.sub)+(n?' · '+n+' Übungen':'')+'</div>'+
-      (erledigt ? '' :
-        '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">'+
-        '<button class="btn btn-primary btn-sm" data-act="startwo" data-id="'+x.id+'">'+
-          (x.kind === 'strength' ? 'Training starten' : 'Eintragen')+'</button>'+
-        (x.kind === 'strength' && exFor(x, pers()).length > 3
-          ? '<button class="btn btn-sm" data-act="startwo" data-id="'+x.id+'" data-short="1">Kurzversion</button>' : '')+
-        '</div>')+
+  h += liste.map(x => {
+    const d = done[x.id];
+    const n = exFor(x, pers()).length;
+    return '<div class="worow'+(d?' fertig':'')+'">'+
+      '<div class="wotxt"><div class="won">'+(d?'✓ ':'')+esc(x.name)+(x.short?' <span class="muted">· '+esc(x.short)+'</span>':'')+'</div>'+
+      '<div class="wom">'+(d ? 'erledigt am '+esc(dShort(d)) : n+' Übungen · ca. '+dauerVon(x, pers())+' Min.')+'</div></div>'+
+      (d ? '' : '<button class="btn btn-sm btn-primary" data-act="startwo" data-id="'+x.id+'">Starten</button>')+
     '</div>';
   }).join('');
 
-  if(w === 7) inner += '<div class="cmeta" style="margin-top:6px">'+esc(blk.note)+'</div>';
+  h += '<div class="hint">Reihenfolge ist ein Vorschlag, kein fester Wochentag. Zwischen den beiden Beintagen mindestens ein Tag Pause.</div>';
+  if(w === 7) h += '<div class="cmeta" style="margin-top:8px">'+esc(blk.note)+'</div>';
+  h += '</div>';
 
-  return '<div class="card accent">'+inner+'</div>';
+  /* Feste Termine, die heute anstehen */
+  const fix = planToday(heute, pers()).filter(x => x.kind !== 'strength');
+  if(fix.length){
+    h += fix.map(x => {
+      const erledigt = entriesOn(heute).some(e => e.planId === x.id);
+      return '<div class="card"><div class="spread"><div><div class="ctitle">'+esc(x.name)+(erledigt?' ✓':'')+'</div>'+
+        '<div class="cmeta">heute · '+esc(x.sub)+'</div></div>'+
+        (erledigt?'':'<button class="btn btn-sm" data-act="startwo" data-id="'+x.id+'">Eintragen</button>')+
+        '</div></div>';
+    }).join('');
+  }
+  return h;
+}
+
+/** Grobe Dauer einer Einheit: Satzzeit plus Pausen plus Aufwärmen und Wege */
+function dauerVon(w, person){
+  let sec = (w.warmup && w.warmup.length ? 8*60 : 0) + 8*60;   // Aufwärmen + Wege
+  exFor(w, person).forEach(e => {
+    const p = String(e.rest || '90 Sek.');
+    const zahl = parseFloat(p.replace(',','.')) || 1.5;
+    const pause = /Min/.test(p) ? zahl*60 : zahl;
+    const satz = e.time ? 45 : (e.perLeg ? 70 : 40);
+    sec += (e.sets || 3) * (satz + pause);
+  });
+  return Math.round(sec/60/5)*5;
 }
 
 function gewichtKarte(){
@@ -1076,19 +1153,43 @@ function renderPlan(){
       '<button class="btn btn-primary" data-act="setstart">Startdatum festlegen</button></div>';
   }
 
-  /* Wochenaufteilung */
-  h += '<h2>Woche</h2><table class="t"><tbody>';
-  [1,2,3,4,5,6,0].forEach(d => {
-    const wos = allWorkouts().filter(x => dayOf(x) === d && x.for.includes(person));
-    h += '<tr><td style="width:34%">'+esc(wdName(d))+'</td>'+
-         '<td>'+(wos.length ? wos.map(x => esc(x.name)+'<div class="small muted">'+esc(x.sub)+'</div>').join('') : '<span class="muted">frei</span>')+'</td></tr>';
-  });
-  h += '</tbody></table>';
+  /* Wochenvariante */
+  h += '<h2>Trainingswoche</h2>'+
+    '<div class="profiles" style="margin-bottom:10px">'+
+      '<button data-act="modus" data-m="4" aria-pressed="'+(S.modus==='4')+'">4 Einheiten</button>'+
+      '<button data-act="modus" data-m="3" aria-pressed="'+(S.modus==='3')+'">3 Einheiten</button>'+
+    '</div>'+
+    '<div class="hint" style="margin-bottom:12px">'+(S.modus === '4'
+      ? 'Vier kürzere Einheiten, keine über 60 Minuten. Oberkörper auf zwei eigene Tage verteilt.'
+      : 'Drei längere Einheiten mit 70–80 Minuten. Der Oberkörper hängt an den Beintagen mit dran.')+
+      ' Umschalten ändert nur die Zusammenstellung — alle bisherigen Einträge und die Progression bleiben erhalten.</div>';
+
+  h += '<table class="t"><tbody>'+
+    wocheEinheiten(person).map((x,i) => {
+      const fest = dayOf(x);
+      return '<tr><td style="width:28px">'+(i+1)+'.</td><td>'+esc(x.name)+
+        (x.short ? ' <span class="muted">· '+esc(x.short)+'</span>' : '')+
+        '<div class="small muted">'+exFor(x, person).length+' Übungen · ca. '+dauerVon(x, person)+' Min.'+
+        (fest != null ? ' · fest am '+wdName(fest) : '')+'</div></td></tr>';
+    }).join('')+
+    '</tbody></table>'+
+    '<div class="hint">Keine festen Wochentage — ihr arbeitet die Liste in der Woche ab. '+
+    'Die Reihenfolge ist ein Vorschlag; zwischen den beiden Beintagen sollte mindestens ein Tag liegen. '+
+    'Wer eine Einheit doch fest auf einen Tag legen will, macht das unten unter Anpassen.</div>';
+
+  const termine = PLAN.workouts.filter(x => x.kind !== 'strength' && x.for.includes(person));
+  if(termine.length){
+    h += '<h3 class="sub">Feste Termine</h3><table class="t"><tbody>'+
+      termine.map(x => '<tr><td>'+esc(x.name)+'<div class="small muted">'+esc(x.sub)+'</div></td>'+
+        '<td class="r small">'+(dayOf(x) != null ? esc(wdName(dayOf(x))) : 'frei')+'</td></tr>').join('')+
+      '</tbody></table>';
+  }
 
   /* Trainings */
   h += '<h2>Trainings</h2>';
-  PLAN.workouts.filter(x => x.for.includes(person)).forEach(x => {
-    h += '<div class="card"><div class="spread"><div class="ctitle">'+esc(x.name)+' · '+esc(wdName(dayOf(x)))+'</div>'+
+  PLAN.workouts.filter(x => (!x.modus || x.modus.indexOf(S.modus) >= 0) && x.for.includes(person)).forEach(x => {
+    h += '<div class="card"><div class="spread"><div class="ctitle">'+esc(x.name)+
+         (dayOf(x) != null ? ' · '+esc(wdName(dayOf(x))) : '')+'</div>'+
          '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'">Anpassen</button></div>'+
          '<div class="cmeta">'+esc(x.sub)+'</div>'+
          (x.note ? '<div class="cmeta" style="margin-top:6px">'+esc(x.note)+'</div>' : '');
@@ -1608,8 +1709,8 @@ function saveWorkout(){
 
 function allCats(){
   const out = [];
-  PLAN.workouts.filter(w => w.for.includes(pers()))
-    .forEach(w => out.push({ id:'plan:'+w.id, name:w.name, sub:w.sub+' · sonst '+wdName(dayOf(w)), group:'Aus dem Plan' }));
+  PLAN.workouts.filter(w => (!w.modus || w.modus.indexOf(S.modus) >= 0) && w.for.includes(pers()))
+    .forEach(w => out.push({ id:'plan:'+w.id, name:w.name, sub:w.sub, group:'Aus dem Plan' }));
   EXTRA.filter(w => w.for.includes(pers())).forEach(w => out.push({
     id:'plan:'+w.id, name:w.name,
     sub: exFor(w, pers()).length+' Übungen · '+exFor(w, pers()).slice(0,2).map(x => x.n).join(', ')+' …',
@@ -1906,6 +2007,10 @@ $('#main').addEventListener('click', e => {
 
   switch(t.dataset.act){
     case 'startwo': openWorkout(t.dataset.id, dkey(new Date()), t.dataset.short === '1'); break;
+    case 'modus':
+      S.modus = t.dataset.m; save(); render();
+      toast(S.modus === '4' ? 'Vier Einheiten pro Woche' : 'Drei Einheiten pro Woche');
+      break;
     case 'woedit': openWoEdit(t.dataset.id); break;
     case 'setstart': openStart(); break;
     case 'new': openPicker(); break;
