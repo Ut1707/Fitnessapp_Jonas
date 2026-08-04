@@ -307,7 +307,10 @@ const PLAN = {
         { n:'Schulterdrücken Kurzhantel', sets:3, reps:[8,12], rest:'90 Sek.', step:'kh',
           unit:'kgSeite', start:{ sie:[6,8] }, modus:['3'], tag:'Druck-Block' },
         { n:'Abduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
-          start:{ sie:[30,40], er:[45,55] } }
+          start:{ sie:[30,40], er:[45,55] } },
+        { n:'Adduktion Maschine', sets:3, reps:[15,20], rest:'60 Sek.', step:'maschine',
+          start:{ sie:[30,40], er:[45,55] },
+          tag:'einzige Beinmuskulatur ohne direkte Arbeit im Plan' }
       ]
     },
 
@@ -668,7 +671,9 @@ function toast(msg){
 }
 function openSheet(html){ $('#sheet').innerHTML = html; $('#overlay').classList.add('open'); $('#sheet').scrollTop = 0; }
 function closeSheet(){ $('#overlay').classList.remove('open'); $('#sheet').innerHTML = ''; draft = null; wo = null; }
-$('#overlay').addEventListener('click', e => { if(e.target === $('#overlay')) closeSheet(); });
+/* Klick auf den Hintergrund schließt — außer im Trainingsformular, dort wären
+   eingetippte Sätze weg. Da schließt nur das X. */
+$('#overlay').addEventListener('click', e => { if(e.target === $('#overlay') && !wo) closeSheet(); });
 function sheetHead(title, sub){
   return '<div class="sheet-head"><div><h3>'+esc(title)+'</h3>'+
          (sub ? '<div class="s2">'+esc(sub)+'</div>' : '')+'</div>'+
@@ -1894,6 +1899,51 @@ function openWoEdit(wid){
   openSheet(h);
 }
 
+/** Übung aus dem laufenden Training heraus hinzufügen oder ersetzen */
+function openAddEx(){
+  const w = wo.w, person = persOf(wo.active);
+  const aktiv = wo.drafts[wo.active].blocks.map(b => b.exercise);
+  const frei = w.id === 'free';
+  const beide = Object.keys(wo.drafts).length > 1;
+
+  openSheet('<div class="sheet-head"><div><h3>Übung hinzufügen</h3>'+
+      '<div class="s2">'+esc(w.name)+'</div></div>'+
+      '<button class="x" data-act="backwo" aria-label="Zurück zum Training">&times;</button></div>'+
+    '<div class="field"><label for="ae-n">Name</label>'+
+      '<input id="ae-n" type="text" placeholder="z. B. Cable Kickback"></div>'+
+    '<div class="grid2">'+
+      '<div class="field"><label for="ae-s">Sätze</label>'+
+        '<input id="ae-s" type="text" inputmode="numeric" value="3"></div>'+
+      '<div class="field"><label for="ae-r">Wdh. von–bis</label>'+
+        '<input id="ae-r" type="text" value="8-12"></div>'+
+    '</div>'+
+    '<div class="field"><label for="ae-p">Pause</label>'+
+      '<input id="ae-p" type="text" value="90 Sek."></div>'+
+    '<div class="field"><label for="ae-st">Steigerungsschritt</label><select id="ae-st">'+
+      Object.keys(PLAN.steps).map(k => '<option value="'+k+'"'+(k==='maschine'?' selected':'')+'>'+
+        esc(PLAN.steps[k].label)+' · +'+fmtNum(PLAN.steps[k][person],1)+' kg</option>').join('')+
+    '</select><div class="hint">Bestimmt, um wie viel die App das Gewicht erhöht, sobald das obere Ende des Wdh.-Bereichs steht.</div></div>'+
+    '<div class="field"><label for="ae-u">Gewichtsangabe</label><select id="ae-u">'+
+      '<option value="">in kg</option>'+
+      '<option value="kgSeite">Kurzhanteln · kg je Hantel</option>'+
+      '<option value="kgZusatz">Körpergewicht + Zusatz</option>'+
+      '<option value="none">ohne Gewicht</option>'+
+    '</select></div>'+
+    (frei ? '' :
+      '<div class="field"><label for="ae-rep">Ersetzt eine Übung</label><select id="ae-rep">'+
+        '<option value="">nein — kommt zusätzlich dazu</option>'+
+        aktiv.map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+
+      '</select><div class="hint">Die ersetzte Übung verschwindet aus der Einheit. Ihre bisherigen Einträge bleiben erhalten.</div></div>')+
+    '<div class="chk"><input type="checkbox" id="ae-leg"><label for="ae-leg">Wiederholungen pro Bein bzw. Seite</label></div>'+
+    (frei ? '' :
+      '<div class="chk"><input type="checkbox" id="ae-keep" checked>'+
+      '<label for="ae-keep">Dauerhaft — auch beim nächsten Mal dabei</label></div>')+
+    (beide && !frei ? '<div class="chk"><input type="checkbox" id="ae-both" checked>'+
+      '<label for="ae-both">Für Franca und Jonas übernehmen</label></div>' : '')+
+    '<button class="btn btn-primary btn-block" data-act="saveaddex" style="margin-top:12px">Hinzufügen</button>');
+  setTimeout(()=> $('#ae-n') && $('#ae-n').focus(), 50);
+}
+
 function openNewEx(wid){
   const person = pers();
   openSheet(sheetHead('Eigene Übung', woById(wid).name)+
@@ -2079,23 +2129,52 @@ $('#sheet').addEventListener('click', e => {
       if(z) d.blocks[bi].sets.forEach(s => s.reps = String(z));
       $('#blocks').innerHTML = renderBlocks(); break;
     }
-    case 'addex': {
-      const n = window.prompt('Name der Übung');
-      if(n && n.trim()){
-        const name = n.trim();
-        const hist = lastSessions(wo.active, null, name, 3).filter(x => x.date < d.date);
-        let t = {};
-        if(hist.length){
-          t = {
-            weight: workWeight(hist[0].b.sets),
-            verlauf: hist.map(x => ({ date:x.date, txt:setsTxt(x.b.sets, x.b.unit), wo:x.cat || '' })),
-            fremd: true
-          };
-        }
-        d.blocks.push({ exercise:name, t:t,
-          sets:[{ reps:'', weight: t.weight != null ? String(t.weight).replace('.',',') : '' }] });
-        $('#blocks').innerHTML = renderBlocks();
+    case 'addex': openAddEx(); break;
+    case 'backwo': renderWorkout(); break;
+    case 'saveaddex': {
+      const w = wo.w;
+      const name = $('#ae-n').value.trim();
+      if(!name){ toast('Bitte einen Namen eingeben'); return; }
+      const sets = Math.max(1, Math.min(10, parseInt($('#ae-s').value,10) || 3));
+      const rr = $('#ae-r').value.split(/[^0-9]+/).map(x => parseInt(x,10)).filter(x => !isNaN(x));
+      const reps = rr.length >= 2 ? [Math.min(rr[0],rr[1]), Math.max(rr[0],rr[1])]
+                 : rr.length ? [rr[0], rr[0]] : [8,12];
+      const u = $('#ae-u').value;
+      const ex = { n:name, sets:sets, reps:reps, rest:$('#ae-p').value.trim() || '90 Sek.', step:$('#ae-st').value };
+      if(u === 'none') ex.noWeight = true; else if(u) ex.unit = u;
+      if($('#ae-leg').checked) ex.perLeg = true;
+
+      const ersetzt = $('#ae-rep').value;
+      const dauerhaft = $('#ae-keep') ? $('#ae-keep').checked : false;
+      const beide = $('#ae-both') ? $('#ae-both').checked : false;
+      const ziele = beide ? Object.keys(wo.drafts) : [wo.active];
+
+      if(dauerhaft){
+        ziele.forEach(pid => {
+          const key = modKey(w.id, persOf(pid));
+          if(!allEx(w, persOf(pid)).some(x => x.n === name)) S.exAdd[key] = (S.exAdd[key] || []).concat([ex]);
+          if(S.exOff[key]) S.exOff[key] = S.exOff[key].filter(x => x !== name);
+          if(ersetzt) S.exOff[key] = (S.exOff[key] || []).concat([ersetzt]);
+        });
+        save();
       }
+
+      /* Im offenen Formular sofort sichtbar machen, ohne eingetippte Werte zu verlieren */
+      ziele.forEach(pid => {
+        const dr = wo.drafts[pid]; if(!dr) return;
+        if(dr.blocks.some(b => b.exercise === name)) return;
+        const t = target(pid, w, ex, wo.date);
+        dr.blocks.push({ exercise:name, unit:ex.unit, perLeg:ex.perLeg, perSide:ex.perSide,
+          time:ex.time, noWeight:ex.noWeight, rest:ex.rest, reps:ex.reps, t:t,
+          sets: Array.from({length:ex.sets}, () => ({
+            reps:'', weight: t.weight != null && !ex.noWeight ? String(t.weight).replace('.',',') : '' })) });
+        if(ersetzt) dr.blocks = dr.blocks.filter(b => b.exercise !== ersetzt);
+      });
+
+      renderWorkout();
+      toast(dauerhaft
+        ? (ersetzt ? '„'+ersetzt+'" ersetzt — gilt auch nächstes Mal' : 'Übung dauerhaft ergänzt')
+        : 'Nur für heute hinzugefügt');
       break;
     }
     case 'savewo': saveWorkout(); break;
