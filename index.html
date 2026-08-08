@@ -570,6 +570,7 @@ const MEALS = [
    ============================================================ */
 
 const KEY = 'ff_v2';
+const VERSION = '2026-08-08 · 9';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
@@ -1278,7 +1279,9 @@ function renderPlan(){
     'Wenn ein Tag eng wird: Kurzversion mit den ersten zwei bis drei Übungen statt Ausfall. Beim Essen dasselbe.</div></div>';
 
   h += '<div class="foot"><button class="btn-ghost" data-act="export">Daten sichern</button>'+
-       '<button class="btn-ghost" data-act="import">Sicherung einlesen</button></div>';
+       '<button class="btn-ghost" data-act="import">Sicherung einlesen</button></div>'+
+       '<div class="hint" style="margin-top:10px">App-Version '+esc(VERSION)+
+       '<br>Zeigt die Version nach einem Update noch die alte Nummer, einmal die Seite neu laden.</div>';
   return h;
 }
 
