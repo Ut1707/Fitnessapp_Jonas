@@ -2006,6 +2006,38 @@ function openManage(){
   openSheet(h);
 }
 
+function openExport(){
+  const json = JSON.stringify(S);
+  const n = S.entries.length, m = S.masse.length, g = S.gewicht.length;
+  openSheet(sheetHead('Daten sichern', n+' Trainings · '+g+' Gewichte · '+m+' Messungen')+
+    '<button class="btn btn-primary btn-block" data-act="exportfile">Als Datei speichern</button>'+
+    '<button class="btn btn-block" data-act="exportcopy" style="margin-top:10px">Text kopieren</button>'+
+    '<div class="field" style="margin-top:16px"><label for="ex-t">Sicherungstext</label>'+
+      '<textarea id="ex-t" readonly style="min-height:120px;font-size:11px;font-family:ui-monospace,Menlo,monospace">'+esc(json)+'</textarea>'+
+      '<div class="hint">Wenn das Speichern als Datei auf dem Handy zickt: Text kopieren und an dich selbst schicken. '+
+      'Zum Zurückholen unter „Sicherung einlesen" wieder einfügen.</div></div>');
+}
+
+function openImport(){
+  openSheet(sheetHead('Sicherung einlesen', 'Ersetzt alle Daten auf diesem Gerät')+
+    '<button class="btn btn-block" data-act="importfile">Datei auswählen</button>'+
+    '<div class="field" style="margin-top:16px"><label for="im-t">oder Sicherungstext einfügen</label>'+
+      '<textarea id="im-t" placeholder="{&quot;version&quot;:2, …}" style="min-height:120px;font-size:11px;font-family:ui-monospace,Menlo,monospace"></textarea></div>'+
+    '<button class="btn btn-primary btn-block" data-act="importtext">Einlesen</button>');
+}
+
+/** Gemeinsamer Weg für Datei und Text */
+function applyImport(text){
+  let d;
+  try{ d = JSON.parse(text); }catch(e){ toast('Das ist kein gültiger Sicherungstext'); return; }
+  if(!d || !Array.isArray(d.entries)){ toast('Sicherung unvollständig — entries fehlt'); return; }
+  const n = d.entries.length;
+  if(!window.confirm('Sicherung mit '+n+' Trainings einlesen? Alle aktuellen Daten auf diesem Gerät werden ersetzt.')) return;
+  S = Object.assign(defaults(), d);
+  save(); closeSheet(); render();
+  toast(n+' Trainings eingelesen');
+}
+
 function exportData(){
   const blob = new Blob([JSON.stringify(S,null,2)], { type:'application/json' });
   const a = document.createElement('a');
@@ -2019,14 +2051,8 @@ function importData(){
   inp.onchange = () => {
     const f = inp.files[0]; if(!f) return;
     const r = new FileReader();
-    r.onload = () => {
-      try{
-        const d = JSON.parse(r.result);
-        if(!d || !Array.isArray(d.entries)) throw new Error();
-        if(!window.confirm('Sicherung einlesen? Alle aktuellen Daten auf diesem Gerät werden ersetzt.')) return;
-        S = Object.assign(defaults(), d); save(); render(); toast('Sicherung eingelesen');
-      }catch(e){ toast('Datei konnte nicht gelesen werden'); }
-    };
+    r.onload = () => applyImport(r.result);
+    r.onerror = () => toast('Datei konnte nicht gelesen werden');
     r.readAsText(f);
   };
   inp.click();
@@ -2086,8 +2112,8 @@ $('#main').addEventListener('click', e => {
       save(); render(); toast('Gewicht gespeichert');
       break;
     }
-    case 'export': exportData(); break;
-    case 'import': importData(); break;
+    case 'export': openExport(); break;
+    case 'import': openImport(); break;
   }
 });
 
@@ -2238,6 +2264,23 @@ $('#sheet').addEventListener('click', e => {
     }
     case 'delcardio': S.cardio = S.cardio.filter(c => c.id !== t.dataset.id); save(); openManage(); break;
     case 'delcustom': S.custom = S.custom.filter(c => c.id !== t.dataset.id); save(); openManage(); break;
+
+    /* Sicherung */
+    case 'exportfile': exportData(); break;
+    case 'exportcopy': {
+      const ta = $('#ex-t');
+      ta.select(); ta.setSelectionRange(0, 999999);
+      const fertig = () => toast('Sicherungstext kopiert');
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(ta.value).then(fertig, () => toast('Kopieren nicht erlaubt — Text von Hand markieren'));
+      }else{
+        try{ document.execCommand('copy'); fertig(); }
+        catch(e){ toast('Kopieren nicht möglich — Text von Hand markieren'); }
+      }
+      break;
+    }
+    case 'importfile': importData(); break;
+    case 'importtext': applyImport($('#im-t').value.trim()); break;
 
     /* Training anpassen */
     case 'newex': openNewEx(t.dataset.id); break;
