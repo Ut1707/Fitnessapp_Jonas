@@ -110,6 +110,11 @@ details.det > *:last-child{margin-bottom:14px}
 .item .t1{font-weight:600}
 .item .t2{font-size:13.5px;color:var(--muted);margin-top:2px}
 .chev{border:0;background:none;color:var(--muted);padding:4px 0 4px 8px;flex:none;font-size:14px}
+button.itemb{width:100%;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit}
+button.itemb:active{background:var(--soft)}
+button.itemb .txt{display:block}
+button.itemb .t1,button.itemb .t2{display:block}
+button.itemb .chev{align-self:center}
 
 /* Auswertung */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
@@ -1052,9 +1057,9 @@ function renderCal(){
 
   const list = entriesOn(selDate);
   const dayHtml = list.length
-    ? list.map(e => '<div class="item"><div class="txt">'+
-        '<div class="t1">'+esc(e.cat)+'</div><div class="t2">'+esc(entrySub(e))+'</div>'+
-        '</div><button class="chev" data-edit="'+e.id+'">Bearbeiten</button></div>').join('')
+    ? list.map(e => '<button class="item itemb" data-detail="'+e.id+'"><span class="txt">'+
+        '<span class="t1">'+esc(e.cat)+'</span><span class="t2">'+esc(entrySub(e))+'</span>'+
+        '</span><span class="chev">ansehen ›</span></button>').join('')
     : '<div class="empty">Kein Training an diesem Tag.</div>';
 
   const kk = ctrl[selDate] ? '<div class="card accent" style="margin-top:12px"><div class="ctitle">Kontrollpunkt '+esc(ctrl[selDate])+'</div>'+
@@ -1495,12 +1500,36 @@ function renderDash(){
     '<div class="stat"><div class="v">'+essenTage+'/7</div><div class="k">Ernährung, letzte 7 Tage</div></div>'+
     '</div><div class="hint">80 % Umsetzung über zwölf Wochen schlägt 100 % über drei.</div>';
 
-  /* Zuletzt */
-  const last = es.slice().sort((a,b)=> a.date < b.date ? 1 : -1).slice(0,5);
-  h += '<h2>Zuletzt</h2>'+ (last.length
-    ? last.map(e => '<div class="item"><div class="txt"><div class="t1">'+esc(e.cat)+'</div>'+
-        '<div class="t2">'+esc(dShort(e.date)+' · '+entrySub(e))+'</div></div></div>').join('')
-    : '<div class="empty">Noch keine Einträge.</div>');
+  /* Übung nachschlagen */
+  const namen = {};
+  es.forEach(e => (e.blocks||[]).forEach(b => { if(b.exercise) namen[b.exercise] = true; }));
+  const exList = Object.keys(namen).sort((a,b) => a.localeCompare(b,'de'));
+  if(exList.length){
+    h += '<h2>Übung nachschlagen</h2>'+
+      '<div class="field"><select id="ex-pick" data-chg="expick">'+
+        '<option value="">Übung wählen …</option>'+
+        exList.map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+
+      '</select><div class="hint">Zeigt alle Einheiten mit dieser Übung, dazu die Entwicklung vom ersten bis zum letzten Mal.</div></div>';
+  }
+
+  /* Alle Einheiten */
+  const alle = es.slice().sort((a,b) => a.date < b.date ? 1 : -1);
+  h += '<h2>Alle Einheiten</h2>';
+  if(!alle.length){
+    h += '<div class="empty">Noch keine Einträge.</div>';
+  }else{
+    let letzterMonat = '';
+    h += alle.map(e => {
+      const monat = fromKey(e.date).toLocaleDateString('de-DE',{ month:'long', year:'numeric' });
+      const kopf = monat !== letzterMonat ? '<div class="sec-title">'+esc(monat)+'</div>' : '';
+      letzterMonat = monat;
+      return kopf+'<button class="item itemb" data-detail="'+e.id+'"><span class="txt">'+
+        '<span class="t1">'+esc(e.cat)+'</span>'+
+        '<span class="t2">'+esc(dShort(e.date)+' · '+entrySub(e))+'</span></span>'+
+        '<span class="chev">ansehen ›</span></button>';
+    }).join('');
+    h += '<div class="hint">Antippen zeigt jede Übung mit allen Sätzen und Gewichten.</div>';
+  }
 
   return h;
 }
@@ -1853,6 +1882,74 @@ function openStart(){
     '<button class="btn btn-primary btn-block" data-act="savestart">Übernehmen</button>');
 }
 
+/* ============================================================
+   11b · VERGANGENE EINHEITEN ANSEHEN
+   ============================================================ */
+
+function openEntryDetail(id){
+  const e = S.entries.find(x => x.id === id);
+  if(!e) return;
+  let h = sheetHead(e.cat, dLabel(e.date)+' · '+nameOf(e.profile));
+
+  if(e.kind === 'strength'){
+    h += (e.blocks||[]).map(b => {
+      const einheit = wLabelOf(b.unit);
+      const wdh = b.time ? 'Sek.' : 'Wdh.'+(b.perLeg?' /Bein':b.perSide?' /Seite':'');
+      const sets = (b.sets||[]).filter(s => num(s.reps));
+      const hatGew = sets.some(s => num(s.weight) != null);
+      return '<div class="exblock">'+
+        '<div class="exhead"><span class="name">'+esc(b.exercise)+'</span>'+
+        '<button class="btn btn-sm" data-act="exhist" data-n="'+esc(b.exercise)+'">Verlauf</button></div>'+
+        '<table class="t" style="margin-top:8px"><thead><tr><th>Satz</th><th>'+esc(wdh)+'</th>'+
+        (hatGew?'<th class="r">'+esc(einheit)+'</th>':'')+'</tr></thead><tbody>'+
+        sets.map((s,i) => '<tr><td>'+(i+1)+'</td><td>'+esc(s.reps)+'</td>'+
+          (hatGew?'<td class="r">'+(num(s.weight)!=null?fmtNum(num(s.weight),1):'–')+'</td>':'')+'</tr>').join('')+
+        '</tbody></table></div>';
+    }).join('');
+    h += '<div class="stats" style="margin-top:4px">'+
+      '<div class="stat"><div class="v">'+setCount(e)+'</div><div class="k">Sätze gesamt</div></div>'+
+      '<div class="stat"><div class="v">'+fmtNum(volume(e),0)+'</div><div class="k">kg bewegt</div></div>'+
+      '</div>';
+  }else{
+    h += '<div class="card"><div class="cmeta">'+esc(entrySub(e))+'</div></div>';
+  }
+
+  if(e.note) h += '<div class="card" style="margin-top:12px"><div class="tagline">Notiz</div>'+
+                  '<div class="cmeta">'+esc(e.note)+'</div></div>';
+
+  h += '<button class="btn btn-block" data-act="editentry" data-id="'+e.id+'" style="margin-top:16px">Bearbeiten</button>'+
+       '<button class="btn-danger btn-block" data-act="delentry3" data-id="'+e.id+'" style="margin-top:8px">Eintrag löschen</button>';
+  openSheet(h);
+}
+
+function openExHistory(name){
+  const hist = lastSessions(S.profile, null, name, 99);
+  let h = sheetHead(name, hist.length+' Einheit'+(hist.length===1?'':'en')+' · '+nameOf(S.profile));
+
+  if(!hist.length){
+    openSheet(h+'<div class="empty">Für diese Übung ist noch nichts erfasst.</div>');
+    return;
+  }
+
+  const erste = hist[hist.length-1], letzte = hist[0];
+  const w1 = workWeight(erste.b.sets), w2 = workWeight(letzte.b.sets);
+  if(w1 != null && w2 != null && w1 > 0){
+    const pct = (w2-w1)/w1*100;
+    h += '<div class="stats"><div class="stat"><div class="v">'+fmtNum(w1,1)+' → '+fmtNum(w2,1)+'</div>'+
+      '<div class="k">kg, erste bis letzte Einheit</div></div>'+
+      '<div class="stat"><div class="v '+(pct>=0?'up':'dn')+'">'+(pct>=0?'+':'')+fmtNum(pct,0)+' %</div>'+
+      '<div class="k">seit '+esc(dShort(erste.date))+'</div></div></div>';
+  }
+
+  h += '<div class="sec-title">Alle Einheiten</div><table class="t"><tbody>'+
+    hist.map(x => '<tr><td>'+esc(dShort(x.date))+
+      '<div class="small muted">'+esc(x.cat || '')+'</div></td>'+
+      '<td class="r small">'+esc(setsTxt(x.b.sets, x.b.unit))+'</td></tr>').join('')+
+    '</tbody></table>';
+
+  openSheet(h);
+}
+
 /* ---- Training anpassen: Tag verschieben, Übungen tauschen ---- */
 
 function openWoEdit(wid){
@@ -2063,8 +2160,10 @@ function importData(){
    ============================================================ */
 
 $('#main').addEventListener('click', e => {
-  const t = e.target.closest('[data-act],[data-day],[data-mon],[data-edit],[data-medit],[data-foto]');
+  const t = e.target.closest('[data-act],[data-day],[data-mon],[data-edit],[data-detail],[data-medit],[data-foto]');
   if(!t) return;
+
+  if(t.dataset.detail){ openEntryDetail(t.dataset.detail); return; }
 
   if(t.dataset.mon){ calMonth.setMonth(calMonth.getMonth() + Number(t.dataset.mon)); render(); return; }
   if(t.dataset.day){ selDate = t.dataset.day; render(); return; }
@@ -2118,6 +2217,12 @@ $('#main').addEventListener('click', e => {
 });
 
 $('#main').addEventListener('change', e => {
+  if(e.target.dataset.chg === 'expick'){
+    const n = e.target.value;
+    e.target.value = '';
+    if(n) openExHistory(n);
+    return;
+  }
   if(e.target.dataset.act === 'essen'){
     const k = S.profile+'|'+dkey(new Date());
     if(e.target.checked) S.essen[k] = true; else delete S.essen[k];
@@ -2264,6 +2369,22 @@ $('#sheet').addEventListener('click', e => {
     }
     case 'delcardio': S.cardio = S.cardio.filter(c => c.id !== t.dataset.id); save(); openManage(); break;
     case 'delcustom': S.custom = S.custom.filter(c => c.id !== t.dataset.id); save(); openManage(); break;
+
+    /* Vergangene Einheiten */
+    case 'exhist': openExHistory(t.dataset.n); break;
+    case 'editentry': {
+      const en = S.entries.find(x => x.id === t.dataset.id);
+      if(!en) break;
+      if(en.kind === 'strength') openEditStrength(JSON.parse(JSON.stringify(en)));
+      else openEntry(JSON.parse(JSON.stringify(en)), false);
+      break;
+    }
+    case 'delentry3':
+      if(window.confirm('Diesen Eintrag löschen?')){
+        S.entries = S.entries.filter(x => x.id !== t.dataset.id);
+        save(); closeSheet(); render(); toast('Gelöscht');
+      }
+      break;
 
     /* Sicherung */
     case 'exportfile': exportData(); break;
