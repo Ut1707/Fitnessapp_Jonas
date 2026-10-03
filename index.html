@@ -569,8 +569,11 @@ const MEALS = [
    2 · ZUSTAND
    ============================================================ */
 
-const KEY = 'ff_v2';
-const VERSION = '2026-08-08 · 9';   // wird bei jeder Änderung hochgezählt
+const KEY        = 'ff_v2';
+const KEY_WO     = 'ff_wo';       // laufendes, noch nicht gespeichertes Training
+const KEY_BAK    = 'ff_bak';      // automatische Tagessicherungen
+const KEY_RESCUE = 'ff_rescue';   // unlesbarer Stand, zur Rettung aufgehoben
+const VERSION = '2026-10-03 · 10';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
@@ -593,6 +596,13 @@ function defaults(){
   };
 }
 
+/* Wenn der gespeicherte Stand unlesbar ist, darf die App auf keinen Fall
+   mit leeren Daten weiterlaufen — der nächste Speichervorgang würde den
+   kaputten, aber vielleicht rettbaren Stand endgültig überschreiben.
+   Muss vor load() stehen, weil load() direkt darunter aufgerufen wird. */
+let ladefehler = null;   // null | 'sicherung' | 'unlesbar'
+let gesperrt = false;    // true = speichern blockiert
+
 let S = load();
 let view = 'cal';
 let calMonth = new Date(); calMonth.setDate(1);
@@ -601,13 +611,53 @@ let draft = null;   // einfaches Formular
 let wo = null;      // Trainingsformular
 
 function load(){
+  const raw = localStorage.getItem(KEY);
+  if(raw){
+    try{
+      return Object.assign(defaults(), JSON.parse(raw));
+    }catch(e){
+      try{ localStorage.setItem(KEY_RESCUE, raw); }catch(_){}
+      const bak = neuesteSicherung();
+      if(bak){
+        ladefehler = 'sicherung';
+        return Object.assign(defaults(), bak.daten);
+      }
+      ladefehler = 'unlesbar';
+      gesperrt = true;
+      return defaults();
+    }
+  }
   try{
-    const raw = localStorage.getItem(KEY);
-    if(raw) return Object.assign(defaults(), JSON.parse(raw));
     const alt = localStorage.getItem('ff_v1');
     if(alt) return migrate(JSON.parse(alt));
   }catch(e){}
   return defaults();
+}
+
+/* ---- Automatische Sicherungen: eine pro Tag, die letzten fünf ---- */
+
+function sicherungen(){
+  try{ return JSON.parse(localStorage.getItem(KEY_BAK) || '[]'); }
+  catch(e){ return []; }
+}
+function neuesteSicherung(){
+  const l = sicherungen();
+  for(let i=0;i<l.length;i++){
+    try{ return { datum:l[i].d, daten:JSON.parse(l[i].s) }; }catch(e){}
+  }
+  return null;
+}
+function sicherungAnlegen(txt){
+  try{
+    const heute = dkey(new Date());
+    const l = sicherungen();
+    if(l.length && l[0].d === heute) l.shift();      // heutige ersetzen
+    l.unshift({ d:heute, s:txt });
+    while(l.length){
+      try{ localStorage.setItem(KEY_BAK, JSON.stringify(l.slice(0,5))); return; }
+      catch(e){ l.pop(); }                            // bei Platzmangel älteste opfern
+    }
+  }catch(e){}
 }
 function migrate(old){
   const s = defaults();
@@ -629,8 +679,26 @@ function migrate(old){
   return s;
 }
 function save(){
-  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch(e){ toast('Speichern fehlgeschlagen — Speicher voll?'); }
+  if(gesperrt){
+    toast('Speichern blockiert — bitte zuerst im Plan-Tab wiederherstellen');
+    return false;
+  }
+  let txt;
+  try{ txt = JSON.stringify(S); }
+  catch(e){ toast('Daten konnten nicht geschrieben werden'); return false; }
+
+  try{
+    localStorage.setItem(KEY, txt);
+    /* Rückprobe: ein stiller Fehlschlag ist der gefährlichste Fall */
+    if(localStorage.getItem(KEY) !== txt) throw new Error('Rückprobe');
+  }catch(e){
+    gesperrt = true;
+    window.alert('Speichern fehlgeschlagen!\n\nDeine Eingaben sind noch auf dem Bildschirm, aber nicht gesichert. '+
+                 'Geh in den Plan-Tab auf „Daten sichern" und kopier den Text, bevor du die App schließt.');
+    return false;
+  }
+  sicherungAnlegen(txt);
+  return true;
 }
 
 /* ============================================================
@@ -677,6 +745,15 @@ function toast(msg){
 }
 function openSheet(html){ $('#sheet').innerHTML = html; $('#overlay').classList.add('open'); $('#sheet').scrollTop = 0; }
 function closeSheet(){ $('#overlay').classList.remove('open'); $('#sheet').innerHTML = ''; draft = null; wo = null; }
+
+/* Schließen über das X: eingetippte Sätze nicht kommentarlos wegwerfen */
+function closeWorkoutSheet(){
+  const hat = wo && Object.keys(wo.drafts||{}).some(p =>
+    (wo.drafts[p].blocks||[]).some(b => (b.sets||[]).some(s => String(s.reps||'').trim() !== '')));
+  if(hat && !window.confirm('Training schließen?\n\nDie eingetippten Sätze bleiben gespeichert — du kannst später über den Kalender weitermachen. Mit „Abbrechen" bleibst du im Formular.')) return;
+  closeSheet();
+  render();   // damit der Hinweis auf das offene Training sofort erscheint
+}
 /* Klick auf den Hintergrund schließt — außer im Trainingsformular, dort wären
    eingetippte Sätze weg. Da schließt nur das X. */
 $('#overlay').addEventListener('click', e => { if(e.target === $('#overlay') && !wo) closeSheet(); });
@@ -942,6 +1019,40 @@ $('#nav').addEventListener('click', e => {
    6 · ANSICHT KALENDER
    ============================================================ */
 
+/* Warnung, wenn beim Laden etwas nicht stimmte */
+function speicherKarte(){
+  if(ladefehler === 'sicherung'){
+    return '<div class="card" style="border-color:var(--danger)">'+
+      '<div class="ctitle">Gespeicherter Stand war beschädigt</div>'+
+      '<div class="cmeta">Die App läuft gerade aus der letzten automatischen Tagessicherung. '+
+      'Prüf unter Auswertung → Alle Einheiten, ob etwas fehlt. Der beschädigte Stand ist aufgehoben.</div>'+
+      '<button class="btn btn-sm" data-act="restore" style="margin-top:10px">Sicherungen ansehen</button></div>';
+  }
+  if(ladefehler === 'unlesbar'){
+    return '<div class="card" style="border-color:var(--danger)">'+
+      '<div class="ctitle">Gespeicherte Daten nicht lesbar</div>'+
+      '<div class="cmeta">Speichern ist vorsorglich blockiert, damit nichts überschrieben wird. '+
+      'Es gibt keine automatische Sicherung. Öffne „Sicherungen ansehen" — dort liegt der Rohtext des beschädigten Standes.</div>'+
+      '<button class="btn btn-primary btn-sm" data-act="restore" style="margin-top:10px">Sicherungen ansehen</button></div>';
+  }
+  return '';
+}
+
+/* Unterbrochenes Training anbieten */
+function offenesTrainingKarte(){
+  const o = offenesTraining();
+  if(!o) return '';
+  const n = Object.keys(o.drafts).reduce((a,p) => a + (o.drafts[p].blocks||[])
+    .reduce((b,x) => b + (x.sets||[]).filter(s => String(s.reps||'').trim() !== '').length, 0), 0);
+  return '<div class="card accent"><div class="tagline">Unterbrochenes Training</div>'+
+    '<div class="ctitle">'+esc(o.cat || 'Training')+'</div>'+
+    '<div class="cmeta">'+esc(dShort(o.datum))+' · '+n+(n===1?' Satz':' Sätze')+' eingetippt, noch nicht gespeichert</div>'+
+    '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="btn btn-primary btn-sm" data-act="wocont">Weitermachen</button>'+
+      '<button class="btn btn-sm" data-act="wodrop">Verwerfen</button>'+
+    '</div></div>';
+}
+
 function heuteKarte(){
   const heute = dkey(new Date());
   if(!S.start){
@@ -1066,7 +1177,7 @@ function renderCal(){
   const kk = ctrl[selDate] ? '<div class="card accent" style="margin-top:12px"><div class="ctitle">Kontrollpunkt '+esc(ctrl[selDate])+'</div>'+
     '<div class="cmeta">Umfänge messen, Fotos machen, Gewichtsdurchschnitt prüfen — im Körper-Tab.</div></div>' : '';
 
-  return heuteKarte() + gewichtKarte() +
+  return speicherKarte() + offenesTrainingKarte() + heuteKarte() + gewichtKarte() +
   '<div class="cal-head">'+
     '<button class="cal-nav" data-mon="-1" aria-label="Vorheriger Monat">‹</button>'+
     '<strong>'+esc(calMonth.toLocaleDateString('de-DE',{month:'long',year:'numeric'}))+'</strong>'+
@@ -1279,7 +1390,8 @@ function renderPlan(){
     'Wenn ein Tag eng wird: Kurzversion mit den ersten zwei bis drei Übungen statt Ausfall. Beim Essen dasselbe.</div></div>';
 
   h += '<div class="foot"><button class="btn-ghost" data-act="export">Daten sichern</button>'+
-       '<button class="btn-ghost" data-act="import">Sicherung einlesen</button></div>'+
+       '<button class="btn-ghost" data-act="import">Sicherung einlesen</button>'+
+       '<button class="btn-ghost" data-act="restore">Automatische Sicherungen</button></div>'+
        '<div class="hint" style="margin-top:10px">App-Version '+esc(VERSION)+
        '<br>Zeigt die Version nach einem Update noch die alte Nummer, einmal die Seite neu laden.</div>';
   return h;
@@ -1629,6 +1741,60 @@ function buildDraft(w, profileId, dateKey, short){
   };
 }
 
+/* ------------------------------------------------------------
+   Laufendes Training mitschreiben.
+   Auf dem Handy wird die Seite beim Appwechsel jederzeit entladen —
+   alles, was nur im Arbeitsspeicher steht, ist dann weg.
+   ------------------------------------------------------------ */
+
+function woSichern(){
+  try{
+    if(!wo || !wo.drafts){ localStorage.removeItem(KEY_WO); return; }
+    localStorage.setItem(KEY_WO, JSON.stringify({
+      modus:   wo.editId ? 'edit' : 'neu',
+      planId:  wo.w.id || '',
+      cat:     wo.w.name || '',
+      datum:   wo.date,
+      kurz:    !!wo.short,
+      aktiv:   wo.active,
+      editId:  wo.editId || null,
+      drafts:  wo.drafts,
+      ts:      Date.now()
+    }));
+  }catch(e){}
+}
+function woVerwerfen(){ try{ localStorage.removeItem(KEY_WO); }catch(e){} }
+
+function offenesTraining(){
+  try{
+    const r = localStorage.getItem(KEY_WO);
+    if(!r) return null;
+    const o = JSON.parse(r);
+    if(!o || !o.drafts) return null;
+    const hat = Object.keys(o.drafts).some(p =>
+      (o.drafts[p].blocks||[]).some(b => (b.sets||[]).some(s => String(s.reps||'').trim() !== '')));
+    return hat ? o : null;
+  }catch(e){ return null; }
+}
+
+function woFortsetzen(){
+  const o = offenesTraining();
+  if(!o) return;
+  if(o.modus === 'edit'){
+    const en = S.entries.find(x => x.id === o.editId);
+    wo = { w:{ name:o.cat, sub:'', warmup:[], for:[persOf(o.aktiv)], id:o.planId },
+           date:o.datum, short:false, drafts:o.drafts, active:o.aktiv, editId:o.editId };
+    if(!en){ woVerwerfen(); wo = null; toast('Der zugehörige Eintrag existiert nicht mehr'); return; }
+    openEditStrengthAus(wo);
+    return;
+  }
+  const w = woById(o.planId);
+  if(!w){ woVerwerfen(); toast('Dieses Training gibt es nicht mehr'); return; }
+  wo = { w:w, date:o.datum, short:o.kurz, drafts:o.drafts,
+         active: o.drafts[o.aktiv] ? o.aktiv : Object.keys(o.drafts)[0] };
+  renderWorkout();
+}
+
 function openWorkout(planId, dateKey, short){
   const w = woById(planId);
   if(w.kind !== 'strength'){
@@ -1680,9 +1846,12 @@ function renderWorkout(){
        '<div class="field"><label for="f-note">Notiz</label><textarea id="f-note" data-wf="note">'+
          esc(wo.drafts[wo.active].note||'')+'</textarea></div>'+
        '<button class="btn btn-primary btn-block" data-act="savewo">Training speichern</button>'+
-       (both ? '<div class="hint" style="text-align:center">Gespeichert wird für beide, sofern Werte eingetragen sind.</div>' : '');
+       (both ? '<div class="hint" style="text-align:center">Gespeichert wird für beide, sofern Werte eingetragen sind.</div>' : '')+
+       '<div class="hint" style="text-align:center;margin-top:6px">Eingaben werden laufend zwischengespeichert — '+
+       'du kannst die App zwischendurch verlassen.</div>';
 
   openSheet(h);
+  woSichern();
 }
 
 function renderBlocks(){
@@ -1742,7 +1911,8 @@ function saveWorkout(){
   });
   if(!n){ toast('Keine Wiederholungen eingetragen'); return; }
   selDate = wo.date;
-  save(); closeSheet(); render();
+  if(!save()) return;          // bei Speicherfehler Formular offen lassen
+  woVerwerfen(); closeSheet(); render();
   toast(n > 1 ? 'Für beide gespeichert' : 'Gespeichert');
 }
 
@@ -1834,13 +2004,21 @@ function openEditStrength(e){
     blocks:(e.blocks||[]).map(b => ({ exercise:b.exercise, unit:b.unit, perLeg:b.perLeg, perSide:b.perSide,
       time:b.time, t:{}, sets:(b.sets||[]).map(s => ({ reps:s.reps, weight:s.weight })) }))
   };
-  const d = wo.drafts[e.profile];
-  openSheet(sheetHead(e.cat, dShort(e.date))+
+  openEditStrengthAus(wo);
+}
+
+/* Zeichnet das Bearbeiten-Formular aus einem bestehenden wo-Zustand —
+   wird auch beim Fortsetzen eines unterbrochenen Trainings benutzt. */
+function openEditStrengthAus(st){
+  wo = st;
+  const d = wo.drafts[wo.active];
+  openSheet(sheetHead(wo.w.name, dShort(wo.date))+
     '<div id="blocks">'+renderBlocks()+'</div>'+
     '<button class="btn btn-sm" data-act="addex" style="margin-bottom:14px">+ Übung</button>'+
-    '<div class="field"><label for="f-note">Notiz</label><textarea id="f-note" data-wf="note">'+esc(d.note)+'</textarea></div>'+
+    '<div class="field"><label for="f-note">Notiz</label><textarea id="f-note" data-wf="note">'+esc(d.note||'')+'</textarea></div>'+
     '<button class="btn btn-primary btn-block" data-act="saveedit">Speichern</button>'+
     '<button class="btn-danger btn-block" data-act="delentry2" style="margin-top:10px">Eintrag löschen</button>');
+  woSichern();
 }
 
 /* ============================================================
@@ -2118,6 +2296,41 @@ function openExport(){
       'Zum Zurückholen unter „Sicherung einlesen" wieder einfügen.</div></div>');
 }
 
+/** Automatische Sicherungen ansehen und zurückholen */
+function openRestore(){
+  const l = sicherungen();
+  let h = sheetHead('Sicherungen', 'Die App legt jeden Tag automatisch eine an');
+
+  if(gesperrt){
+    h += '<div class="card" style="border-color:var(--danger)"><div class="cmeta">'+
+      'Speichern ist blockiert. Sobald du eine Sicherung zurückholst, läuft wieder alles normal.</div></div>';
+  }
+
+  h += l.length ? l.map((x,i) => {
+    let n = '?', g = '?';
+    try{ const d = JSON.parse(x.s); n = (d.entries||[]).length; g = (d.gewicht||[]).length; }catch(e){}
+    return '<div class="item"><div class="txt"><div class="t1">'+esc(dShort(x.d))+(i===0?' · neueste':'')+'</div>'+
+      '<div class="t2">'+n+' Trainings · '+g+' Gewichte</div></div>'+
+      '<button class="btn btn-sm" data-act="restoreone" data-i="'+i+'">Zurückholen</button></div>';
+  }).join('') : '<div class="empty">Noch keine automatische Sicherung vorhanden.</div>';
+
+  let rescue = null;
+  try{ rescue = localStorage.getItem(KEY_RESCUE); }catch(e){}
+  if(rescue){
+    h += '<div class="sec-title">Beschädigter Stand</div>'+
+      '<div class="hint" style="margin-bottom:8px">Der Text, der sich nicht lesen ließ. '+
+      'Schick ihn mir, dann versuche ich ihn zu retten.</div>'+
+      '<textarea readonly style="min-height:110px;font-size:11px;font-family:ui-monospace,Menlo,monospace">'+
+      esc(rescue)+'</textarea>'+
+      '<button class="btn btn-block" data-act="rescuecopy" style="margin-top:8px">Text kopieren</button>';
+  }
+
+  h += '<div class="hint" style="margin-top:16px">Automatische Sicherungen liegen im selben Browserspeicher. '+
+       'Gegen ein gelöschtes Gerät helfen nur eigene Sicherungen über „Daten sichern".</div>'+
+       '<button class="btn btn-primary btn-block" data-act="close" style="margin-top:12px">Fertig</button>';
+  openSheet(h);
+}
+
 function openImport(){
   openSheet(sheetHead('Sicherung einlesen', 'Ersetzt alle Daten auf diesem Gerät')+
     '<button class="btn btn-block" data-act="importfile">Datei auswählen</button>'+
@@ -2190,6 +2403,13 @@ $('#main').addEventListener('click', e => {
   }
 
   switch(t.dataset.act){
+    case 'wocont': woFortsetzen(); break;
+    case 'wodrop':
+      if(window.confirm('Die eingetippten Sätze dieses Trainings endgültig verwerfen?')){
+        woVerwerfen(); render(); toast('Verworfen');
+      }
+      break;
+    case 'restore': openRestore(); break;
     case 'startwo': openWorkout(t.dataset.id, dkey(new Date()), t.dataset.short === '1'); break;
     case 'modus':
       S.modus = t.dataset.m; save(); render();
@@ -2256,7 +2476,7 @@ $('#sheet').addEventListener('click', e => {
   const d = wo ? wo.drafts[wo.active] : null;
 
   switch(t.dataset.act){
-    case 'close': closeSheet(); break;
+    case 'close': if(wo) closeWorkoutSheet(); else closeSheet(); break;
 
     case 'addset': d.blocks[bi].sets.push({ reps:'', weight:d.blocks[bi].sets[0] ? d.blocks[bi].sets[0].weight : '' });
       $('#blocks').innerHTML = renderBlocks(); break;
@@ -2324,7 +2544,8 @@ $('#sheet').addEventListener('click', e => {
       if(!blocks.length){ toast('Mindestens einen Satz eintragen'); return; }
       const i = S.entries.findIndex(x => x.id === wo.editId);
       if(i >= 0){ S.entries[i].blocks = blocks; S.entries[i].note = d.note||''; }
-      save(); closeSheet(); render(); toast('Gespeichert');
+      if(!save()) return;
+      woVerwerfen(); closeSheet(); render(); toast('Gespeichert');
       break;
     }
     case 'delentry2':
@@ -2390,6 +2611,26 @@ $('#sheet').addEventListener('click', e => {
       break;
 
     /* Sicherung */
+    case 'restoreone': {
+      const x = sicherungen()[Number(t.dataset.i)];
+      if(!x) break;
+      let d; try{ d = JSON.parse(x.s); }catch(e){ toast('Diese Sicherung ist unlesbar'); break; }
+      if(!window.confirm('Sicherung vom '+dShort(x.d)+' mit '+(d.entries||[]).length+
+         ' Trainings zurückholen? Der aktuelle Stand wird ersetzt.')) break;
+      S = Object.assign(defaults(), d);
+      gesperrt = false; ladefehler = null;
+      if(save()){ closeSheet(); render(); toast('Sicherung vom '+dShort(x.d)+' zurückgeholt'); }
+      break;
+    }
+    case 'rescuecopy': {
+      const ta = $('#sheet textarea[readonly]');
+      if(!ta) break;
+      ta.select();
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(ta.value).then(()=>toast('Kopiert'), ()=>toast('Von Hand markieren'));
+      }else{ try{ document.execCommand('copy'); toast('Kopiert'); }catch(e){ toast('Von Hand markieren'); } }
+      break;
+    }
     case 'exportfile': exportData(); break;
     case 'exportcopy': {
       const ta = $('#ex-t');
@@ -2484,9 +2725,10 @@ $('#sheet').addEventListener('input', e => {
   const el = e.target;
   if(el.dataset.sf && wo){
     wo.drafts[wo.active].blocks[Number(el.dataset.b)].sets[Number(el.dataset.s)][el.dataset.sf] = el.value;
+    woSichern();
     return;
   }
-  if(el.dataset.wf && wo){ wo.drafts[wo.active][el.dataset.wf] = el.value; return; }
+  if(el.dataset.wf && wo){ wo.drafts[wo.active][el.dataset.wf] = el.value; woSichern(); return; }
   if(el.dataset.f && draft){
     draft[el.dataset.f] = el.value;
     if(el.dataset.f === 'distance' || el.dataset.f === 'durText') updatePace();

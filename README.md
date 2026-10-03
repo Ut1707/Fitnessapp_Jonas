@@ -102,6 +102,19 @@ Plans und eigene Cardio-Arten.
 | Brust | 6, 2× | 10, 2× |
 | Schultern | 9, 2× | 9, 2× |
 
+## Datensicherheit
+
+- **Laufendes Training** wird bei jeder Eingabe zwischengespeichert. Die App
+  darf verlassen, geschlossen oder vom System entladen werden — beim nächsten
+  Start bietet der Kalender „Weitermachen" an.
+- **Automatische Tagessicherung**, die letzten fünf werden behalten. Im
+  Plan-Tab unter „Automatische Sicherungen" einsehbar und zurückholbar.
+- **Beschädigter Speicher** führt nie zu einem stillen Neustart mit leeren
+  Daten: die App greift auf die letzte Sicherung zurück, und wenn es keine
+  gibt, wird das Speichern blockiert und der beschädigte Rohtext aufgehoben.
+- **Jeder Schreibvorgang wird zurückgelesen.** Schlägt er fehl, erscheint eine
+  Warnung statt eines stillen Datenverlusts.
+
 ## Sicherung
 
 Im Plan-Tab unten: `Daten sichern` schreibt eine JSON-Datei, `Sicherung einlesen`
