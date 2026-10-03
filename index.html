@@ -464,9 +464,9 @@ const EXTRA = [
   ]}
 ];
 
-/** Nur die Trainings der aktuell gewählten Wochenvariante, plus die Zusatz-Trainings */
+/** Nur die Trainings der aktuell gewählten Wochenvariante, plus Zusatz- und importierte Trainings */
 function allWorkouts(){
-  return PLAN.workouts.filter(w => !w.modus || w.modus.indexOf(S.modus) >= 0).concat(EXTRA);
+  return PLAN.workouts.filter(w => !w.modus || w.modus.indexOf(S.modus) >= 0).concat(EXTRA, S.imported || []);
 }
 /** Die Einheiten der Woche, in vorgeschlagener Reihenfolge */
 function wocheEinheiten(person){
@@ -592,7 +592,8 @@ function defaults(){
     exOrder: {},          // 'workoutId|person' -> Reihenfolge
     cardio: [ {id:'c1',name:'Laufen'}, {id:'c2',name:'Radfahren'}, {id:'c3',name:'Schwimmen'},
               {id:'c4',name:'Rudern'}, {id:'c5',name:'Walken'} ],
-    custom: []
+    custom: [],
+    imported: []          // aus Textdateien übernommene Trainings: { id, profile, for, name, plan, ex, … }
   };
 }
 
@@ -609,6 +610,7 @@ let calMonth = new Date(); calMonth.setDate(1);
 let selDate = dkey(new Date());
 let draft = null;   // einfaches Formular
 let wo = null;      // Trainingsformular
+let imp = null;     // Text-Import: { text, quelle, result }
 
 function load(){
   const raw = localStorage.getItem(KEY);
@@ -744,7 +746,7 @@ function toast(msg){
   clearTimeout(toast._t); toast._t = setTimeout(()=> t.classList.remove('show'), 2200);
 }
 function openSheet(html){ $('#sheet').innerHTML = html; $('#overlay').classList.add('open'); $('#sheet').scrollTop = 0; }
-function closeSheet(){ $('#overlay').classList.remove('open'); $('#sheet').innerHTML = ''; draft = null; wo = null; }
+function closeSheet(){ $('#overlay').classList.remove('open'); $('#sheet').innerHTML = ''; draft = null; wo = null; imp = null; }
 
 /* Schließen über das X: eingetippte Sätze nicht kommentarlos wegwerfen */
 function closeWorkoutSheet(){
@@ -754,9 +756,9 @@ function closeWorkoutSheet(){
   closeSheet();
   render();   // damit der Hinweis auf das offene Training sofort erscheint
 }
-/* Klick auf den Hintergrund schließt — außer im Trainingsformular, dort wären
-   eingetippte Sätze weg. Da schließt nur das X. */
-$('#overlay').addEventListener('click', e => { if(e.target === $('#overlay') && !wo) closeSheet(); });
+/* Klick auf den Hintergrund schließt — außer im Trainingsformular und beim Text-Import,
+   dort wären eingetippte Sätze bzw. eingefügter Text weg. Da schließt nur das X. */
+$('#overlay').addEventListener('click', e => { if(e.target === $('#overlay') && !wo && !imp) closeSheet(); });
 function sheetHead(title, sub){
   return '<div class="sheet-head"><div><h3>'+esc(title)+'</h3>'+
          (sub ? '<div class="s2">'+esc(sub)+'</div>' : '')+'</div>'+
@@ -786,6 +788,7 @@ function kontrollDate(k){
 
 /* ---- Einträge ---- */
 function myEntries(){ return S.entries.filter(e => e.profile === S.profile); }
+function myImported(){ return (S.imported || []).filter(w => w.profile === S.profile); }
 function entriesOn(k){ return myEntries().filter(e => e.date === k); }
 function myGewicht(){ return S.gewicht.filter(g => g.profile === S.profile).slice().sort((a,b)=> a.date < b.date ? 1 : -1); }
 function myMasse(){ return S.masse.filter(m => m.profile === S.profile).slice().sort((a,b)=> a.date < b.date ? 1 : -1); }
@@ -1353,6 +1356,35 @@ function renderPlan(){
         '</tbody></table>'+
         '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'" style="margin-top:10px">Anpassen</button>'+
         '</details>';
+    });
+  });
+
+  /* Eigene Trainings aus Textdateien — nur für das gewählte Profil */
+  const eigene = myImported();
+  h += '<h2>Eigene Trainings</h2>'+
+    '<div class="hint" style="margin-bottom:12px">Aus einer Textdatei übernommen, nur für '+esc(nameOf(S.profile))+'. '+
+    'Zählen nicht zur Wochenliste — im Kalender über „+ Eintragen" unter „Importiert" nutzbar. '+
+    'Progression und Verlauf laufen wie beim Plan, gleiche Übungsnamen setzen die bisherige Historie fort.</div>'+
+    '<button class="btn btn-block" data-act="txtimport" style="margin-bottom:12px">+ Trainings aus Textdatei</button>';
+  const gruppen = [];
+  eigene.forEach(x => { if(gruppen.indexOf(x.plan || '') < 0) gruppen.push(x.plan || ''); });
+  gruppen.forEach(g => {
+    if(g || gruppen.length > 1) h += '<div class="sec-title">'+esc(g || 'Einzeltrainings')+'</div>';
+    eigene.filter(x => (x.plan || '') === g).forEach(x => {
+      const ex = exFor(x, person);
+      h += '<details class="card det"><summary><strong>'+esc(x.name)+'</strong>'+
+        '<span class="cmeta"> · '+ex.length+' Übungen</span></summary>'+
+        (x.warmup.length ? '<div class="small" style="margin-top:8px"><span class="muted">Aufwärmen:</span> '+esc(x.warmup.join(' · '))+'</div>' : '')+
+        (x.note ? '<div class="cmeta" style="margin-top:8px">'+esc(x.note)+'</div>' : '')+
+        '<table class="t" style="margin-top:10px"><tbody>'+
+        ex.map((e,i) => '<tr><td>'+(i+1)+'. '+esc(e.n)+
+          '<div class="small muted">'+e.sets+' × '+repTxt(e)+' · Pause '+esc(e.rest)+'</div></td></tr>').join('')+
+        '</tbody></table>'+
+        '<div class="small muted" style="margin-top:8px">Importiert am '+esc(dShort(x.added))+(x.src ? ' aus '+esc(x.src) : '')+'</div>'+
+        '<div style="display:flex;gap:16px;margin-top:10px">'+
+          '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'">Anpassen</button>'+
+          '<button class="btn-danger btn-sm" data-act="impdel" data-id="'+x.id+'">Löschen</button>'+
+        '</div></details>';
     });
   });
 
@@ -1929,6 +1961,12 @@ function allCats(){
     sub: exFor(w, pers()).length+' Übungen · '+exFor(w, pers()).slice(0,2).map(x => x.n).join(', ')+' …',
     group: w.ort === 'Gym' ? 'Zusatz · Gym' : 'Zusatz · Zuhause'
   }));
+  myImported().forEach(w => {
+    const ex = exFor(w, pers());
+    out.push({ id:'plan:'+w.id, name:w.name,
+      sub:(w.plan ? w.plan+' · ' : '')+ex.length+' Übungen · '+ex.slice(0,2).map(x => x.n).join(', ')+(ex.length > 2 ? ' …' : ''),
+      group:'Importiert' });
+  });
   S.cardio.forEach(c => out.push({ id:'c:'+c.id, name:c.name, kind:'cardio', group:'Cardio' }));
   out.push({ id:'plan:free', name:FREE.name, sub:FREE.sub, group:'Weitere' });
   S.custom.forEach(c => out.push({ id:'x:'+c.id, name:c.name, kind:c.kind, group:'Weitere' }));
@@ -1938,14 +1976,15 @@ function allCats(){
 function openPicker(){
   const cats = allCats();
   let html = sheetHead('Was hast du gemacht?', dLabel(selDate));
-  ['Aus dem Plan','Zusatz · Gym','Zusatz · Zuhause','Cardio','Weitere'].forEach(g => {
+  ['Aus dem Plan','Zusatz · Gym','Zusatz · Zuhause','Importiert','Cardio','Weitere'].forEach(g => {
     const items = cats.filter(c => c.group === g);
     if(!items.length) return;
     html += '<div class="sec-title">'+g+'</div>'+ items.map(c =>
       '<button class="pick" data-cat="'+esc(c.id)+'"><div>'+esc(c.name)+'</div>'+
       (c.sub ? '<div class="p2">'+esc(c.sub)+'</div>' : '')+'</button>').join('');
   });
-  html += '<button class="btn btn-block" data-act="newcat" style="margin-top:14px">+ Neue Kategorie</button>';
+  html += '<button class="btn btn-block" data-act="newcat" style="margin-top:14px">+ Neue Kategorie</button>'+
+          '<button class="btn-ghost" data-act="txtimport" style="margin-top:6px">Trainings aus Textdatei hinzufügen</button>';
   openSheet(html);
 }
 
@@ -2049,6 +2088,350 @@ function saveMass(){
   save(); closeSheet(); render(); toast('Gespeichert');
 }
 
+/* @@TXT-IMPORT-BEGIN */
+/* ============================================================
+   12b · TRAININGS AUS TEXT — PARSER
+   Reine Funktionen: kein DOM, kein S, keine anderen Helfer.
+   tests/txt-import.test.mjs schneidet genau diesen Block aus
+   und prüft ihn mit Node. Kein Lookbehind verwenden — ältere
+   iOS-Safaris brechen sonst beim Laden der ganzen App ab.
+   ============================================================ */
+
+/* Wortende auch vor Umlauten — \b hält „ä" für ein Nicht-Wortzeichen */
+const TXT_NB   = '(?=[^0-9A-Za-zÄÖÜäöüß]|$)';
+const TXT_ZEIT = 'sekunden|sek\\.?|sec|s|minuten|min\\.?';
+const TXT_SATZ = 'sätze|satz|sets?|serien|runden|rounds|durchgänge';
+const TXT_WDH  = 'wdh\\.?|wiederholungen|reps?';
+const TXT_BIS  = '(?:\\s*(?:-|bis|/)\\s*(\\d{1,3}))?';
+const TXT_RE = {
+  bullet:  /^(?:[-*•·>–—]+|\d{1,2}[.)])\s+/,
+  kopf:    /^(?:(?:tag|day|woche|week|training|einheit)\s*\d+|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)(?=[^0-9A-Za-zÄÖÜäöüß]|$)/i,
+  warm:    /^(?:aufwärmen|aufwärmung|erwärmung|warm-?up)(?=[^0-9A-Za-zÄÖÜäöüß]|$)\s*:?\s*(.*)$/i,
+  note:    /^(?:notiz|hinweis|note|info|tipp)\s*:\s*(.+)$/i,
+  plan:    /^(?:mein\s+)?(?:trainings)?(?:plan|programm|split)(?=[\s:]|$)\s*:?\s*(.*)$/i,
+  pause:   new RegExp('(?:^|\\s)(?:satzpause|pause|rest|ruhe)\\s*:?\\s*(\\d{1,3}(?:[.,]\\d)?)\\s*('+TXT_ZEIT+')?'+TXT_NB, 'i'),
+  pause2:  new RegExp('(\\d{1,3}(?:[.,]\\d)?)\\s*('+TXT_ZEIT+')\\s*(?:satzpause|pause|rest)'+TXT_NB, 'i'),
+  kg:      new RegExp('@?\\s*(\\d{1,3}(?:[.,]\\d{1,2})?)\\s*kg'+TXT_NB, 'i'),
+  perLeg:  /(?:^|\s)(?:(?:pro|je|per)\s+(?:bein|leg)|each\s+leg|einbeinig)(?=[^0-9A-Za-zÄÖÜäöüß]|$)/i,
+  perSide: /(?:^|\s)(?:(?:pro|je|per)\s+(?:seite|side|arm)|each\s+side|einarmig)(?=[^0-9A-Za-zÄÖÜäöüß]|$)/i,
+  /* 4x8, 4 x 8-10, 3x45 Sek */
+  sxr:     new RegExp('(\\d{1,2})\\s*x\\s*(\\d{1,3})'+TXT_BIS+'(?:\\s*('+TXT_WDH+'|'+TXT_ZEIT+'))?'+TXT_NB, 'i'),
+  /* 3 Sätze à 10 Wdh, 3 sets of 12, 3 Runden à 45 Sek */
+  satzWdh: new RegExp('(\\d{1,2})\\s*(?:'+TXT_SATZ+')'+TXT_NB+'\\s*(?:à|a|zu|je|mit|of|x|,|:)?\\s*(\\d{1,3})'+TXT_BIS+
+                      '(?:\\s*('+TXT_WDH+'|'+TXT_ZEIT+'))?'+TXT_NB, 'i'),
+  /* 12 Wdh x 3 Sätze */
+  wdhSatz: new RegExp('(\\d{1,3})'+TXT_BIS+'\\s*(?:'+TXT_WDH+')'+TXT_NB+'\\s*(?:x|,|in|bei|à)?\\s*(\\d{1,2})\\s*(?:'+TXT_SATZ+')'+TXT_NB, 'i'),
+  /* nur Wiederholungen bzw. nur Sekunden → 3 Sätze */
+  nurWdh:  new RegExp('(\\d{1,3})'+TXT_BIS+'\\s*('+TXT_WDH+')'+TXT_NB, 'i'),
+  nurZeit: new RegExp('(\\d{1,3})'+TXT_BIS+'\\s*(sekunden|sek\\.?|sec|s)'+TXT_NB, 'i'),
+  /* Reste nach dem Herausschneiden */
+  rest:    new RegExp('(?:^|\\s)(?:'+TXT_SATZ+'|'+TXT_WDH+'|x)'+TXT_NB, 'gi')
+};
+
+function txtUnique(name, taken){
+  let n = name, i = 2;
+  while(taken.indexOf(n) >= 0) n = name+' ('+(i++)+')';
+  return n;
+}
+
+function txtSplitList(t){
+  return String(t || '').split(/\s*[,;·]\s*|\s+\+\s+/).map(x => x.trim()).filter(Boolean);
+}
+
+function txtTitle(line){
+  return line.replace(/^(?:training|workout|einheit)\s*:\s*/i, '')
+             .replace(/\s*:\s*$/, '').replace(/\s*:\s*/g, ' · ')
+             .replace(/\s+/g, ' ').trim().slice(0, 60);
+}
+
+/** "90" → "90 Sek.", "2" → "2 Min." (ohne Einheit gilt bis 5 als Minuten) */
+function txtRest(v, u){
+  const n = parseFloat(String(v).replace(',', '.'));
+  const min = u ? /^m/i.test(u) : n <= 5;
+  return min ? String(n).replace('.', ',')+' Min.' : Math.round(n)+' Sek.';
+}
+
+function txtName(s){
+  return s.replace(TXT_RE.rest, ' ')
+          .replace(/[(\[]\s*[)\]]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .replace(/(?:\s+(?:à|a|bei|mit|zu|je|@))+\s*$/i, '')
+          .replace(/^[\s:,;|@\-.]+|[\s:,;|@\-(]+$/g, '')
+          .trim();
+}
+
+/** Steigerungsschritt und Gewichtsart aus dem Übungsnamen raten — nur Schlüssel aus PLAN.steps */
+function guessExKind(name){
+  const s = name.toLowerCase();
+  if(/plank|unterarmstütz|crunch|sit-?up|burpee|hampelmann|jumping jack|mountain climber|superman|dead ?bug|bird ?dog|hollow/.test(s))
+    return { noWeight:true };
+  if(/kurzhantel|\bkh\b|dumbbell/.test(s)) return { step:'kh', unit:'kgSeite' };
+  if(/klimmz|pull-?up|chin-?up|dips|liegestütz|push-?up/.test(s)) return { step:'iso', unit:'kgZusatz' };
+  if(/beinpresse|leg ?press/.test(s)) return { step:'presse' };
+  if(/kniebeuge|squat|kreuzheben|deadlift|hip ?thrust|bankdrücken|bench|langhantel|barbell/.test(s)) return { step:'grund' };
+  if(/maschine|machine|kabel|cable|seilzug|latzug|lat ?pull|presse|butterfly|beinbeuger|beinstrecker|abduktion|adduktion/.test(s))
+    return { step:'maschine' };
+  return { step:'iso' };
+}
+
+/** Eine Zeile als Übung lesen. Ohne Satz/Wdh.-Angabe nur mit fallback (dann 3 × 8–12, geschätzt). */
+function txtExercise(line, fallback){
+  let s = ' '+line.replace(/[×*]/g, 'x').replace(/[–—]/g, '-')+' ';
+  const cut = re => {
+    const m = s.match(re);
+    if(m) s = s.slice(0, m.index)+' '+s.slice(m.index + m[0].length);
+    return m;
+  };
+  const ex = {};
+  let m = cut(TXT_RE.pause) || cut(TXT_RE.pause2);
+  if(m) ex.rest = txtRest(m[1], m[2]);
+  if((m = cut(TXT_RE.kg))) ex.kg = parseFloat(m[1].replace(',', '.'));
+  if(cut(TXT_RE.perLeg)) ex.perLeg = true;
+  else if(cut(TXT_RE.perSide)) ex.perSide = true;
+
+  let sets = null, lo = null, hi = null, einheit = '';
+  if((m = cut(TXT_RE.sxr) || cut(TXT_RE.satzWdh))){
+    sets = +m[1]; lo = +m[2]; hi = m[3] ? +m[3] : lo; einheit = m[4] || '';
+  }else if((m = cut(TXT_RE.wdhSatz))){
+    lo = +m[1]; hi = m[2] ? +m[2] : lo; sets = +m[3];
+  }else if((m = cut(TXT_RE.nurWdh) || cut(TXT_RE.nurZeit))){
+    sets = 3; lo = +m[1]; hi = m[2] ? +m[2] : lo; einheit = m[3] || '';
+  }else if(fallback){
+    sets = 3; lo = 8; hi = 12; ex.guessed = true;
+  }else return null;
+  if(!(sets >= 1) || !(lo >= 1)) return null;
+  if(lo > hi){ const t = lo; lo = hi; hi = t; }
+  if(/^m/i.test(einheit)){ lo *= 60; hi *= 60; ex.time = true; }
+  else if(/^s/i.test(einheit)) ex.time = true;
+
+  const n = txtName(s);
+  if(n.length < 2) return null;
+  ex.n = n.slice(0, 80);
+  ex.sets = Math.min(10, sets);
+  ex.reps = [lo, hi];
+  if(!ex.rest) ex.rest = '90 Sek.';
+  Object.assign(ex, guessExKind(n));
+  if(ex.guessed && ex.noWeight && /plank|stütz|halten|hold|wall ?sit/i.test(n)){ ex.time = true; ex.reps = [30,45]; }
+  if(ex.time) ex.noWeight = true;
+  if(ex.noWeight){ delete ex.step; delete ex.unit; delete ex.kg; }
+  return ex;
+}
+
+/**
+ * Frei geschriebenen Text in Trainings zerlegen.
+ * → { workouts:[{ name, plan, note, warmup, ex }], skipped:[Zeilen] }
+ */
+function parseTrainingText(text, opts){
+  opts = opts || {};
+  const res = { workouts:[], skipped:[] };
+  let cur = null, plan = '', warmMode = false;
+  let pend = { warmup:[], note:'' };   // Aufwärmen/Notiz vor der ersten Überschrift
+
+  const neu = name => {
+    cur = { name:name, plan:plan, note:pend.note, warmup:pend.warmup, ex:[] };
+    pend = { warmup:[], note:'' };
+    res.workouts.push(cur);
+    warmMode = false;
+  };
+  /* Überschrift ohne Übungen wieder entfernen, Aufwärmen/Notiz weiterreichen */
+  const dropEmpty = () => {
+    if(!cur || cur.ex.length) return '';
+    res.workouts.pop();
+    pend = { warmup:cur.warmup.concat(pend.warmup), note:[cur.note, pend.note].filter(Boolean).join(' ') };
+    const name = cur.name; cur = null;
+    return name;
+  };
+  const addNote = t => {
+    const z = cur || pend;
+    z.note = z.note ? z.note+' '+t : t;
+  };
+  const addEx = ex => {
+    if(!cur) neu(plan || opts.fallbackName || 'Importiertes Training');
+    ex.n = txtUnique(ex.n, cur.ex.map(x => x.n));
+    cur.ex.push(ex);
+    warmMode = false;
+  };
+
+  String(text == null ? '' : text).replace(/^﻿/, '').split(/\r\n|\r|\n/).forEach(raw => {
+    let line = raw.trim().replace(/^#+\s*/, '').replace(/\*\*|__/g, '').trim();
+    if(!line){ warmMode = false; return; }
+    const bullet = TXT_RE.bullet.test(line);
+    if(bullet) line = line.replace(TXT_RE.bullet, '').trim();
+    if(!line) return;
+    let m;
+
+    if((m = line.match(TXT_RE.warm))){
+      const items = txtSplitList(m[1]);
+      const z = cur || pend;
+      z.warmup = z.warmup.concat(items);
+      warmMode = !items.length;
+      return;
+    }
+    if((m = line.match(TXT_RE.note))){ addNote(m[1].trim()); return; }
+
+    const ex = txtExercise(line, false);
+    if(ex){ addEx(ex); return; }
+
+    if(bullet && !TXT_RE.kopf.test(line)){
+      if(warmMode){ (cur || pend).warmup.push(line); return; }
+      const d = txtExercise(line, true);
+      if(d) addEx(d); else res.skipped.push(raw.trim());
+      return;
+    }
+    warmMode = false;
+
+    if(!bullet && (m = line.match(TXT_RE.plan))){
+      const leer = dropEmpty();
+      if(leer) res.skipped.push(leer);
+      plan = txtTitle(m[1] || line);
+      return;
+    }
+    if(line.length > 60 || /[.!?]$/.test(line)){
+      if(cur) addNote(line); else res.skipped.push(raw.trim());
+      return;
+    }
+
+    /* Überschrift eines neuen Trainings */
+    const leer = dropEmpty();
+    if(leer){
+      if(!plan && !res.workouts.length) plan = leer;   // erste leere Überschrift = Name des Plans
+      else res.skipped.push(leer);
+    }
+    neu(txtTitle(line));
+  });
+
+  const leer = dropEmpty();
+  if(leer) res.skipped.push(leer);
+  return res;
+}
+/* @@TXT-IMPORT-END */
+
+
+/* ============================================================
+   12c · TRAININGS AUS TEXT — DIALOGE
+   ============================================================ */
+
+const TXT_BEISPIEL = 'Tag 1 – Push\n- Bankdrücken 4x8-10 Pause 2 Min\n- Seitheben 3x15\n- Plank 3x45 Sek\n\n'+
+                     'Tag 2 – Beine\n- Kniebeuge 4x6-8 60kg\n- Ausfallschritte 3x10 pro Bein';
+
+function openTxtImport(text, quelle){
+  imp = { text:text || '', quelle:quelle || '', result:null };
+  openSheet(sheetHead('Trainings aus Textdatei', 'Für '+nameOf(S.profile)+' · kommt zu den bestehenden Trainings dazu')+
+    '<button class="btn btn-block" data-act="txtfile">Textdatei auswählen</button>'+
+    '<div class="field" style="margin-top:16px"><label for="ti-t">oder Text einfügen</label>'+
+      '<textarea id="ti-t" placeholder="'+esc(TXT_BEISPIEL)+'" style="min-height:180px;font-size:13px;font-family:ui-monospace,Menlo,monospace">'+
+        esc(imp.text)+'</textarea>'+
+      '<div class="hint">So schreiben wie im Notizbuch: eine Überschrift pro Training, darunter eine Übung pro Zeile, '+
+      'z. B. „Bankdrücken 4x8-10". Pause, kg und „pro Bein" werden mit erkannt. Übungen ohne Zahlen mit „-" beginnen. '+
+      'Vor dem Übernehmen kommt eine Vorschau.</div></div>'+
+    '<button class="btn btn-primary btn-block" data-act="txtpreview">Vorschau</button>');
+}
+
+function readTxtFile(){
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.txt,.text,.md,text/plain,text/markdown';
+  inp.onchange = () => {
+    const f = inp.files[0]; if(!f) return;
+    if(f.size > 200000){ toast('Datei zu groß — bitte eine einfache Textdatei'); return; }
+    const lies = (enc, weiter) => {
+      const r = new FileReader();
+      r.onload = () => weiter(String(r.result || ''));
+      r.onerror = () => toast('Datei konnte nicht gelesen werden');
+      r.readAsText(f, enc);
+    };
+    /* Windows-Editor speichert Umlaute oft als ANSI — dann ein zweiter Versuch */
+    lies('utf-8', t => t.indexOf('�') >= 0 ? lies('windows-1252', t2 => txtPreview(t2, f.name)) : txtPreview(t, f.name));
+  };
+  inp.click();
+}
+
+function txtPreview(text, quelle){
+  text = String(text || '');
+  if(!text.trim()){ toast('Kein Text — Datei wählen oder Text einfügen'); return; }
+  const ausDatei = quelle ? quelle.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() : '';
+  imp = { text:text, quelle:quelle || '',
+          result: parseTrainingText(text, { fallbackName: ausDatei || 'Importiertes Training' }) };
+  renderTxtPreview();
+}
+
+function renderTxtPreview(){
+  const r = imp.result, n = r.workouts.length;
+  let h = sheetHead('Vorschau', n+' Training'+(n===1?'':'s')+' für '+nameOf(S.profile)+(imp.quelle ? ' · '+imp.quelle : ''));
+
+  if(!n){
+    h += '<div class="empty">Keine Übungen erkannt. Eine Übung pro Zeile mit Sätzen und Wiederholungen, z. B. „Kniebeuge 4x8".</div>';
+  }
+  r.workouts.forEach(w => {
+    h += '<div class="card">'+
+      (w.plan ? '<div class="tagline">'+esc(w.plan)+'</div>' : '')+
+      '<div class="ctitle">'+esc(w.name)+'</div>'+
+      '<div class="cmeta">'+w.ex.length+' Übung'+(w.ex.length===1?'':'en')+'</div>'+
+      (w.warmup.length ? '<div class="small" style="margin-top:6px"><span class="muted">Aufwärmen:</span> '+esc(w.warmup.join(' · '))+'</div>' : '')+
+      (w.note ? '<div class="cmeta" style="margin-top:6px">'+esc(w.note)+'</div>' : '')+
+      '<table class="t" style="margin-top:10px"><tbody>'+
+      w.ex.map((e,i) => '<tr><td>'+(i+1)+'. '+esc(e.n)+
+        '<div class="small muted">'+e.sets+' × '+repTxt(e)+' · Pause '+esc(e.rest)+
+          (e.guessed ? ' · <span style="color:var(--danger)">Sätze/Wdh. geschätzt</span>' : '')+'</div></td>'+
+        '<td class="r small">'+(e.noWeight ? 'ohne Gewicht'
+          : (e.kg != null ? fmtNum(e.kg,1)+' ' : '')+esc(wLabelOf(e.unit)))+'</td></tr>').join('')+
+      '</tbody></table></div>';
+  });
+
+  if(r.skipped.length){
+    h += '<div class="sec-title">Nicht zugeordnet</div>'+
+      '<div class="hint" style="margin-bottom:8px">Diese Zeilen werden nicht übernommen. Zum Korrigieren „Text bearbeiten".</div>'+
+      r.skipped.map(x => '<div class="item"><div class="txt"><div class="t2">'+esc(x)+'</div></div></div>').join('');
+  }
+
+  h += (n ? '<button class="btn btn-primary btn-block" data-act="txtsave" style="margin-top:16px">'+
+              (n === 1 ? 'Training übernehmen' : n+' Trainings übernehmen')+'</button>' : '')+
+       '<button class="btn btn-block" data-act="txtback" style="margin-top:10px">Text bearbeiten</button>';
+  openSheet(h);
+}
+
+/** Parser-Ergebnis in ein Training im Format von PLAN.workouts / EXTRA übersetzen */
+function toImported(pw, profileId, quelle, taken){
+  const person = persOf(profileId);
+  return {
+    id: 'imp'+uid(), kind:'strength', imported:true,
+    profile: profileId, for:[person],
+    name: txtUnique(pw.name, taken),
+    sub: 'Importiert'+(pw.plan ? ' · '+pw.plan : ''),
+    plan: pw.plan || '', note: pw.note || '', warmup: pw.warmup || [],
+    src: quelle || '', added: dkey(new Date()),
+    ex: pw.ex.map(x => {
+      const e = { n:x.n, sets:x.sets, reps:x.reps, rest:x.rest || '90 Sek.' };
+      ['step','unit','perLeg','perSide','time','noWeight'].forEach(k => { if(x[k] != null) e[k] = x[k]; });
+      if(x.kg != null && !x.noWeight){ e.start = {}; e.start[person] = [x.kg, x.kg]; }
+      return e;
+    })
+  };
+}
+
+function saveTxtImport(){
+  const r = imp && imp.result;
+  if(!r || !r.workouts.length) return;
+  const taken = myImported().map(w => w.name);
+  const neu = r.workouts.map(pw => {
+    const w = toImported(pw, S.profile, imp.quelle, taken);
+    taken.push(w.name);
+    return w;
+  });
+  S.imported = (S.imported || []).concat(neu);
+  save(); closeSheet(); render();
+  toast((neu.length === 1 ? '1 Training' : neu.length+' Trainings')+' ergänzt — unter „+ Eintragen" → Importiert');
+}
+
+function deleteImported(id){
+  const w = (S.imported || []).find(x => x.id === id);
+  if(!w) return;
+  if(!window.confirm('„'+w.name+'" löschen? Bereits eingetragene Einheiten bleiben erhalten.')) return;
+  S.imported = S.imported.filter(x => x.id !== id);
+  const key = modKey(w.id, persOf(w.profile));
+  delete S.exOff[key]; delete S.exAdd[key]; delete S.exOrder[key]; delete S.days[w.id];
+  save(); render(); toast('Training gelöscht');
+}
+
 /* ============================================================
    13 · SONSTIGE DIALOGE
    ============================================================ */
@@ -2137,9 +2520,11 @@ function openWoEdit(wid){
   const w = woById(wid), person = pers(), key = modKey(wid, person);
 
   let h = sheetHead(w.name+' anpassen',
-    w.kind === 'strength' ? 'Übungen gelten nur für '+nameOf(S.profile)+', der Wochentag für beide.' : w.sub);
+    w.imported ? 'Importiertes Training · gilt nur für '+nameOf(S.profile)
+    : w.kind === 'strength' ? 'Übungen gelten nur für '+nameOf(S.profile)+', der Wochentag für beide.' : w.sub);
 
-  h += '<div class="field"><label for="wd">Wochentag</label>'+
+  /* Importierte Trainings bleiben ohne festen Tag — nur über „+ Eintragen" */
+  if(!w.imported) h += '<div class="field"><label for="wd">Wochentag</label>'+
     '<select id="wd" data-chg="setday" data-id="'+wid+'">'+
     '<option value="-1"'+(dayOf(w)==null?' selected':'')+'>kein fester Tag</option>'+
     [1,2,3,4,5,6,0].map(d => '<option value="'+d+'"'+(dayOf(w)===d?' selected':'')+'>'+wdName(d)+'</option>').join('')+
@@ -2436,6 +2821,8 @@ $('#main').addEventListener('click', e => {
     }
     case 'export': openExport(); break;
     case 'import': openImport(); break;
+    case 'txtimport': openTxtImport('', ''); break;
+    case 'impdel': deleteImported(t.dataset.id); break;
   }
 });
 
@@ -2609,6 +2996,13 @@ $('#sheet').addEventListener('click', e => {
         save(); closeSheet(); render(); toast('Gelöscht');
       }
       break;
+
+    /* Trainings aus Textdatei */
+    case 'txtimport': openTxtImport('', ''); break;
+    case 'txtfile': readTxtFile(); break;
+    case 'txtpreview': txtPreview($('#ti-t').value, imp ? imp.quelle : ''); break;
+    case 'txtback': openTxtImport(imp.text, imp.quelle); break;
+    case 'txtsave': saveTxtImport(); break;
 
     /* Sicherung */
     case 'restoreone': {

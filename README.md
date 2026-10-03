@@ -75,6 +75,33 @@ Einträge bleiben unverändert.
 jedem Tag erfassen, dazu `Freies Krafttraining` für Einheiten außerhalb des
 Plans und eigene Cardio-Arten.
 
+## Trainings aus Textdatei
+
+Im Plan-Tab unter **Eigene Trainings** (oder im Kalender unter `+ Eintragen`):
+`+ Trainings aus Textdatei` liest eine `.txt`-Datei oder eingefügten Text.
+Geschrieben wird wie im Notizbuch — eine Überschrift pro Training, darunter eine
+Übung pro Zeile:
+
+    Trainingsplan Sommer
+
+    Tag 1 – Push
+    Aufwärmen: 5 Min Rudergerät, Bandzug
+    - Bankdrücken 4x8-10 Pause 2 Min
+    - Seitheben 3 Sätze à 15 Wdh
+    - Plank 3x45 Sek
+
+Erkannt werden `4x8-10`, `3 Sätze à 12`, `12 Wdh x 3 Sätze`, Sekunden und Minuten,
+`Pause 90s`, `60kg` und `pro Bein`/`pro Seite`. Eine erste Zeile ohne Übungen wird
+zum Plan-Namen. Vor dem Übernehmen zeigt eine Vorschau, was erkannt wurde und welche
+Zeilen nicht zugeordnet werden konnten. Beispiel: `beispiel-trainings.txt`.
+
+Importierte Trainings gelten nur für die gerade gewählte Person, kommen zu den
+bestehenden dazu und zählen nicht zur Wochenliste — sie stehen unter `+ Eintragen`
+in der Gruppe **Importiert**. Anpassen und Löschen im Plan-Tab; bereits erfasste
+Einheiten bleiben beim Löschen erhalten. Die Sicherung enthält sie mit.
+
+Tests für den Parser: `node --test 'tests/*.test.mjs'`
+
 ## Abweichungen vom Ausgangsplan
 
 - Kniebeugen-Tag auf Dienstag, Hip-Thrust-Tag auf Freitag (Erholung nach dem Beach)
