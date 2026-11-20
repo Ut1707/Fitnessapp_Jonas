@@ -129,6 +129,22 @@ button.itemb .chev{align-self:center}
 .stat .v{font-size:22px;font-weight:600;letter-spacing:-.01em}
 .stat .k{font-size:12.5px;color:var(--muted);margin-top:2px}
 .chart{width:100%;height:100px;display:block;margin-top:6px}
+.stat .v .v2{font-size:15px;color:var(--muted);font-weight:500}
+.wbars{position:relative;display:flex;align-items:flex-end;gap:6px;height:120px;margin:18px 0 4px;padding-bottom:20px}
+.wbar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;position:relative}
+.wsaule{background:var(--accent-soft);border-radius:6px 6px 2px 2px;min-height:2px;position:relative}
+.wbar.voll .wsaule{background:var(--accent)}
+.wbar.jetzt .wsaule{outline:2px solid var(--accent);outline-offset:-2px}
+.wsaule span{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted)}
+.wlab{position:absolute;bottom:-20px;left:-4px;right:-4px;text-align:center;font-size:11px;color:var(--muted)}
+.wziel{position:absolute;left:0;right:0;border-top:1.5px dashed var(--muted);opacity:.6;pointer-events:none}
+.wziel span{position:absolute;right:0;top:-17px;font-size:11px;color:var(--muted)}
+.mg{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px}
+.mg-n{width:78px;flex:none}
+.mg-bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.mg-bar span{display:block;height:100%;background:var(--accent);border-radius:4px}
+.mg-v{width:28px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.tipp{margin-top:14px;padding:12px 14px;background:var(--accent-soft);border-radius:var(--radius);font-size:14px;line-height:1.45}
 .chart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .chart .pt{fill:var(--accent)}
 table.t{width:100%;border-collapse:collapse;font-size:14px}
@@ -680,7 +696,7 @@ const KEY        = 'ff_v2';
 const KEY_WO     = 'ff_wo';       // laufendes, noch nicht gespeichertes Training
 const KEY_BAK    = 'ff_bak';      // automatische Tagessicherungen
 const KEY_RESCUE = 'ff_rescue';   // unlesbarer Stand, zur Rettung aufgehoben
-const VERSION = '2026-11-20 · 16';   // wird bei jeder Änderung hochgezählt
+const VERSION = '2026-11-20 · 17';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
@@ -1273,16 +1289,122 @@ function kraftListe(){
   }).filter(Boolean).sort((a,b) => b.anz - a.anz);
 }
 
+/* ---- Überblick: wie oft und was trainiert wurde ---- */
+
+/** Muskelgruppe einer Übung: aus dem Katalog, sonst nach Stichworten */
+const GRUPPE_REGEL = [
+  ['Beine',     /nordic/i],
+  ['Po',        /hip thrust|glute|abduktion|kickback|donkey|sumo|pulse squat|rumänisch|kreuzheben kurzhantel|seitliches beinheben/i],
+  ['Arme',      /curl|trizeps|bank-dips|diamant|enges bank/i],
+  ['Beine',     /kniebeuge|squat|beinpresse|beinbeuger|beinstrecker|ausfallschritt|split|step-up|waden|wall sit|adduktion/i],
+  ['Rücken',    /rudern|klimmz|latzug|pullover|hyperext|superman|kreuzheben/i],
+  ['Schultern', /schulterdr|seitheb|face pull|reverse|frontheb|arnold|pike/i],
+  ['Brust',     /bankdr|brustpresse|fly|butterfly|liegestütz|dips/i],
+  ['Rumpf',     /plank|pallof|leg raise|crunch|ab wheel|dead bug|twist|climber|seitstütz/i]
+];
+function gruppeVon(name){
+  const k = katEx(name); if(k) return k.g;
+  const r = GRUPPE_REGEL.find(x => x[1].test(name));
+  return r ? r[0] : null;
+}
+
+function ueberblick(){
+  const heute = dkey(new Date());
+  const es = myEntries();
+  const ziel = meineWoche().length;
+  const WOCHEN = 8;
+
+  /* Trainings je Woche, älteste zuerst */
+  const montag = laufendeWoche(heute).von;
+  const wochen = [];
+  for(let i = WOCHEN-1; i >= 0; i--){
+    const von = addDays(montag, -7*i), bis = addDays(von, 6);
+    wochen.push({ von:von, n:es.filter(e => e.date >= von && e.date <= bis).length });
+  }
+  const dieseWoche = wochen[WOCHEN-1].n;
+  /* Schnitt nur über abgeschlossene Wochen ab dem ersten Eintrag */
+  const erst = es.reduce((m,e) => !m || e.date < m ? e.date : m, null);
+  const fertigeW = wochen.slice(0, -1).filter(w => erst && addDays(w.von, 6) >= erst);
+  const schnitt = fertigeW.length ? fertigeW.reduce((a,w) => a + w.n, 0) / fertigeW.length : null;
+  /* Wochen in Folge mit mindestens einem Training (laufende Woche zählt mit, wenn schon trainiert) */
+  let serie = 0;
+  for(let i = (dieseWoche ? 0 : 1); ; i++){
+    const von = addDays(montag, -7*i), bis = addDays(von, 6);
+    if(es.some(e => e.date >= von && e.date <= bis)) serie++; else break;
+    if(i > 520) break;
+  }
+
+  let h = '<div class="stats" style="margin-top:18px">'+
+    '<div class="stat"><div class="v">'+dieseWoche+(ziel ? '<span class="v2"> / '+ziel+'</span>' : '')+'</div><div class="k">Diese Woche</div></div>'+
+    '<div class="stat"><div class="v">'+(schnitt == null ? '–' : fmtNum(schnitt,1)+'×')+'</div><div class="k">Pro Woche im Schnitt</div></div>'+
+    '<div class="stat"><div class="v">'+es.filter(e => e.date.startsWith(heute.slice(0,7))).length+'</div><div class="k">Diesen Monat</div></div>'+
+    '<div class="stat"><div class="v">'+serie+'</div><div class="k">'+(serie === 1 ? 'Woche' : 'Wochen')+' in Folge aktiv</div></div>'+
+  '</div>';
+
+  /* Balken: letzte 8 Wochen */
+  const max = Math.max(ziel, ...wochen.map(w => w.n), 1);
+  h += '<div class="wbars" role="img" aria-label="Trainings pro Woche, letzte '+WOCHEN+' Wochen">'+
+    (ziel ? '<div class="wziel" style="bottom:calc(20px + '+(ziel/max*100)+'px)"><span>Ziel '+ziel+'</span></div>' : '')+
+    wochen.map((w,i) =>
+      '<div class="wbar'+(i === WOCHEN-1 ? ' jetzt' : '')+(ziel && w.n >= ziel ? ' voll' : '')+'">'+
+        '<div class="wsaule" style="height:'+(w.n/max*100)+'%">'+(w.n ? '<span>'+w.n+'</span>' : '')+'</div>'+
+        '<div class="wlab">'+(i === WOCHEN-1 ? 'jetzt' : fromKey(w.von).getDate()+'.'+(fromKey(w.von).getMonth()+1)+'.')+'</div>'+
+      '</div>').join('')+
+  '</div>';
+
+  /* Sätze je Muskelgruppe, letzte 4 Wochen */
+  const seit = addDays(heute, -27);
+  const saetze = {};
+  es.filter(e => e.date >= seit).forEach(e => (e.blocks || []).forEach(b => {
+    const g = gruppeVon(b.exercise || ''); if(!g) return;
+    saetze[g] = (saetze[g] || 0) + (b.sets || []).length;
+  }));
+  const gr = KAT_GRUPPEN.map(g => [g, saetze[g] || 0]);
+  const gmax = Math.max(...gr.map(x => x[1]), 1);
+  if(gr.some(x => x[1])){
+    h += '<div class="sec-title" style="margin-top:22px">Sätze je Muskelgruppe · letzte 4 Wochen</div>'+
+      gr.map(([g,n]) => '<div class="mg"><span class="mg-n">'+esc(g)+'</span>'+
+        '<span class="mg-bar"><span style="width:'+(n/gmax*100)+'%"></span></span>'+
+        '<span class="mg-v">'+n+'</span></div>').join('');
+  }
+
+  /* Häufigste Trainings, letzte 4 Wochen */
+  const arten = {};
+  es.filter(e => e.date >= seit).forEach(e => { const c = e.cat || 'Training'; arten[c] = (arten[c] || 0) + 1; });
+  const top = Object.entries(arten).sort((a,b) => b[1] - a[1]).slice(0, 4);
+  if(top.length){
+    h += '<div class="small muted" style="margin-top:10px">Am häufigsten: '+
+      top.map(t => esc(t[0])+' '+t[1]+'×').join(' · ')+'</div>';
+  }
+
+  /* Kurzer Hinweis */
+  const tipps = [];
+  if(!es.length) tipps.push('Sobald du Trainings einträgst, siehst du hier, wie oft und was du trainierst.');
+  else{
+    if(ziel && schnitt != null){
+      if(schnitt >= ziel) tipps.push('Du schaffst dein Wochenziel von '+ziel+' Trainings im Schnitt. Stark!');
+      else if(schnitt >= ziel - 1) tipps.push('Fast am Ziel: im Schnitt '+fmtNum(schnitt,1)+' von '+ziel+' Trainings pro Woche.');
+      else tipps.push('Im Schnitt '+fmtNum(schnitt,1)+' von '+ziel+' Trainings pro Woche. Vielleicht passt eine kürzere Woche besser.');
+    }
+    const kraftG = gr.filter(x => x[1]).length;
+    if(kraftG >= 2){
+      const fehlt = gr.filter(x => !x[1] && x[0] !== 'Rumpf').map(x => x[0]);
+      if(fehlt.length && fehlt.length <= 3) tipps.push('Seit vier Wochen keine Sätze für '+fehlt.join(', ')+'.');
+    }
+    const letzt = es.reduce((m,e) => !m || e.date > m ? e.date : m, null);
+    const tage = Math.round((fromKey(heute) - fromKey(letzt)) / 864e5);
+    if(tage >= 7) tipps.push('Letztes Training vor '+tage+' Tagen. Heute wäre ein guter Tag.');
+  }
+  if(tipps.length) h += '<div class="tipp">'+tipps.map(esc).join('<br>')+'</div>';
+  return h;
+}
+
 function renderFortschritt(){
   const heute = dkey(new Date());
   const es = myEntries();
-  const monat = es.filter(e => e.date.startsWith(heute.slice(0,7))).length;
   const now7 = avgWeight(heute, 7);
 
-  let h = '<div class="stats" style="margin-top:18px">'+
-    '<div class="stat"><div class="v">'+monat+'</div><div class="k">Trainings diesen Monat</div></div>'+
-    '<div class="stat"><div class="v">'+(now7 ? fmtNum(now7.v,1)+' kg' : '–')+'</div><div class="k">Gewicht, 7-Tage-Schnitt</div></div>'+
-  '</div>';
+  let h = ueberblick();
 
   /* Kraft */
   const kraft = kraftListe();
@@ -1315,6 +1437,7 @@ function renderFortschritt(){
     const d = now7.v - vor4.v;
     h += '<div class="small muted" style="margin-top:10px">'+(d>0?'+':'')+fmtNum(d,1)+' kg gegenüber vor vier Wochen</div>';
   }
+  if(now7) h += '<div class="small muted" style="margin-top:6px">7-Tage-Schnitt: '+fmtNum(now7.v,1)+' kg</div>';
   h += gewichtChart();
 
   /* Umfänge */
