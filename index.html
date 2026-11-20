@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>12 Wochen</title>
+<title>Training</title>
 <style>
 :root{
   --bg:#ffffff; --fg:#16181d; --muted:#71757e; --line:#e4e6ea; --soft:#f5f6f8;
@@ -26,17 +26,40 @@ body{
 }
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
-.wrap{max-width:620px;margin:0 auto;padding:0 16px 72px}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
 
 header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
-.head-in{max-width:620px;margin:0 auto;padding:12px 16px 0}
+.head-in{max-width:620px;margin:0 auto;padding:10px 16px}
 .profiles{display:flex;gap:6px;background:var(--soft);padding:4px;border-radius:var(--radius)}
 .profiles button{flex:1;padding:9px 8px;border:0;background:transparent;border-radius:7px;color:var(--muted);font-weight:500}
 .profiles button[aria-pressed="true"]{background:var(--bg);color:var(--fg);font-weight:600;box-shadow:0 0 0 1px var(--line)}
-nav{display:flex;gap:16px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav button{border:0;background:none;padding:10px 0;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-size:15px}
-nav button[aria-current="page"]{color:var(--fg);border-bottom-color:var(--fg);font-weight:600}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;
+  background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.tabbar button{flex:1;max-width:200px;border:0;background:none;padding:8px 0 9px;color:var(--muted);
+  font-size:11.5px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabbar svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current="page"]{color:var(--fg);font-weight:600}
+
+/* Katalog */
+#kat-q{margin-bottom:10px;-webkit-appearance:none;appearance:none}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;margin:0 -16px 4px;padding-left:16px;padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:16px;padding:6px 12px;font-size:14px}
+.chips button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+.kat-da{opacity:.45}
+button.itemb .chev{font-size:17px}
+
+/* Heute */
+.week{margin-top:20px}
+.hero{border:1px solid var(--line);background:var(--soft);border-radius:14px;padding:18px;margin:14px 0 4px}
+.hero-t{font-size:23px;font-weight:700;letter-spacing:-.015em;margin:2px 0 3px}
+.btn-lg{padding:14px;font-size:17px;border-radius:12px;margin-top:16px}
+details.det-plain{border-bottom:1px solid var(--line)}
+details.det-plain summary{padding:13px 0;cursor:pointer;list-style:none;display:flex;font-weight:500}
+details.det-plain summary::-webkit-details-marker{display:none}
+details.det-plain summary::after{content:'+';margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
+details.det-plain[open] summary::after{content:'−'}
+details.det-plain .item:last-child,details.det-plain .itemb:last-child{border-bottom:0}
 
 h2{font-size:17px;font-weight:600;margin:26px 0 10px}
 h2:first-child{margin-top:20px}
@@ -53,7 +76,7 @@ h3.sub{font-size:15px;font-weight:600;margin:18px 0 8px}
 .btn-block{display:block;width:100%;text-align:center}
 
 label{display:block;font-size:13px;color:var(--muted);margin:0 0 5px}
-input[type=text],input[type=number],input[type=date],select,textarea{
+input[type=text],input[type=search],input[type=number],input[type=date],select,textarea{
   width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
 textarea{resize:vertical;min-height:60px}
@@ -80,25 +103,7 @@ details.det > *:last-child{margin-bottom:14px}
 .bar i{display:block;height:100%;background:var(--fg)}
 .bar.g i{background:var(--good)}
 
-/* Kalender */
-.cal-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 12px}
-.cal-head strong{font-size:17px;font-weight:600}
-.cal-nav{border:1px solid var(--line);background:var(--bg);width:34px;height:34px;border-radius:8px;line-height:1}
-.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
-.dow span{text-align:center;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal button{position:relative;min-height:46px;padding-bottom:8px;border:0;background:none;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;font-size:15px}
-.cal button.out{color:transparent;pointer-events:none}
-.cal button.today{font-weight:700;box-shadow:inset 0 0 0 1px var(--line)}
-.cal button.ctrl{box-shadow:inset 0 0 0 1px var(--accent)}
-.cal button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:600}
-.cal button[aria-pressed="true"] .dots i{background:var(--bg)}
-.dots{position:absolute;bottom:6px;display:flex;gap:3px}
-.dots i{width:4px;height:4px;border-radius:50%;background:var(--accent);display:block}
-.day-panel{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
 .worow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
-.worow:first-of-type{border-top:1px solid var(--line);margin-top:10px}
 .worow .wotxt{min-width:0}
 .worow .won{font-weight:600;font-size:15px}
 .worow .wom{font-size:12.5px;color:var(--muted);margin-top:1px}
@@ -110,13 +115,15 @@ details.det > *:last-child{margin-bottom:14px}
 .item .t1{font-weight:600}
 .item .t2{font-size:13.5px;color:var(--muted);margin-top:2px}
 .chev{border:0;background:none;color:var(--muted);padding:4px 0 4px 8px;flex:none;font-size:14px}
+.chev:disabled{opacity:.3}
+button.chev[data-act]{min-width:36px;min-height:36px;padding:0 6px;font-size:16px}
 button.itemb{width:100%;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit}
 button.itemb:active{background:var(--soft)}
 button.itemb .txt{display:block}
 button.itemb .t1,button.itemb .t2{display:block}
 button.itemb .chev{align-self:center}
 
-/* Auswertung */
+/* Zahlen */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .stat{background:var(--bg);padding:14px}
 .stat .v{font-size:22px;font-weight:600;letter-spacing:-.01em}
@@ -131,7 +138,7 @@ table.t td.r{text-align:right;white-space:nowrap}
 .up{color:var(--good)} .dn{color:var(--danger)}
 
 /* Modal */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:60;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
 .sheet{background:var(--bg);width:100%;max-width:620px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;
   padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
@@ -156,14 +163,6 @@ table.t td.r{text-align:right;white-space:nowrap}
 .exblock .rest{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:2px}
 .ziel{font-size:14px;font-weight:600;color:var(--accent);margin:4px 0 2px}
 .letzt{font-size:12.5px;color:var(--muted);margin-bottom:8px}
-.naechst{font-size:12.5px;color:var(--good);margin:-4px 0 8px}
-.verlauf{background:var(--soft);border-radius:8px;padding:8px 10px;margin:0 0 10px}
-.verlauf .vh{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
-.verlauf .vr{display:flex;gap:10px;font-size:13px;padding:2px 0;color:var(--muted)}
-.verlauf .vr.neu{color:var(--fg);font-weight:500}
-.verlauf .vd{flex:none;width:58px;font-variant-numeric:tabular-nums}
-.verlauf .vs{min-width:0}
-.verlauf .vw{opacity:.7}
 .warn{font-size:12.5px;color:var(--danger);margin-bottom:8px}
 .setrow{display:grid;grid-template-columns:22px 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:6px}
 .setrow.nw{grid-template-columns:22px 1fr 30px}
@@ -173,15 +172,16 @@ table.t td.r{text-align:right;white-space:nowrap}
 .setlabels{display:grid;grid-template-columns:22px 1fr 1fr 30px;gap:8px;font-size:11.5px;color:var(--muted);margin-bottom:4px}
 .setlabels.nw{grid-template-columns:22px 1fr 30px}
 .setlabels span{text-align:center}
-.exfoot{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.exfoot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}
 .warmup{background:var(--soft);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:14px}
+.warmup summary{cursor:pointer;list-style:none}
+.warmup summary::-webkit-details-marker{display:none}
 .warmup ul{margin:6px 0 0;padding-left:18px}
 .warmup li{margin:2px 0}
 
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:99;background:var(--fg);color:var(--bg);
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));z-index:99;background:var(--fg);color:var(--bg);
   padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .18s;max-width:90%;text-align:center}
 .toast.show{opacity:1}
-.foot{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap}
 .chk{display:flex;align-items:center;gap:10px;padding:10px 0}
 .chk input{width:20px;height:20px;flex:none;margin:0}
 .chk label{margin:0;font-size:15px;color:var(--fg)}
@@ -194,15 +194,13 @@ table.t td.r{text-align:right;white-space:nowrap}
 <header>
   <div class="head-in">
     <div class="profiles" id="profiles"></div>
-    <nav id="nav">
-      <button data-v="cal" aria-current="page">Kalender</button>
-      <button data-v="body">Körper</button>
-      <button data-v="plan">Plan</button>
-      <button data-v="essen">Essen</button>
-      <button data-v="dash">Auswertung</button>
-    </nav>
   </div>
 </header>
+<nav class="tabbar" id="nav">
+  <button data-v="heute" aria-current="page"><svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>Heute</button>
+  <button data-v="fortschritt"><svg viewBox="0 0 24 24"><path d="M4 19h16M7 15v-3M12 15V8M17 15V5"/></svg>Fortschritt</button>
+  <button data-v="mehr"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Mehr</button>
+</nav>
 
 <main class="wrap" id="main"></main>
 <div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
@@ -222,16 +220,6 @@ const PROFILES = [
 ];
 
 const PLAN = {
-  weeks: 12,
-
-  blocks: [
-    { from:1,  to:1,  name:'Testwoche', note:'Gewichte finden, 3–4 Wdh. Reserve lassen. Zu leicht ist in Woche 1 richtig — wer zu schwer startet, hat nach vier Wochen keinen Spielraum mehr.' },
-    { from:2,  to:6,  name:'Block 1',   note:'Erster Progressionsblock. Reserve auf 1–2 Wdh.' },
-    { from:7,  to:7,  name:'Deload',    note:'Alle Gewichte auf 60 %, gleiche Sätze und Wiederholungen. Volleyball in dieser Woche mit zurückfahren.' },
-    { from:8,  to:11, name:'Block 2',   note:'Zweiter Block. Reserve 1 Wdh., letzte Sätze nahe am Limit.' },
-    { from:12, to:12, name:'Abschluss', note:'Letzte Trainingswoche und Abschlussmessung. Danach Übungsauswahl leicht rotieren.' }
-  ],
-
   /* Steigerungsschritte je Übungstyp, in kg */
   steps: {
     grund:    { sie:5,   er:5,   label:'Kniebeuge, Kreuzheben, Hip Thrust' },
@@ -464,6 +452,188 @@ const EXTRA = [
   ]}
 ];
 
+/* ------------------------------------------------------------
+   Übungskatalog — Auswahl beim Hinzufügen von Übungen
+   Format: 'Name | Sätze | Wdh. | Pause | Merkmale'
+   Merkmale: lh Langhantel/Grundübung · kh Kurzhantel je Hand · m Maschine/Kabel
+             p Beinpresse · i Isolation · bw Körpergewicht (+ Zusatz) · nw ohne Gewicht
+             t Sekunden statt Wdh. · L pro Bein · S pro Seite · H ohne Geräte machbar
+   Gleiche Namen wie im Plan, damit Verlauf und Progression weiterlaufen.
+   ------------------------------------------------------------ */
+
+const KAT_ROH = {
+  'Brust': [
+    'Bankdrücken|4|6-10|2 Min.|lh',
+    'Bankdrücken Kurzhantel|3|8-12|2 Min.|kh',
+    'Schrägbankdrücken Langhantel|3|8-10|2 Min.|lh',
+    'Schrägbankdrücken Kurzhantel|3|10-12|90 Sek.|kh',
+    'Brustpresse|3|10-12|90 Sek.|m',
+    'Butterfly Maschine|3|12-15|60 Sek.|m',
+    'Cable Fly (mittlere Höhe)|3|12-15|60 Sek.|m',
+    'Fliegende Kurzhantel|3|12-15|60 Sek.|kh',
+    'Dips|3|8-12|2 Min.|bw',
+    'Liegestütze|4|15-20|60 Sek.|bw H',
+    'Liegestütze erhöht|3|12-15|60 Sek.|bw H',
+    'Liegestütze breit|3|12-15|60 Sek.|bw H',
+    'Negativ-Liegestütze (Füße erhöht)|3|8-12|90 Sek.|bw H'
+  ],
+  'Rücken': [
+    'Klimmzüge|4|6-10|2 Min.|bw',
+    'Latzug breit|3|8-12|90 Sek.|m',
+    'Latzug eng|3|10-12|90 Sek.|m',
+    'Rudern Langhantel|3|8-12|90 Sek.|lh',
+    'Rudern Kabel eng|3|8-12|90 Sek.|m',
+    'Rudern Maschine|3|10-12|90 Sek.|m',
+    'Rudern Kurzhantel einarmig|3|10-12|60 Sek.|kh S',
+    'T-Bar-Rudern|3|8-12|90 Sek.|lh',
+    'Kreuzheben|3|5-8|3 Min.|lh',
+    'Pullover Kabel|3|12-15|60 Sek.|m',
+    'Hyperextension|3|12-15|90 Sek.|bw',
+    'Rudern vorgebeugt mit Rucksack|4|15-15|90 Sek.|i H',
+    'Einarmiges Rudern mit Flasche oder Kanister|3|12-12|60 Sek.|i S H',
+    'Tischrudern (unter dem Tisch)|3|8-12|90 Sek.|bw H',
+    'Superman|4|20-20|45 Sek.|nw H',
+    'Reverse Snow Angels|3|12-15|45 Sek.|nw H'
+  ],
+  'Schultern': [
+    'Schulterdrücken Kurzhantel|3|8-12|90 Sek.|kh',
+    'Schulterdrücken Langhantel stehend|3|6-10|2 Min.|lh',
+    'Schulterdrücken Maschine|3|10-12|90 Sek.|m',
+    'Arnold Press|3|10-12|90 Sek.|kh',
+    'Seitheben|3|12-15|60 Sek.|kh',
+    'Seitheben Kabel|3|12-15|60 Sek.|m S',
+    'Face Pull|3|12-15|60 Sek.|m',
+    'Reverse Flys Maschine|3|12-15|60 Sek.|m',
+    'Reverse Flys Kurzhantel|3|12-15|60 Sek.|kh',
+    'Frontheben Kurzhantel|3|12-15|60 Sek.|kh',
+    'Pike-Liegestütze|3|8-12|90 Sek.|bw H',
+    'Seitheben mit Wasserflaschen|3|15-20|45 Sek.|i H',
+    'Y-T-W-Heben bäuchlings|3|10-10|45 Sek.|nw H'
+  ],
+  'Arme': [
+    'Bizepscurl Kurzhantel|3|10-12|60 Sek.|kh',
+    'Bizepscurl Langhantel|3|8-12|60 Sek.|i',
+    'Bizepscurl Kabel|3|12-15|60 Sek.|m',
+    'Hammercurl Kurzhantel|3|10-12|60 Sek.|kh',
+    'Konzentrationscurl|3|10-12|60 Sek.|kh S',
+    'Trizepsdrücken Kabel|3|12-15|60 Sek.|m',
+    'Trizepsdrücken Seil|3|12-15|60 Sek.|m',
+    'Trizepsstrecken über Kopf Kabel|3|10-12|60 Sek.|m',
+    'Trizepsstrecken liegend SZ-Stange|3|10-12|60 Sek.|i',
+    'Enges Bankdrücken|3|8-10|2 Min.|lh',
+    'Bizepscurl mit Rucksack|3|15-15|60 Sek.|i H',
+    'Hammercurl mit Wasserflasche|3|15-15|60 Sek.|i H',
+    'Bank-Dips|3|12-15|60 Sek.|bw H',
+    'Diamant-Liegestütze|3|12-15|60 Sek.|bw H',
+    'Trizeps-Kickback mit Rucksack|3|12-15|45 Sek.|i S H'
+  ],
+  'Beine': [
+    'Kniebeuge Langhantel|4|6-10|2–3 Min.|lh',
+    'Frontkniebeuge|3|6-8|2–3 Min.|lh',
+    'Goblet Squat|3|10-12|90 Sek.|i',
+    'Beinpresse|3|10-12|2 Min.|p',
+    'Hackenschmidt-Kniebeuge|3|10-12|2 Min.|m',
+    'Beinstrecker Maschine|3|12-15|60 Sek.|m',
+    'Beinbeuger sitzend|3|10-12|90 Sek.|m',
+    'Beinbeuger liegend|3|10-12|90 Sek.|m',
+    'Ausfallschritte gehend|3|10-10|90 Sek.|kh L',
+    'Bulgarian Split Squat|3|8-10|90 Sek.|kh L',
+    'Wadenheben|3|12-15|60 Sek.|m',
+    'Wadenheben sitzend|3|15-20|60 Sek.|m',
+    'Air Squat|4|20-20|60 Sek.|bw H',
+    'Pulse Squat|3|20-20|45 Sek.|bw H',
+    'Sprungkniebeuge|3|10-12|60 Sek.|nw H',
+    'Ausfallschritte im Wechsel|3|10-15|60 Sek.|bw L H',
+    'Step-up auf Stuhl oder Bank|3|15-15|60 Sek.|bw L H',
+    'Nordic Curl|3|4-8|2 Min.|nw H',
+    'Wadenheben einbeinig auf der Stufe|3|15-20|45 Sek.|bw L H',
+    'Wall Sit isometrisch|4|40-60|60 Sek.|nw t H'
+  ],
+  'Po': [
+    'Hip Thrust Langhantel|4|8-12|2–3 Min.|lh',
+    'Hip Thrust Maschine|4|10-12|2 Min.|m',
+    'Rumänisches Kreuzheben|3|8-10|2 Min.|lh',
+    'Rumänisches Kreuzheben Kurzhantel|3|10-12|90 Sek.|kh',
+    'Abduktion Maschine|3|15-20|60 Sek.|m',
+    'Adduktion Maschine|3|15-20|60 Sek.|m',
+    'Cable Kickback|3|12-15|60 Sek.|m L',
+    'Hyperextension glute-fokussiert|3|12-15|90 Sek.|bw',
+    'Sumo-Kniebeuge mit Kurzhantel|3|12-15|60 Sek.|i',
+    'Sumo Squat|4|20-20|60 Sek.|bw H',
+    'Glute Bridge|4|15-20|60 Sek.|bw H',
+    'Glute Bridge einbeinig|3|10-15|60 Sek.|bw L H',
+    'Glute Bridge isometrisch halten|3|30-45|45 Sek.|nw t H',
+    'Donkey Kick|3|15-15|45 Sek.|bw L H',
+    'Fire Hydrant|3|15-15|45 Sek.|nw L H',
+    'Clamshell mit Miniband|3|15-20|45 Sek.|nw L H',
+    'Seitliches Beinheben|3|15-20|45 Sek.|nw L H'
+  ],
+  'Rumpf': [
+    'Pallof Press|3|12-12|45 Sek.|i S',
+    'Hanging Leg Raise|3|10-15|60 Sek.|nw',
+    'Cable Crunch|3|12-15|60 Sek.|m',
+    'Ab Wheel|3|8-12|60 Sek.|nw',
+    'Plank|3|30-60|45 Sek.|nw t H',
+    'Seitstütz|3|20-45|45 Sek.|nw t S H',
+    'Dead Bug|3|10-12|45 Sek.|nw S H',
+    'Crunch|3|15-20|45 Sek.|nw H',
+    'Bicycle Crunch|3|15-20|45 Sek.|nw S H',
+    'Beinheben liegend|3|12-15|45 Sek.|nw H',
+    'Hollow Hold|3|20-40|45 Sek.|nw t H',
+    'Russian Twist|3|15-20|45 Sek.|i S H',
+    'Mountain Climber|3|30-45|45 Sek.|nw t H'
+  ]
+};
+const KAT_GRUPPEN = Object.keys(KAT_ROH);
+
+const KATALOG = [];
+KAT_GRUPPEN.forEach(g => KAT_ROH[g].forEach(zeile => {
+  const [n, sets, reps, rest, flags] = zeile.split('|');
+  const [lo, hi] = reps.split('-').map(Number);
+  const f = flags.split(' ');
+  const ex = { n:n, g:g, sets:Number(sets), reps:[lo, hi], rest:rest };
+  if(f.includes('lh')) ex.step = 'grund';
+  if(f.includes('kh')){ ex.step = 'kh'; ex.unit = 'kgSeite'; }
+  if(f.includes('m'))  ex.step = 'maschine';
+  if(f.includes('p'))  ex.step = 'presse';
+  if(f.includes('i'))  ex.step = 'iso';
+  if(f.includes('bw')){ ex.step = 'iso'; ex.unit = 'kgZusatz'; }
+  if(f.includes('nw')) ex.noWeight = true;
+  if(f.includes('t'))  ex.time = true;
+  if(f.includes('L'))  ex.perLeg = true;
+  if(f.includes('S'))  ex.perSide = true;
+  if(f.includes('H'))  ex.home = true;
+  KATALOG.push(ex);
+}));
+function katEx(name){ return KATALOG.find(x => x.n === name); }
+/** Übung für ein Training: ohne Katalog-Felder */
+function katKopie(x){
+  const e = { n:x.n, sets:x.sets, reps:x.reps.slice(), rest:x.rest };
+  ['step','unit','perLeg','perSide','time','noWeight'].forEach(k => { if(x[k] != null) e[k] = x[k]; });
+  return e;
+}
+
+/* Vorlagen für neue Trainings — alle Übungen kommen aus dem Katalog */
+const VORLAGEN = [
+  { ort:'Gym', name:'Push', sub:'Brust, Schultern, Trizeps', ex:['Bankdrücken','Schrägbankdrücken Kurzhantel','Schulterdrücken Kurzhantel','Seitheben','Cable Fly (mittlere Höhe)','Trizepsdrücken Seil'] },
+  { ort:'Gym', name:'Pull', sub:'Rücken, hintere Schulter, Bizeps', ex:['Klimmzüge','Rudern Langhantel','Latzug eng','Face Pull','Bizepscurl Langhantel','Hammercurl Kurzhantel'] },
+  { ort:'Gym', name:'Beine', sub:'Oberschenkel, Beinbeuger, Waden', ex:['Kniebeuge Langhantel','Rumänisches Kreuzheben','Beinpresse','Beinbeuger sitzend','Beinstrecker Maschine','Wadenheben'] },
+  { ort:'Gym', name:'Oberkörper', sub:'Zug und Druck im Wechsel', ex:['Bankdrücken','Rudern Langhantel','Schulterdrücken Kurzhantel','Latzug breit','Bizepscurl Kurzhantel','Trizepsdrücken Kabel'] },
+  { ort:'Gym', name:'Unterkörper', sub:'Beine und Po', ex:['Kniebeuge Langhantel','Hip Thrust Langhantel','Rumänisches Kreuzheben','Ausfallschritte gehend','Beinbeuger sitzend','Wadenheben'] },
+  { ort:'Gym', name:'Ganzkörper A', sub:'Kniebeuge und Bankdrücken', ex:['Kniebeuge Langhantel','Bankdrücken','Rudern Kabel eng','Rumänisches Kreuzheben','Seitheben','Plank'] },
+  { ort:'Gym', name:'Ganzkörper B', sub:'Kreuzheben und Klimmzüge', ex:['Kreuzheben','Schulterdrücken Langhantel stehend','Klimmzüge','Bulgarian Split Squat','Dips','Hanging Leg Raise'] },
+  { ort:'Gym', name:'Po-Fokus', sub:'Hip Thrust, Kreuzheben, Abduktion', ex:['Hip Thrust Langhantel','Rumänisches Kreuzheben','Bulgarian Split Squat','Cable Kickback','Abduktion Maschine','Hyperextension glute-fokussiert'] },
+  { ort:'Gym', name:'Schultern & Arme', sub:'Kurze Zusatzeinheit', ex:['Schulterdrücken Maschine','Seitheben','Face Pull','Bizepscurl Kabel','Trizepsstrecken über Kopf Kabel','Hammercurl Kurzhantel'] },
+  { ort:'Gym', name:'Rumpf', sub:'Bauch und Stabilität', ex:['Pallof Press','Cable Crunch','Hanging Leg Raise','Ab Wheel','Plank','Seitstütz'] },
+
+  { ort:'Zuhause', name:'Ganzkörper zuhause', sub:'Ohne Geräte', ex:['Air Squat','Liegestütze','Glute Bridge','Rudern vorgebeugt mit Rucksack','Pike-Liegestütze','Plank'] },
+  { ort:'Zuhause', name:'Oberkörper zuhause', sub:'Brust, Rücken, Schultern, Arme', ex:['Liegestütze','Tischrudern (unter dem Tisch)','Pike-Liegestütze','Rudern vorgebeugt mit Rucksack','Bank-Dips','Bizepscurl mit Rucksack'] },
+  { ort:'Zuhause', name:'Beine & Po zuhause', sub:'Ohne Geräte', ex:['Air Squat','Ausfallschritte im Wechsel','Glute Bridge einbeinig','Step-up auf Stuhl oder Bank','Donkey Kick','Wall Sit isometrisch'] },
+  { ort:'Zuhause', name:'Po zuhause', sub:'Mit Miniband oder ohne', ex:['Sumo Squat','Glute Bridge','Donkey Kick','Fire Hydrant','Clamshell mit Miniband','Glute Bridge isometrisch halten'] },
+  { ort:'Zuhause', name:'Bauch zuhause', sub:'Rumpf ohne Geräte', ex:['Plank','Dead Bug','Bicycle Crunch','Beinheben liegend','Seitstütz','Mountain Climber'] },
+  { ort:'Zuhause', name:'Kurzhantel-Ganzkörper', sub:'Mit einem Paar Kurzhanteln', ex:['Goblet Squat','Bankdrücken Kurzhantel','Rudern Kurzhantel einarmig','Rumänisches Kreuzheben Kurzhantel','Schulterdrücken Kurzhantel','Bizepscurl Kurzhantel'] }
+];
+
 /** Nur die Trainings der aktuell gewählten Wochenvariante, plus Zusatz- und importierte Trainings */
 function allWorkouts(){
   return PLAN.workouts.filter(w => !w.modus || w.modus.indexOf(S.modus) >= 0).concat(EXTRA, S.imported || []);
@@ -474,6 +644,21 @@ function wocheEinheiten(person){
     .filter(w => w.kind === 'strength' && (!w.modus || w.modus.indexOf(S.modus) >= 0) && w.for.indexOf(person) >= 0)
     .sort((a,b) => (a.ord || 9) - (b.ord || 9));
 }
+
+/* ---- Meine Woche: selbst zusammengestellt, pro Person ----
+   Solange nichts gewählt ist, gilt der bisherige Plan als Vorschlag. */
+function wocheIdsFor(pid){
+  const l = S.woche && S.woche[pid];
+  return l ? l.slice() : wocheEinheiten(persOf(pid)).map(w => w.id);
+}
+function setWocheFor(pid, ids){
+  S.woche = S.woche || {};
+  S.woche[pid] = ids;
+}
+function meineWoche(){
+  return wocheIdsFor(S.profile).map(woById).filter(w => w && w.for.includes(pers()));
+}
+function inWoche(id){ return wocheIdsFor(S.profile).indexOf(id) >= 0; }
 
 /* Messstellen aus dem Plan, mit Zielrichtung je Person */
 const MASSE = [
@@ -487,84 +672,6 @@ const MASSE = [
   { k:'wade',    l:'Wade',          wo:'dickste Stelle',                ziel:{ sie:'–', er:'↑' } }
 ];
 
-const NUT = {
-  sie:{
-    kcal:2300, protein:125, fett:'70–80 g', kh:'280–300 g',
-    ziel:'Recomposition auf Erhaltungsniveau',
-    warum:'Bei stehendem Beruf liegt der Verbrauch hoch — deshalb kein Defizit. Als Anfängerin funktioniert Muskelaufbau und Fettabbau hier gleichzeitig.',
-    check:'Woche 4: bewegt sich an Taille und Bauch nichts → 150 kcal runter. Fühlt sich das Training schwach an und die Umfänge schrumpfen überall → 150 kcal drauf.',
-    tag:[
-      { t:'Frühstück', i:'250 g Skyr · 60 g Haferflocken · 100 g Beeren · 10 g Mandeln', kcal:520, p:33 },
-      { t:'Snack', i:'1 Apfel · 20 g Erdnussbutter', kcal:230, p:6 },
-      { t:'Mittag', i:'140 g Hähnchenbrust · 70 g Reis (roh) · 200 g Gemüse · 1 EL Olivenöl', kcal:620, p:37 },
-      { t:'Um das Training', i:'1 Banane · 250 ml Milch', kcal:230, p:9 },
-      { t:'Abend', i:'150 g Lachs · 350 g Kartoffeln · großer Salat mit Dressing', kcal:700, p:34 },
-      { t:'Optional abends', i:'150 g Magerquark mit Zimt', kcal:110, p:20 }
-    ]
-  },
-  er:{
-    kcal:3200, protein:165, fett:'85–95 g', kh:'430–460 g',
-    ziel:'Aufbau mit moderatem Überschuss',
-    warum:'Bei vier Stunden Volleyball plus drei Krafteinheiten liegt der Erhaltungsbedarf wahrscheinlich schon bei 3.100–3.400. Der Überschuss ist damit knapp — deshalb Kontrolle des Gewichtstrends bereits in Woche 2 statt erst in Woche 4. An Volleyballtagen 300–400 kcal zusätzlich.',
-    check:'Gewicht sollte um 0,2–0,3 kg pro Woche steigen. Steht es still: +200 kcal. Steigt es um mehr als 0,5 kg/Woche: −200 kcal, sonst geht zu viel in Fett.',
-    tag:[
-      { t:'Frühstück', i:'100 g Haferflocken · 300 ml Milch · 1 Banane · 20 g Erdnussbutter · 20 g Honig', kcal:800, p:29 },
-      { t:'Snack', i:'250 g Magerquark · 40 g Marmelade oder Honig · 25 g Walnüsse', kcal:450, p:37 },
-      { t:'Mittag', i:'180 g Hähnchenbrust · 120 g Reis (roh) · 250 g Gemüse · 1 EL Öl', kcal:860, p:60 },
-      { t:'Nach dem Training', i:'2 Scheiben Vollkornbrot · 30 g Whey · 1 Banane', kcal:480, p:30 },
-      { t:'Abend', i:'180 g Rind, Lachs oder Tofu · 400 g Kartoffeln · Gemüse · Olivenöl', kcal:750, p:40 }
-    ]
-  }
-};
-
-const PROTEIN = [
-  ['Magerquark','250 g','34 g'], ['Skyr','250 g','28 g'], ['Hähnchenbrust','150 g','46 g'],
-  ['Rinderhack 5 %','150 g','32 g'], ['Lachs','150 g','31 g'], ['Thunfisch (Dose)','150 g','38 g'],
-  ['Eier','3 Stück','19 g'], ['Linsen (gekocht)','200 g','18 g'], ['Tofu','200 g','32 g'],
-  ['Whey','30 g','24 g'], ['Harzer Käse','100 g','30 g']
-];
-
-/* Mahlzeiten-Ideen aus dem Wochenplan, nach Mahlzeit sortiert */
-const MEAL_TAGE = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
-const MEALS = [
-  { k:'Frühstück', l:[
-    'Rührei mit Spinat, Avocado und Vollkornbrot',
-    'Haferflocken mit Protein, Beeren und Nüssen',
-    'Schoko-Haferflocken-Smoothie-Bowl mit Banane und Erdnussbutter',
-    'Vollkorntoast mit Avocado, Tomate und Chiasamen',
-    'Omelett mit Spinat und Champignons, dazu Vollkornbrot',
-    'Haferflocken-Pancakes mit Banane, Beeren und Honig',
-    'Haferflocken mit Erdnussbutter, Banane und Kürbiskernen'
-  ]},
-  { k:'Mittagessen', l:[
-    'Gegrillte Hähnchenbrust mit braunem Reis und gedünstetem Gemüse',
-    'Mageres Rindfleisch mit Süßkartoffel und grünen Bohnen',
-    'Gegrillte Pute mit braunem Reis und gedünstetem Gemüse',
-    'Kichererbsen-Bowl mit Reis und Salat',
-    'Gegrillter Lachs mit Süßkartoffelpüree und Spargel',
-    'Hähnchen-Wrap mit Gemüse und Hummus',
-    'Gebackenes Hähnchen mit Röstkartoffeln und grünem Salat'
-  ]},
-  { k:'Zwischenmahlzeit', sub:'vor oder nach dem Training', l:[
-    'Proteinshake mit Milch, Banane und Erdnussbutter',
-    'Griechischer Joghurt mit Granola und Honig',
-    'Reiswaffeln mit Hüttenkäse und Honig',
-    'Proteinshake mit Haferflocken, Kakao und Mandeln',
-    'Banane mit Erdnussbutter',
-    'Griechischer Joghurt mit roten Beeren und Nüssen',
-    'Proteinshake mit Milch, Haferflocken und Kakao'
-  ]},
-  { k:'Abendessen', l:[
-    'Gebackener Lachs mit Quinoa und gedünstetem Brokkoli',
-    'Thunfischsalat mit Vollkornnudeln, Tomate und Avocado',
-    'Gebackenes Fischfilet mit Röstkartoffeln und grünem Salat',
-    'Gegrilltes Hähnchen mit Quinoa und sautiertem Gemüse',
-    'Rindfleisch-Pfanne mit braunem Reis und Gemüse',
-    'Gebratene Garnelen mit Quinoa und Blattgemüse',
-    'Linseneintopf mit Gemüse und Avocado'
-  ]}
-];
-
 /* ============================================================
    2 · ZUSTAND
    ============================================================ */
@@ -573,19 +680,16 @@ const KEY        = 'ff_v2';
 const KEY_WO     = 'ff_wo';       // laufendes, noch nicht gespeichertes Training
 const KEY_BAK    = 'ff_bak';      // automatische Tagessicherungen
 const KEY_RESCUE = 'ff_rescue';   // unlesbarer Stand, zur Rettung aufgehoben
-const VERSION = '2026-10-03 · 10';   // wird bei jeder Änderung hochgezählt
+const VERSION = '2026-11-20 · 16';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
     version: 2,
     profile: 'jonas',
     modus: '4',           // '4' = vier Einheiten pro Woche, '3' = drei
-    start: '2026-08-01',  // erster Tag von Woche 1
     entries: [],          // Trainingseinträge
     masse: [],            // { id, profile, date, po, oberL, ... }
     gewicht: [],          // { id, profile, date, kg }
-    essen: {},            // 'profil|datum' -> true
-    fotos: {},            // 'profil|kontrollpunkt' -> true
     days: {},             // workoutId -> Wochentag, wenn vom Plan abweichend
     exOff: {},            // 'workoutId|person' -> ausgeblendete Übungen
     exAdd: {},            // 'workoutId|person' -> eigene Übungen
@@ -593,6 +697,7 @@ function defaults(){
     cardio: [ {id:'c1',name:'Laufen'}, {id:'c2',name:'Radfahren'}, {id:'c3',name:'Schwimmen'},
               {id:'c4',name:'Rudern'}, {id:'c5',name:'Walken'} ],
     custom: [],
+    woche: {},            // profilId -> Trainings-IDs „Meine Woche“, in Reihenfolge
     imported: []          // aus Textdateien übernommene Trainings: { id, profile, for, name, plan, ex, … }
   };
 }
@@ -605,8 +710,7 @@ let ladefehler = null;   // null | 'sicherung' | 'unlesbar'
 let gesperrt = false;    // true = speichern blockiert
 
 let S = load();
-let view = 'cal';
-let calMonth = new Date(); calMonth.setDate(1);
+let view = 'heute';
 let selDate = dkey(new Date());
 let draft = null;   // einfaches Formular
 let wo = null;      // Trainingsformular
@@ -682,7 +786,7 @@ function migrate(old){
 }
 function save(){
   if(gesperrt){
-    toast('Speichern blockiert — bitte zuerst im Plan-Tab wiederherstellen');
+    toast('Speichern blockiert — bitte unter Mehr → Automatische Sicherungen wiederherstellen');
     return false;
   }
   let txt;
@@ -696,7 +800,7 @@ function save(){
   }catch(e){
     gesperrt = true;
     window.alert('Speichern fehlgeschlagen!\n\nDeine Eingaben sind noch auf dem Bildschirm, aber nicht gesichert. '+
-                 'Geh in den Plan-Tab auf „Daten sichern" und kopier den Text, bevor du die App schließt.');
+                 'Geh unter Mehr auf „Daten sichern" und kopier den Text, bevor du die App schließt.');
     return false;
   }
   sicherungAnlegen(txt);
@@ -752,7 +856,7 @@ function closeSheet(){ $('#overlay').classList.remove('open'); $('#sheet').inner
 function closeWorkoutSheet(){
   const hat = wo && Object.keys(wo.drafts||{}).some(p =>
     (wo.drafts[p].blocks||[]).some(b => (b.sets||[]).some(s => String(s.reps||'').trim() !== '')));
-  if(hat && !window.confirm('Training schließen?\n\nDie eingetippten Sätze bleiben gespeichert — du kannst später über den Kalender weitermachen. Mit „Abbrechen" bleibst du im Formular.')) return;
+  if(hat && !window.confirm('Training schließen?\n\nDie eingetippten Sätze bleiben gespeichert — du kannst später auf der Startseite weitermachen. Mit „Abbrechen" bleibst du im Formular.')) return;
   closeSheet();
   render();   // damit der Hinweis auf das offene Training sofort erscheint
 }
@@ -770,21 +874,6 @@ function pers(){ return PROFILES.find(p => p.id === S.profile).p; }
 function persOf(profileId){ return PROFILES.find(p => p.id === profileId).p; }
 function nameOf(profileId){ return PROFILES.find(p => p.id === profileId).name; }
 
-/* ---- Plan-Woche ---- */
-function weekOf(dateKey){
-  if(!S.start) return null;
-  const d = daysBetween(S.start, dateKey);
-  if(d < 0) return 0;
-  const w = Math.floor(d/7) + 1;
-  return w > PLAN.weeks ? PLAN.weeks + 1 : w;
-}
-function blockOf(w){ return PLAN.blocks.find(b => w >= b.from && w <= b.to) || null; }
-function weekStartKey(w){ return S.start ? addDays(S.start, (w-1)*7) : null; }
-const KONTROLL = [ {w:0,l:'Start'}, {w:4,l:'Woche 4'}, {w:8,l:'Woche 8'}, {w:12,l:'Woche 12'} ];
-function kontrollDate(k){
-  if(!S.start) return null;
-  return k.w === 0 ? S.start : addDays(S.start, k.w*7 - 1);
-}
 
 /* ---- Einträge ---- */
 function myEntries(){ return S.entries.filter(e => e.profile === S.profile); }
@@ -904,7 +993,6 @@ function setsTxt(sets, unit){
 /** Ergebnis: { weight, reps, quelle, verlauf:[{date,txt}], fremd, warnung } */
 function target(profileId, w, ex, dateKey){
   const person = persOf(profileId);
-  const week = weekOf(dateKey);
   const [lo, hi] = ex.reps;
 
   /* Verlauf: zuerst dieselbe Übung im selben Training, sonst dieselbe Übung woanders */
@@ -929,10 +1017,7 @@ function target(profileId, w, ex, dateKey){
     return {
       weight: startRange ? startRange[0] : null,
       reps: lo,
-      quelle: week === 1 || !week
-        ? (startTxt ? 'Testwoche · Startbereich '+startTxt+' kg, mit 3–4 Wdh. Reserve'
-                    : 'Testwoche · Gewicht herantasten, 3–4 Wdh. Reserve')
-        : (startTxt ? 'Erste Einheit dieser Übung · Startbereich '+startTxt+' kg' : 'Erste Einheit dieser Übung'),
+      quelle: startTxt ? 'Erste Einheit dieser Übung · Startbereich '+startTxt+' kg' : 'Erste Einheit dieser Übung',
       naechst: (!ex.noWeight && ex.step)
         ? 'Ab dann: '+hi+' Wdh. in allen Sätzen → +'+fmtNum(PLAN.steps[ex.step][person],1)+' kg'
         : null,
@@ -944,16 +1029,6 @@ function target(profileId, w, ex, dateKey){
   const sets = (last.b.sets||[]).filter(s => num(s.reps));
   const lastW = workWeight(sets);
   const minReps = Math.min.apply(null, sets.map(s => num(s.reps)));
-
-  /* Deload-Woche */
-  if(week === 7){
-    return {
-      weight: lastW != null ? round25(lastW * 0.6) : null,
-      reps: minReps,
-      quelle: 'Deload · 60 % vom letzten Gewicht, gleiche Wiederholungen',
-      verlauf: verlauf, fremd: fremd, warnung: null
-    };
-  }
 
   const step = ex.step ? PLAN.steps[ex.step][person] : 0;
   let nw = lastW, nr;
@@ -1015,27 +1090,26 @@ $('#profiles').addEventListener('click', e => {
 });
 $('#nav').addEventListener('click', e => {
   const b = e.target.closest('button[data-v]'); if(!b) return;
-  view = b.dataset.v; render(); window.scrollTo(0,0);
+  view = b.dataset.v; alleZeigen = false; render(); window.scrollTo(0,0);
 });
 
 /* ============================================================
-   6 · ANSICHT KALENDER
+   6 · ANSICHT HEUTE
    ============================================================ */
 
 /* Warnung, wenn beim Laden etwas nicht stimmte */
 function speicherKarte(){
   if(ladefehler === 'sicherung'){
-    return '<div class="card" style="border-color:var(--danger)">'+
+    return '<div class="card" style="border-color:var(--danger);margin-top:16px">'+
       '<div class="ctitle">Gespeicherter Stand war beschädigt</div>'+
-      '<div class="cmeta">Die App läuft gerade aus der letzten automatischen Tagessicherung. '+
-      'Prüf unter Auswertung → Alle Einheiten, ob etwas fehlt. Der beschädigte Stand ist aufgehoben.</div>'+
+      '<div class="cmeta">Die App läuft gerade aus der letzten automatischen Sicherung. '+
+      'Prüf unter Fortschritt, ob ein Training fehlt.</div>'+
       '<button class="btn btn-sm" data-act="restore" style="margin-top:10px">Sicherungen ansehen</button></div>';
   }
   if(ladefehler === 'unlesbar'){
-    return '<div class="card" style="border-color:var(--danger)">'+
+    return '<div class="card" style="border-color:var(--danger);margin-top:16px">'+
       '<div class="ctitle">Gespeicherte Daten nicht lesbar</div>'+
-      '<div class="cmeta">Speichern ist vorsorglich blockiert, damit nichts überschrieben wird. '+
-      'Es gibt keine automatische Sicherung. Öffne „Sicherungen ansehen" — dort liegt der Rohtext des beschädigten Standes.</div>'+
+      '<div class="cmeta">Speichern ist vorsorglich blockiert, damit nichts überschrieben wird.</div>'+
       '<button class="btn btn-primary btn-sm" data-act="restore" style="margin-top:10px">Sicherungen ansehen</button></div>';
   }
   return '';
@@ -1047,80 +1121,24 @@ function offenesTrainingKarte(){
   if(!o) return '';
   const n = Object.keys(o.drafts).reduce((a,p) => a + (o.drafts[p].blocks||[])
     .reduce((b,x) => b + (x.sets||[]).filter(s => String(s.reps||'').trim() !== '').length, 0), 0);
-  return '<div class="card accent"><div class="tagline">Unterbrochenes Training</div>'+
+  return '<div class="card accent" style="margin-top:16px"><div class="tagline">Nicht gespeichert</div>'+
     '<div class="ctitle">'+esc(o.cat || 'Training')+'</div>'+
-    '<div class="cmeta">'+esc(dShort(o.datum))+' · '+n+(n===1?' Satz':' Sätze')+' eingetippt, noch nicht gespeichert</div>'+
+    '<div class="cmeta">'+esc(dShort(o.datum))+' · '+n+(n===1?' Satz':' Sätze')+' eingetippt</div>'+
     '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="btn btn-primary btn-sm" data-act="wocont">Weitermachen</button>'+
       '<button class="btn btn-sm" data-act="wodrop">Verwerfen</button>'+
     '</div></div>';
 }
 
-function heuteKarte(){
-  const heute = dkey(new Date());
-  if(!S.start){
-    return '<div class="card accent"><div class="ctitle">Der Plan läuft noch nicht</div>'+
-      '<div class="cmeta" style="margin-bottom:10px">Leg fest, wann Woche 1 beginnt — danach zeigt die App, was in der Woche ansteht.</div>'+
-      '<button class="btn btn-primary" data-act="setstart">Startdatum festlegen</button></div>';
-  }
-  const w = weekOf(heute);
-  if(w === 0){
-    const tage = daysBetween(heute, S.start);
-    return '<div class="card"><div class="ctitle">Woche 1 beginnt in '+tage+' Tag'+(tage===1?'':'en')+'</div>'+
-           '<div class="cmeta">Start am '+esc(dShort(S.start))+'. Vorher: Startmessung im Körper-Tab.</div></div>';
-  }
-  if(w > PLAN.weeks){
-    return '<div class="card"><div class="ctitle">Die zwölf Wochen sind durch</div>'+
-           '<div class="cmeta">Vergleich in der Auswertung. Für den nächsten Block Übungsauswahl leicht rotieren und neues Startdatum setzen.</div>'+
-           '<button class="btn btn-sm" data-act="setstart" style="margin-top:10px">Neuen Zyklus starten</button></div>';
-  }
-
-  const blk = blockOf(w);
-  const von = weekStartKey(w), bis = addDays(von, 6);
-  const liste = wocheEinheiten(pers());
-
-  /* Welche Einheit wurde in dieser Woche schon erledigt? */
-  const done = {};
-  myEntries().filter(e => e.date >= von && e.date <= bis && e.planId)
-             .forEach(e => { if(!done[e.planId] || e.date > done[e.planId]) done[e.planId] = e.date; });
-  const fertig = liste.filter(x => done[x.id]).length;
-
-  let h = '<div class="card accent">'+
-    '<div class="tagline">Woche '+w+' von 12 · '+esc(blk.name)+' · '+esc(dShort(von))+'–'+esc(dShort(bis))+'</div>'+
-    '<div class="ctitle">'+fertig+' von '+liste.length+' Einheiten erledigt</div>'+
-    '<div class="bar g"><i style="width:'+Math.round(fertig/liste.length*100)+'%"></i></div>';
-
-  h += liste.map(x => {
-    const d = done[x.id];
-    const n = exFor(x, pers()).length;
-    return '<div class="worow'+(d?' fertig':'')+'">'+
-      '<div class="wotxt"><div class="won">'+(d?'✓ ':'')+esc(x.name)+(x.short?' <span class="muted">· '+esc(x.short)+'</span>':'')+'</div>'+
-      '<div class="wom">'+(d ? 'erledigt am '+esc(dShort(d)) : n+' Übungen · ca. '+dauerVon(x, pers())+' Min.')+'</div></div>'+
-      (d ? '' : '<button class="btn btn-sm btn-primary" data-act="startwo" data-id="'+x.id+'">Starten</button>')+
-    '</div>';
-  }).join('');
-
-  h += '<div class="hint">Reihenfolge ist ein Vorschlag, kein fester Wochentag. Zwischen den beiden Beintagen mindestens ein Tag Pause.</div>';
-  if(w === 7) h += '<div class="cmeta" style="margin-top:8px">'+esc(blk.note)+'</div>';
-  h += '</div>';
-
-  /* Feste Termine, die heute anstehen */
-  const fix = planToday(heute, pers()).filter(x => x.kind !== 'strength');
-  if(fix.length){
-    h += fix.map(x => {
-      const erledigt = entriesOn(heute).some(e => e.planId === x.id);
-      return '<div class="card"><div class="spread"><div><div class="ctitle">'+esc(x.name)+(erledigt?' ✓':'')+'</div>'+
-        '<div class="cmeta">heute · '+esc(x.sub)+'</div></div>'+
-        (erledigt?'':'<button class="btn btn-sm" data-act="startwo" data-id="'+x.id+'">Eintragen</button>')+
-        '</div></div>';
-    }).join('');
-  }
-  return h;
+/** Die laufende Woche, Montag bis Sonntag */
+function laufendeWoche(k){
+  const von = addDays(k, -((fromKey(k).getDay()+6)%7));
+  return { von:von, bis:addDays(von, 6) };
 }
 
 /** Grobe Dauer einer Einheit: Satzzeit plus Pausen plus Aufwärmen und Wege */
 function dauerVon(w, person){
-  let sec = (w.warmup && w.warmup.length ? 8*60 : 0) + 8*60;   // Aufwärmen + Wege
+  let sec = (w.warmup && w.warmup.length ? 8*60 : 0) + 8*60;
   exFor(w, person).forEach(e => {
     const p = String(e.rest || '90 Sek.');
     const zahl = parseFloat(p.replace(',','.')) || 1.5;
@@ -1131,609 +1149,102 @@ function dauerVon(w, person){
   return Math.round(sec/60/5)*5;
 }
 
-function gewichtKarte(){
-  const heute = dkey(new Date());
-  const g = S.gewicht.find(x => x.profile === S.profile && x.date === heute);
-  return '<div class="card">'+
-    '<div class="tagline">Morgens, nüchtern, ohne Kleidung</div>'+
-    '<div class="inline-w">'+
-      '<div class="field"><label for="gw">Gewicht heute (kg)</label>'+
-        '<input id="gw" type="text" inputmode="decimal" value="'+esc(g?g.kg:'')+'" placeholder="–"></div>'+
-      '<button class="btn btn-primary" data-act="savegw">'+(g?'Ändern':'Speichern')+'</button>'+
-    '</div>'+
-    '<div class="hint">Nur der Wochendurchschnitt zählt. Tagesschwankungen von 1–2 kg sind normal.</div>'+
-    '<div class="chk" style="border-top:1px solid var(--line);margin-top:12px">'+
-      '<input type="checkbox" id="essen" '+(S.essen[S.profile+'|'+heute]?'checked':'')+' data-act="essen">'+
-      '<label for="essen">Ernährung heute eingehalten</label></div>'+
-  '</div>';
+function woMeta(x){
+  if(x.kind !== 'strength') return x.sub || '';
+  return (x.short ? x.short+' · ' : '')+exFor(x, pers()).length+' Übungen · ca. '+dauerVon(x, pers())+' Min.';
 }
 
-function renderCal(){
-  const y = calMonth.getFullYear(), m = calMonth.getMonth();
-  const first = new Date(y, m, 1);
-  const lead = (first.getDay() + 6) % 7;
-  const days = new Date(y, m+1, 0).getDate();
-  const todayK = dkey(new Date());
-
-  const counts = {};
-  myEntries().forEach(e => counts[e.date] = (counts[e.date]||0) + 1);
-  const ctrl = {};
-  KONTROLL.forEach(k => { const d = kontrollDate(k); if(d) ctrl[d] = k.l; });
-
-  let cells = '';
-  for(let i=0;i<lead;i++) cells += '<button class="out" tabindex="-1"></button>';
-  for(let d=1; d<=days; d++){
-    const k = y+'-'+pad(m+1)+'-'+pad(d);
-    const n = Math.min(counts[k]||0, 3);
-    const dots = n ? '<span class="dots">'+'<i></i>'.repeat(n)+'</span>' : '';
-    const cls = [k===todayK?'today':'', ctrl[k]?'ctrl':''].filter(Boolean).join(' ');
-    cells += '<button data-day="'+k+'"'+(cls?' class="'+cls+'"':'')+' aria-pressed="'+(k===selDate)+'">'+d+dots+'</button>';
-  }
-
-  const list = entriesOn(selDate);
-  const dayHtml = list.length
-    ? list.map(e => '<button class="item itemb" data-detail="'+e.id+'"><span class="txt">'+
-        '<span class="t1">'+esc(e.cat)+'</span><span class="t2">'+esc(entrySub(e))+'</span>'+
-        '</span><span class="chev">ansehen ›</span></button>').join('')
-    : '<div class="empty">Kein Training an diesem Tag.</div>';
-
-  const kk = ctrl[selDate] ? '<div class="card accent" style="margin-top:12px"><div class="ctitle">Kontrollpunkt '+esc(ctrl[selDate])+'</div>'+
-    '<div class="cmeta">Umfänge messen, Fotos machen, Gewichtsdurchschnitt prüfen — im Körper-Tab.</div></div>' : '';
-
-  return speicherKarte() + offenesTrainingKarte() + heuteKarte() + gewichtKarte() +
-  '<div class="cal-head">'+
-    '<button class="cal-nav" data-mon="-1" aria-label="Vorheriger Monat">‹</button>'+
-    '<strong>'+esc(calMonth.toLocaleDateString('de-DE',{month:'long',year:'numeric'}))+'</strong>'+
-    '<button class="cal-nav" data-mon="1" aria-label="Nächster Monat">›</button>'+
-  '</div>'+
-  '<div class="dow"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>'+
-  '<div class="cal">'+cells+'</div>'+
-  '<div class="day-panel">'+
-    '<div class="spread"><strong>'+esc(dLabel(selDate))+'</strong></div>'+ kk + dayHtml +
-    '<button class="btn btn-primary btn-block" data-act="new" style="margin-top:14px">+ Eintragen</button>'+
-    '<button class="btn-ghost" data-act="manage" style="margin-top:6px">Eigene Kategorien bearbeiten</button>'+
-  '</div>';
+function relDatum(k){
+  const d = daysBetween(k, dkey(new Date()));
+  return d === 0 ? 'Heute' : d === 1 ? 'Gestern' : fromKey(k).toLocaleDateString('de-DE',{ weekday:'short', day:'numeric', month:'numeric' });
 }
 
-/* ============================================================
-   7 · ANSICHT KÖRPER
-   ============================================================ */
-
-function renderBody(){
-  const person = pers();
-  const ms = myMasse();
-  const heute = dkey(new Date());
-
-  /* Kontrollpunkte */
-  let kp = '';
-  if(S.start){
-    kp = '<h2>Kontrollpunkte</h2>' + KONTROLL.map(k => {
-      const d = kontrollDate(k);
-      const faellig = daysBetween(heute, d) <= 0;
-      const gemessen = ms.some(m => Math.abs(daysBetween(m.date, d)) <= 3);
-      const foto = !!S.fotos[S.profile+'|'+k.w];
-      return '<div class="item"><div class="txt">'+
-        '<div class="t1">'+esc(k.l)+' <span class="small muted">· '+esc(dShort(d))+'</span></div>'+
-        '<div class="t2">'+(faellig
-          ? (gemessen?'Umfänge ✓':'Umfänge offen') + ' · ' + (foto?'Fotos ✓':'Fotos offen')
-          : 'noch nicht fällig')+'</div></div>'+
-        (faellig ? '<button class="chev" data-foto="'+k.w+'">'+(foto?'Fotos ✓':'Fotos erledigt')+'</button>' : '')+
-      '</div>';
-    }).join('');
-  }
-
-  /* Vergleich Start gegen aktuell */
-  let verg = '';
-  if(ms.length >= 2){
-    const jetzt = ms[0], start = ms[ms.length-1];
-    const rows = MASSE.map(f => {
-      const a = num(start[f.k]), b = num(jetzt[f.k]);
-      if(a == null || b == null) return '';
-      const d = b - a;
-      const cls = Math.abs(d) < 0.25 ? '' : (d > 0 ? 'up' : 'dn');
-      return '<tr><td>'+esc(f.l)+'<div class="small muted">Ziel: '+esc(f.ziel[person])+'</div></td>'+
-             '<td class="r">'+fmtNum(a,1)+' → '+fmtNum(b,1)+' cm<div class="small '+cls+'">'+
-             (d>0?'+':'')+fmtNum(d,1)+' cm</div></td></tr>';
-    }).join('');
-    if(rows) verg = '<h2>Erste gegen letzte Messung</h2><table class="t"><tbody>'+rows+'</tbody></table>';
-  }
-
-  const rows = ms.length
-    ? ms.map(m => {
-        const bits = MASSE.filter(f => m[f.k]).map(f => f.l.replace('Oberschenkel ','OS ')+' '+fmtNum(num(m[f.k]),1));
-        return '<div class="item"><div class="txt"><div class="t1">'+esc(dShort(m.date))+'</div>'+
-               '<div class="t2">'+esc(bits.join(' · ') || 'Keine Werte')+'</div></div>'+
-               '<button class="chev" data-medit="'+m.id+'">Bearbeiten</button></div>';
-      }).join('')
-    : '<div class="empty">Noch keine Messung erfasst.</div>';
-
-  return kp +
-    '<h2>Umfänge</h2>'+
-    '<div class="hint" style="margin-bottom:10px">Morgens, nüchtern, entspannter Muskel. Maßband anliegend, nicht einschnüren. Immer dieselbe Person misst, immer dieselben Stellen.</div>'+
-    '<button class="btn btn-primary btn-block" data-act="newmass">+ Messung eintragen</button>'+
-    verg +
-    '<h2>Verlauf</h2>'+ rows;
+function eintragZeile(e){
+  return '<button class="item itemb" data-detail="'+e.id+'"><span class="txt">'+
+    '<span class="t1">'+esc(e.cat)+'</span>'+
+    '<span class="t2">'+esc(relDatum(e.date)+' · '+entrySub(e))+'</span></span>'+
+    '<span class="chev">›</span></button>';
 }
 
-/* ============================================================
-   8 · ANSICHT PLAN
-   ============================================================ */
-
-function renderPlan(){
-  const person = pers();
+function wocheKarte(){
   const heute = dkey(new Date());
-  const w = weekOf(heute);
+  const wk = laufendeWoche(heute);
+  const liste = meineWoche();
+  if(!liste.length){
+    return '<div class="hero" style="margin-top:20px"><div class="hero-t">Deine Woche ist leer</div>'+
+      '<div class="cmeta">Leg fest, welche Trainings du jede Woche machen willst — aus Vorlagen, eigenen oder dem bisherigen Plan.</div>'+
+      '<button class="btn btn-primary btn-block btn-lg" data-act="wochewahl">Woche zusammenstellen</button></div>';
+  }
 
-  let h = '<h2>Zeitraum</h2>';
-  if(S.start){
-    const blk = w >= 1 && w <= 12 ? blockOf(w) : null;
-    h += '<div class="card"><div class="ctitle">'+
-      (w === 0 ? 'Start am '+esc(dShort(S.start)) :
-       w > 12  ? 'Abgeschlossen' : 'Woche '+w+' von 12 · '+esc(blk.name))+'</div>'+
-      '<div class="cmeta">'+(blk ? esc(blk.note) : 'Woche 1 beginnt am '+esc(dShort(S.start)))+'</div>'+
-      '<button class="btn btn-sm" data-act="setstart" style="margin-top:10px">Startdatum ändern</button></div>';
+  const done = {};
+  myEntries().filter(e => e.date >= wk.von && e.date <= wk.bis && e.planId)
+             .forEach(e => { if(!done[e.planId] || e.date > done[e.planId]) done[e.planId] = e.date; });
+  const offen = liste.filter(x => !done[x.id]);
+  const fertig = liste.length - offen.length;
+
+  const label = 'Diese Woche';
+
+  let h = '<div class="week"><div class="spread">'+
+      '<span class="tagline" style="margin:0">'+esc(label)+'</span>'+
+      '<span class="small muted">'+fertig+' von '+liste.length+' erledigt</span></div>'+
+    '<div class="bar g"><i style="width:'+(liste.length ? Math.round(fertig/liste.length*100) : 0)+'%"></i></div></div>';
+
+  const next = offen[0];
+  if(next){
+    h += '<div class="hero"><div class="tagline">Als Nächstes</div>'+
+      '<div class="hero-t">'+esc(next.name)+'</div>'+
+      '<div class="cmeta">'+esc(woMeta(next))+'</div>'+
+      '<button class="btn btn-primary btn-block btn-lg" data-act="startwo" data-id="'+next.id+'">Training starten</button>'+
+    '</div>';
   }else{
-    h += '<div class="card accent"><div class="ctitle">Noch kein Startdatum</div>'+
-      '<div class="cmeta" style="margin-bottom:10px">Ohne Startdatum gibt es keine Wochen, keine Progressionsvorschläge und keine Kontrollpunkte.</div>'+
-      '<button class="btn btn-primary" data-act="setstart">Startdatum festlegen</button></div>';
+    h += '<div class="hero"><div class="hero-t">Woche geschafft</div>'+
+      '<div class="cmeta">Alle '+liste.length+' Einheiten erledigt. Ab Montag geht es von vorn los.</div></div>';
   }
 
-  /* Wochenvariante */
-  h += '<h2>Trainingswoche</h2>'+
-    '<div class="profiles" style="margin-bottom:10px">'+
-      '<button data-act="modus" data-m="4" aria-pressed="'+(S.modus==='4')+'">4 Einheiten</button>'+
-      '<button data-act="modus" data-m="3" aria-pressed="'+(S.modus==='3')+'">3 Einheiten</button>'+
-    '</div>'+
-    '<div class="hint" style="margin-bottom:12px">'+(S.modus === '4'
-      ? 'Vier kürzere Einheiten, keine über 60 Minuten. Oberkörper auf zwei eigene Tage verteilt.'
-      : 'Drei längere Einheiten mit 70–80 Minuten. Der Oberkörper hängt an den Beintagen mit dran.')+
-      ' Umschalten ändert nur die Zusammenstellung — alle bisherigen Einträge und die Progression bleiben erhalten.</div>';
-
-  h += '<table class="t"><tbody>'+
-    wocheEinheiten(person).map((x,i) => {
-      const fest = dayOf(x);
-      return '<tr><td style="width:28px">'+(i+1)+'.</td><td>'+esc(x.name)+
-        (x.short ? ' <span class="muted">· '+esc(x.short)+'</span>' : '')+
-        '<div class="small muted">'+exFor(x, person).length+' Übungen · ca. '+dauerVon(x, person)+' Min.'+
-        (fest != null ? ' · fest am '+wdName(fest) : '')+'</div></td></tr>';
-    }).join('')+
-    '</tbody></table>'+
-    '<div class="hint">Keine festen Wochentage — ihr arbeitet die Liste in der Woche ab. '+
-    'Die Reihenfolge ist ein Vorschlag; zwischen den beiden Beintagen sollte mindestens ein Tag liegen. '+
-    'Wer eine Einheit doch fest auf einen Tag legen will, macht das unten unter Anpassen.</div>';
-
-  const termine = PLAN.workouts.filter(x => x.kind !== 'strength' && x.for.includes(person));
-  if(termine.length){
-    h += '<h3 class="sub">Feste Termine</h3><table class="t"><tbody>'+
-      termine.map(x => '<tr><td>'+esc(x.name)+'<div class="small muted">'+esc(x.sub)+'</div></td>'+
-        '<td class="r small">'+(dayOf(x) != null ? esc(wdName(dayOf(x))) : 'frei')+'</td></tr>').join('')+
-      '</tbody></table>';
+  const rest = liste.filter(x => x !== next);
+  if(rest.length){
+    h += '<div class="list">'+rest.map(x => {
+      const d = done[x.id];
+      return '<div class="worow'+(d?' fertig':'')+'"><div class="wotxt">'+
+        '<div class="won">'+(d?'✓ ':'')+esc(x.name)+'</div>'+
+        '<div class="wom">'+esc(d ? 'erledigt · '+relDatum(d) : woMeta(x))+'</div></div>'+
+        (d ? '' : '<button class="btn btn-sm" data-act="startwo" data-id="'+x.id+'">Starten</button>')+
+      '</div>';
+    }).join('')+'</div>';
   }
-
-  /* Trainings */
-  h += '<h2>Trainings</h2>';
-  PLAN.workouts.filter(x => (!x.modus || x.modus.indexOf(S.modus) >= 0) && x.for.includes(person)).forEach(x => {
-    h += '<div class="card"><div class="spread"><div class="ctitle">'+esc(x.name)+
-         (dayOf(x) != null ? ' · '+esc(wdName(dayOf(x))) : '')+'</div>'+
-         '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'">Anpassen</button></div>'+
-         '<div class="cmeta">'+esc(x.sub)+'</div>'+
-         (x.note ? '<div class="cmeta" style="margin-top:6px">'+esc(x.note)+'</div>' : '');
-    if(x.kind !== 'strength'){ h += '</div>'; return; }
-    const ex = exFor(x, person);
-    h += '<div class="small muted" style="margin:10px 0 4px">Aufwärmen</div>'+
-         '<div class="small">'+esc(x.warmup.join(' · '))+'</div>'+
-         '<table class="t" style="margin-top:12px"><tbody>'+
-         ex.map((e,i) => {
-            const st = e.start && e.start[person];
-            const stTxt = st ? (st[0]===st[1] ? fmtNum(st[0],1) : fmtNum(st[0],1)+'–'+fmtNum(st[1],1)) +
-                               (e.unit === 'kgSeite' ? ' kg je Hantel' : e.unit === 'kgZusatz' ? ' kg Zusatz' : ' kg')
-                            : (e.noWeight ? '–' : 'Woche 1 herantasten');
-            return '<tr><td>'+(i+1)+'. '+esc(e.n)+
-              (e.tag ? '<div class="small" style="color:var(--accent)">'+esc(e.tag)+'</div>' : '')+
-              '<div class="small muted">'+e.sets+' × '+repTxt(e)+' · Pause '+esc(e.rest)+'</div></td>'+
-              '<td class="r small">'+esc(stTxt)+'</td></tr>';
-         }).join('')+
-         '</tbody></table></div>';
-  });
-
-  /* Zusatz-Trainings */
-  h += '<h2>Zusatz-Trainings</h2>'+
-    '<div class="hint" style="margin-bottom:12px">Kein fester Wochentag. Im Kalender über „+ Eintragen" an jedem Tag nutzbar — '+
-    'oder unter Anpassen fest auf einen Tag legen. Progression, Verlauf und Auswertung laufen genauso mit wie beim Plan.</div>';
-  ['Gym','Zuhause'].forEach(ort => {
-    const list = EXTRA.filter(x => x.ort === ort && x.for.includes(person));
-    if(!list.length) return;
-    h += '<div class="sec-title">'+ort+'</div>';
-    list.forEach(x => {
-      const ex = exFor(x, person);
-      h += '<details class="card det"><summary><strong>'+esc(x.name)+'</strong>'+
-        '<span class="cmeta"> · '+ex.length+' Übungen</span></summary>'+
-        (x.note ? '<div class="cmeta" style="margin-top:8px">'+esc(x.note)+'</div>' : '')+
-        '<table class="t" style="margin-top:10px"><tbody>'+
-        ex.map((e,i) => '<tr><td>'+(i+1)+'. '+esc(e.n)+
-          (e.tag ? '<div class="small" style="color:var(--accent)">'+esc(e.tag)+'</div>' : '')+
-          '<div class="small muted">'+e.sets+' × '+repTxt(e)+' · Pause '+esc(e.rest)+'</div></td></tr>').join('')+
-        '</tbody></table>'+
-        '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'" style="margin-top:10px">Anpassen</button>'+
-        '</details>';
-    });
-  });
-
-  /* Eigene Trainings aus Textdateien — nur für das gewählte Profil */
-  const eigene = myImported();
-  h += '<h2>Eigene Trainings</h2>'+
-    '<div class="hint" style="margin-bottom:12px">Aus einer Textdatei übernommen, nur für '+esc(nameOf(S.profile))+'. '+
-    'Zählen nicht zur Wochenliste — im Kalender über „+ Eintragen" unter „Importiert" nutzbar. '+
-    'Progression und Verlauf laufen wie beim Plan, gleiche Übungsnamen setzen die bisherige Historie fort.</div>'+
-    '<button class="btn btn-block" data-act="txtimport" style="margin-bottom:12px">+ Trainings aus Textdatei</button>';
-  const gruppen = [];
-  eigene.forEach(x => { if(gruppen.indexOf(x.plan || '') < 0) gruppen.push(x.plan || ''); });
-  gruppen.forEach(g => {
-    if(g || gruppen.length > 1) h += '<div class="sec-title">'+esc(g || 'Einzeltrainings')+'</div>';
-    eigene.filter(x => (x.plan || '') === g).forEach(x => {
-      const ex = exFor(x, person);
-      h += '<details class="card det"><summary><strong>'+esc(x.name)+'</strong>'+
-        '<span class="cmeta"> · '+ex.length+' Übungen</span></summary>'+
-        (x.warmup.length ? '<div class="small" style="margin-top:8px"><span class="muted">Aufwärmen:</span> '+esc(x.warmup.join(' · '))+'</div>' : '')+
-        (x.note ? '<div class="cmeta" style="margin-top:8px">'+esc(x.note)+'</div>' : '')+
-        '<table class="t" style="margin-top:10px"><tbody>'+
-        ex.map((e,i) => '<tr><td>'+(i+1)+'. '+esc(e.n)+
-          '<div class="small muted">'+e.sets+' × '+repTxt(e)+' · Pause '+esc(e.rest)+'</div></td></tr>').join('')+
-        '</tbody></table>'+
-        '<div class="small muted" style="margin-top:8px">Importiert am '+esc(dShort(x.added))+(x.src ? ' aus '+esc(x.src) : '')+'</div>'+
-        '<div style="display:flex;gap:16px;margin-top:10px">'+
-          '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'">Anpassen</button>'+
-          '<button class="btn-danger btn-sm" data-act="impdel" data-id="'+x.id+'">Löschen</button>'+
-        '</div></details>';
-    });
-  });
-
-  /* Progression */
-  h += '<h2>Wie die Gewichte steigen</h2>'+
-    '<div class="card"><div class="cmeta">Doppelprogression: erst Wiederholungen hochschrauben, dann Gewicht erhöhen und wieder unten anfangen. '+
-    'Die App rechnet das aus deinem Log aus und schlägt jede Woche Gewicht und Wiederholungen vor.</div>'+
-    '<table class="t" style="margin-top:12px"><thead><tr><th>Übungstyp</th><th class="r">Schritt</th></tr></thead><tbody>'+
-    Object.keys(PLAN.steps).map(k => '<tr><td>'+esc(PLAN.steps[k].label)+'</td>'+
-      '<td class="r">+'+fmtNum(PLAN.steps[k][person],1)+' kg</td></tr>').join('')+
-    '</tbody></table>'+
-    '<div class="hint">Stagniert eine Übung zwei Wochen, senkt der Vorschlag das Gewicht um 10 %. Das betrifft meist nur eine Übung, nicht das Programm.</div></div>';
-
-  /* Blöcke */
-  h += '<h2>Blöcke</h2><table class="t"><tbody>'+
-    PLAN.blocks.map(b => '<tr><td style="width:30%">'+(b.from===b.to?'Woche '+b.from:'Woche '+b.from+'–'+b.to)+
-      '<div class="small muted">'+esc(b.name)+'</div></td><td class="small">'+esc(b.note)+'</td></tr>').join('')+
-    '</tbody></table>';
-
-  /* Messen */
-  h += '<h2>Was gemessen wird</h2><table class="t"><thead><tr><th>Maß</th><th class="r">Ziel</th></tr></thead><tbody>'+
-    MASSE.map(f => '<tr><td>'+esc(f.l)+'<div class="small muted">'+esc(f.wo)+'</div></td>'+
-      '<td class="r">'+esc(f.ziel[person])+'</td></tr>').join('')+
-    '</tbody></table>'+
-    '<div class="hint">Körperfettwaagen und BMI werden bewusst nicht erfasst — beide sind bei Krafttraining nicht aussagekräftig.</div>'+
-    (person === 'sie'
-      ? '<div class="card" style="margin-top:12px"><div class="cmeta">Der Zyklus verschiebt das Gewicht in der zweiten Hälfte oft um 1–2 kg nach oben. Die Auswertung vergleicht deshalb immer mit dem Durchschnitt von vor vier Wochen, nicht mit der Vorwoche.</div></div>'
-      : '');
-
-  h += '<h2>Woran es meistens scheitert</h2>'+
-    '<div class="card"><div class="ctitle">1 · Fehlende Progression</div>'+
-    '<div class="cmeta">Immer dasselbe Gewicht heißt kein Reiz heißt kein Ergebnis. Deshalb wird jede Einheit hier festgehalten — ohne Aufzeichnung trainiert man unbewusst monatelang mit demselben Gewicht.</div></div>'+
-    '<div class="card"><div class="ctitle">2 · Fehlende Konstanz</div>'+
-    '<div class="cmeta">24 geplante Beineinheiten in zwölf Wochen. Wer 20 schafft, bekommt praktisch das volle Ergebnis. Wer nach drei Wochen aussetzt und neu startet, bleibt dauerhaft in der Phase, in der noch nichts sichtbar ist.<br><br>'+
-    'Wenn ein Tag eng wird: Kurzversion mit den ersten zwei bis drei Übungen statt Ausfall. Beim Essen dasselbe.</div></div>';
-
-  h += '<div class="foot"><button class="btn-ghost" data-act="export">Daten sichern</button>'+
-       '<button class="btn-ghost" data-act="import">Sicherung einlesen</button>'+
-       '<button class="btn-ghost" data-act="restore">Automatische Sicherungen</button></div>'+
-       '<div class="hint" style="margin-top:10px">App-Version '+esc(VERSION)+
-       '<br>Zeigt die Version nach einem Update noch die alte Nummer, einmal die Seite neu laden.</div>';
   return h;
 }
 
-/* ============================================================
-   8b · ANSICHT ESSEN
-   ============================================================ */
-
-function renderEssen(){
-  const person = pers();
-  const n = NUT[person];
+function renderHeute(){
   const heute = dkey(new Date());
-  const sumK = n.tag.reduce((a,x)=>a+x.kcal,0), sumP = n.tag.reduce((a,x)=>a+x.p,0);
-  let tage = 0;
-  for(let i=0;i<7;i++) if(S.essen[S.profile+'|'+addDays(heute,-i)]) tage++;
+  let h = speicherKarte() + offenesTrainingKarte() + wocheKarte();
 
-  let h = '<h2>Zielwerte '+esc(nameOf(S.profile))+'</h2>'+
-    '<div class="stats">'+
-      '<div class="stat"><div class="v">'+fmtNum(n.kcal,0)+'</div><div class="k">kcal pro Tag</div></div>'+
-      '<div class="stat"><div class="v">'+n.protein+' g</div><div class="k">Protein</div></div>'+
-      '<div class="stat"><div class="v">'+esc(n.fett)+'</div><div class="k">Fett</div></div>'+
-      '<div class="stat"><div class="v">'+esc(n.kh)+'</div><div class="k">Kohlenhydrate</div></div>'+
-    '</div>'+
-    '<div class="hint" style="margin-top:8px"><strong>'+esc(n.ziel)+'.</strong> '+esc(n.warum)+'</div>';
-
-  h += '<div class="card" style="margin-top:16px">'+
-    '<div class="spread"><strong>'+tage+' von 7 Tagen eingehalten</strong>'+
-      '<span class="small muted">letzte Woche</span></div>'+
-    '<div class="bar g"><i style="width:'+Math.round(tage/7*100)+'%"></i></div>'+
-    '<div class="chk" style="border-top:1px solid var(--line);margin-top:10px">'+
-      '<input type="checkbox" id="essen2" '+(S.essen[S.profile+'|'+heute]?'checked':'')+' data-act="essen">'+
-      '<label for="essen2">Heute eingehalten</label></div>'+
-    '<div class="hint">80 % Umsetzung über zwölf Wochen schlägt 100 % über drei.</div></div>';
-
-  h += '<h2>Beispieltag</h2><table class="t"><tbody>'+
-    n.tag.map(x => '<tr><td>'+esc(x.t)+'<div class="small muted">'+esc(x.i)+'</div></td>'+
-      '<td class="r small">'+x.kcal+' kcal<div class="muted">'+x.p+' g P</div></td></tr>').join('')+
-    '<tr><td><strong>Summe</strong><div class="small muted">Zielwert '+fmtNum(n.kcal,0)+' kcal · '+n.protein+' g Protein</div></td>'+
-    '<td class="r"><strong>'+fmtNum(sumK,0)+' kcal</strong><div class="small muted">'+sumP+' g P</div></td></tr>'+
-    '</tbody></table>'+
-    (person === 'er'
-      ? '<div class="hint">Der Beispieltag liegt etwas über dem Zielwert. Wenn 3.200 kcal schwer zu essen sind: Milch statt Wasser, mehr Öl und Nüsse, Trockenfrüchte. Flüssige Kalorien sind der einfachste Hebel.</div>'
-      : '<div class="hint">Der letzte Punkt ist optional — ohne ihn liegt der Tag bei 2.190 kcal und 119 g Protein.</div>');
-
-  h += '<h2>Mahlzeiten-Ideen</h2>'+
-    '<div class="hint" style="margin-bottom:12px">28 Vorschläge aus dem Wochenplan, nach Mahlzeit sortiert. '+
-    'Der Wochentag dahinter ist nur die Herkunft — frei kombinierbar.</div>';
-  MEALS.forEach(m => {
-    h += '<details class="card det"><summary><strong>'+esc(m.k)+'</strong>'+
-      '<span class="cmeta"> · '+m.l.length+' Ideen</span></summary>'+
-      (m.sub ? '<div class="cmeta" style="margin-top:6px">'+esc(m.sub)+'</div>' : '')+
-      '<table class="t" style="margin-top:10px"><tbody>'+
-      m.l.map((x,i) => '<tr><td>'+esc(x)+'<div class="small muted">'+esc(MEAL_TAGE[i])+'</div></td></tr>').join('')+
-      '</tbody></table></details>';
+  /* Feste Termine, die heute anstehen (Volleyball) */
+  planToday(heute, pers()).filter(x => x.kind !== 'strength' && !inWoche(x.id)).forEach(x => {
+    const erledigt = entriesOn(heute).some(e => e.planId === x.id);
+    h += '<div class="worow"><div class="wotxt"><div class="won">'+(erledigt?'✓ ':'')+esc(x.name)+'</div>'+
+      '<div class="wom">Heute · '+esc(x.sub)+'</div></div>'+
+      (erledigt ? '' : '<button class="btn btn-sm" data-act="startwo" data-id="'+x.id+'">Eintragen</button>')+'</div>';
   });
 
-  h += '<h2>Trinken</h2><div class="card"><div class="cmeta">'+
-    '<strong>2,5–4 Liter Wasser am Tag.</strong> An Trainings- und Volleyballtagen eher am oberen Ende. '+
-    'Zu wenig Flüssigkeit kostet spürbar Leistung in den schweren Sätzen.</div></div>';
+  h += '<button class="btn btn-block" data-act="new" style="margin-top:16px">Anderes Training eintragen</button>';
 
-  h += '<h2>Anpassung an den Kontrollpunkten</h2>'+
-    '<div class="card"><div class="cmeta">'+esc(n.check)+'</div></div>';
-
-  h += '<h2>Protein zur Orientierung</h2><table class="t"><tbody>'+
-    PROTEIN.map(r => '<tr><td>'+esc(r[0])+'<span class="small muted"> · '+esc(r[1])+'</span></td>'+
-      '<td class="r">'+esc(r[2])+'</td></tr>').join('')+
-    '</tbody></table>'+
-    '<div class="hint">In jeder Hauptmahlzeit 30–40 g Protein. Damit ist das Tagesziel fast automatisch erreicht.</div>';
-
-  h += '<h2>Warum diese Verteilung</h2><div class="card"><div class="cmeta">'+
-    'Protein bei 1,8–2,0 g/kg entscheidet über Muskelerhalt und -aufbau. Alles darüber bringt keinen Zusatznutzen.<br><br>'+
-    'Fett nicht unter '+(person === 'sie' ? '60 g' : '70 g')+' — der Hormonhaushalt hängt daran.<br><br>'+
-    'Kohlenhydrate füllen den Rest. Sie sind der Treibstoff für die schweren Sätze und damit der Grund, warum das Training überhaupt greift. Größerer Anteil rund um die Einheiten.'+
-    '</div></div>';
-
-  h += '<h2>Timing</h2><div class="card"><div class="cmeta">'+
-    'Wichtig ist die Tagesmenge, nicht die Uhrzeit. Zwei Dinge helfen trotzdem: 1–2 Stunden vor dem Training eine kohlenhydratbetonte Mahlzeit — der Unterschied bei schweren Sätzen ist merkbar. Und Protein über 3–5 Mahlzeiten verteilen statt in einer großen Portion.'+
-    '</div></div>';
-
-  h += '<h2>Schlaf</h2><div class="card"><div class="cmeta">'+
-    '<strong>7–9 Stunden.</strong> Im Ausgangsplan nicht erwähnt, für Muskelaufbau aber ein größerer Hebel als Kreatin, Whey und Vitamin D zusammen. Bei Trainingsende um 22 Uhr am Montag eine reale Frage.'+
-    '</div></div>';
-
-  h += '<h2>Supplements</h2><table class="t"><tbody>'+
-    '<tr><td>Kreatin Monohydrat<div class="small muted">3–5 g täglich, Tageszeit egal. Wirkt bei beiden.'+
-      (person === 'sie' ? ' In der ersten Woche eventuell 0,5–1 kg mehr auf der Waage durch Wasser im Muskel — kein Fett.' : '')+
-      '</div></td><td class="r small">sinnvoll</td></tr>'+
-    '<tr><td>Whey<div class="small muted">nur aus Bequemlichkeit, wenn die Proteinmenge über Lebensmittel nicht zusammenkommt</div></td><td class="r small">optional</td></tr>'+
-    '<tr><td>Vitamin D<div class="small muted">im Winter, 1.000–2.000 IE</div></td><td class="r small">sinnvoll</td></tr>'+
-    '<tr><td class="muted">Fatburner, BCAA, Detox, Anti-Cellulite<div class="small muted">bringt nichts</div></td><td class="r small muted">nein</td></tr>'+
-    '</tbody></table>';
-
-  h += '<h2>Was keinen Effekt hat</h2><div class="card"><div class="cmeta">'+
-    'Gezielte Ernährung für einzelne Körperzonen existiert nicht — kein Lebensmittel beeinflusst, wo Fett abgebaut wird. '+
-    'Kohlenhydrate am Abend machen nicht dick. Low Carb ist für dieses Ziel kontraproduktiv, weil genau die schweren Sätze darunter leiden.'+
-    '</div></div>';
-
+  const letzte = myEntries().slice().sort((a,b) => a.date < b.date ? 1 : -1).slice(0, 3);
+  if(letzte.length) h += '<h2>Zuletzt</h2>' + letzte.map(eintragZeile).join('');
   return h;
 }
 
-function repTxt(e){
-  const [lo,hi] = e.reps;
-  const r = lo === hi ? String(lo) : lo+'–'+hi;
-  if(e.time) return r+' Sek.';
-  if(e.perLeg) return r+' pro Bein';
-  if(e.perSide) return r+' pro Seite';
-  return r;
-}
-
 /* ============================================================
-   9 · ANSICHT AUSWERTUNG
+   7 · ANSICHT FORTSCHRITT
    ============================================================ */
+
+let alleZeigen = false;
 
 function avgWeight(endKey, days){
   const from = addDays(endKey, -(days-1));
   const vals = S.gewicht.filter(g => g.profile === S.profile && g.date >= from && g.date <= endKey)
                         .map(g => num(g.kg)).filter(v => v != null);
   return vals.length ? { v: vals.reduce((a,b)=>a+b,0)/vals.length, n: vals.length } : null;
-}
-
-function renderDash(){
-  const person = pers();
-  const heute = dkey(new Date());
-  const es = myEntries();
-  let h = '';
-
-  /* Plan-Fortschritt */
-  if(S.start){
-    const w = Math.min(Math.max(weekOf(heute),0), PLAN.weeks);
-    const bein = es.filter(e => e.planId === 'ukA' || e.planId === 'ukB').length;
-    h += '<h2>Der Plan</h2><div class="card">'+
-      '<div class="spread"><strong>Woche '+w+' von 12</strong><span class="small muted">'+
-        (blockOf(w) ? esc(blockOf(w).name) : '')+'</span></div>'+
-      '<div class="bar"><i style="width:'+Math.round(w/12*100)+'%"></i></div>'+
-      '<div class="spread" style="margin-top:14px"><strong>Beineinheiten '+bein+' von 24</strong>'+
-        '<span class="small muted">Schwelle 20</span></div>'+
-      '<div class="bar g"><i style="width:'+Math.min(100,Math.round(bein/24*100))+'%"></i></div>'+
-      '<div class="hint">Wer 20 der 24 Einheiten schafft, bekommt praktisch das volle Ergebnis.</div>'+
-    '</div>';
-  }
-
-  /* Kontrollpunkt fällig? */
-  h += kontrollKarte();
-
-  /* Gewicht */
-  const now7 = avgWeight(heute, 7);
-  const vor4 = avgWeight(addDays(heute,-28), 7);
-  h += '<h2>Gewicht</h2>';
-  if(!now7){
-    h += '<div class="empty">Noch kein Gewicht erfasst — Feld auf der Kalender-Seite.</div>';
-  }else{
-    let sub = '';
-    if(vor4){
-      const d = now7.v - vor4.v, rate = d/4;
-      sub = '<div class="small muted" style="margin-top:4px">'+
-        (d>0?'+':'')+fmtNum(d,1)+' kg gegenüber dem Schnitt vor vier Wochen'+
-        (person === 'er' ? ' · '+(rate>0?'+':'')+fmtNum(rate,2)+' kg pro Woche' : '')+'</div>';
-    }else{
-      sub = '<div class="small muted" style="margin-top:4px">Vergleichswert von vor vier Wochen fehlt noch.</div>';
-    }
-    h += '<div style="font-size:26px;font-weight:600">'+fmtNum(now7.v,1)+' kg</div>'+
-         '<div class="small muted">7-Tage-Durchschnitt aus '+now7.n+' Messung'+(now7.n===1?'':'en')+'</div>'+ sub +
-         gewichtChart();
-  }
-
-  /* Umfänge */
-  const ms = myMasse();
-  h += '<h2>Umfänge</h2>';
-  if(ms.length < 2){
-    h += '<div class="empty">Zwei Messungen nötig für einen Vergleich.</div>';
-  }else{
-    const jetzt = ms[0], start = ms[ms.length-1];
-    const rows = MASSE.map(f => {
-      const a = num(start[f.k]), b = num(jetzt[f.k]);
-      if(a == null || b == null) return '';
-      const d = b - a;
-      const cls = Math.abs(d) < 0.25 ? 'muted' : (d > 0 ? 'up' : 'dn');
-      return '<tr><td>'+esc(f.l)+'<div class="small muted">Ziel '+esc(f.ziel[person])+'</div></td>'+
-             '<td class="r">'+(d>0?'+':'')+fmtNum(d,1)+' cm<div class="small '+cls+'">'+fmtNum(a,1)+' → '+fmtNum(b,1)+'</div></td></tr>';
-    }).join('');
-    h += '<table class="t"><tbody>'+rows+'</tbody></table>'+ zielHinweis(person, start, jetzt);
-  }
-
-  /* Trainingsleistung */
-  h += '<h2>Trainingsleistung</h2>';
-  const kern = person === 'sie'
-    ? [['ukA','Hip Thrust Langhantel'],['ukB','Kniebeuge Langhantel'],['ukB','Abduktion Maschine']]
-    : [['ukB','Kniebeuge Langhantel'],['ukA','Hip Thrust Langhantel'],['okEr','Bankdrücken'],['okEr','Klimmzüge']];
-  const lrows = kern.map(([pid,name]) => {
-    const hist = lastSessions(S.profile, pid, name, 99);
-    if(hist.length < 2) return '';
-    const f = hist[hist.length-1], l = hist[0];
-    const fw = num((f.b.sets[0]||{}).weight), lw = num((l.b.sets[0]||{}).weight);
-    if(fw == null || lw == null || fw === 0) return '';
-    const pct = (lw-fw)/fw*100;
-    return '<tr><td>'+esc(name)+'<div class="small muted">'+dShort(f.date)+' → '+dShort(l.date)+'</div></td>'+
-           '<td class="r">'+fmtNum(fw,1)+' → '+fmtNum(lw,1)+' kg<div class="small '+(pct>=0?'up':'dn')+'">'+
-           (pct>=0?'+':'')+fmtNum(pct,0)+' %</div></td></tr>';
-  }).join('');
-  h += lrows
-    ? '<table class="t"><tbody>'+lrows+'</tbody></table>'+
-      '<div class="hint">'+(person === 'sie'
-        ? 'Erwartung über zwölf Wochen: +40–60 % beim Hip Thrust, +30–50 % bei der Kniebeuge.'
-        : 'Erwartung über zwölf Wochen mit Trainingsvorgeschichte: +15–25 %.')+'</div>'
-    : '<div class="empty">Ab der zweiten Einheit je Übung.</div>';
-
-  /* Einheiten und Ernährung */
-  const monPrefix = heute.slice(0,7);
-  const month = es.filter(e => e.date.startsWith(monPrefix));
-  const km = month.filter(e => e.kind === 'cardio').reduce((a,e)=> a + (num(e.distance)||0), 0);
-  const vol = month.reduce((a,e)=> a + volume(e), 0);
-  const wkStart = addDays(heute,-6);
-  let essenTage = 0;
-  for(let i=0;i<7;i++) if(S.essen[S.profile+'|'+addDays(wkStart,i)]) essenTage++;
-
-  h += '<h2>Dieser Monat</h2><div class="stats">'+
-    '<div class="stat"><div class="v">'+month.length+'</div><div class="k">Einheiten</div></div>'+
-    '<div class="stat"><div class="v">'+fmtNum(vol,0)+'</div><div class="k">kg bewegt</div></div>'+
-    '<div class="stat"><div class="v">'+fmtNum(km,1)+'</div><div class="k">km Cardio</div></div>'+
-    '<div class="stat"><div class="v">'+essenTage+'/7</div><div class="k">Ernährung, letzte 7 Tage</div></div>'+
-    '</div><div class="hint">80 % Umsetzung über zwölf Wochen schlägt 100 % über drei.</div>';
-
-  /* Übung nachschlagen */
-  const namen = {};
-  es.forEach(e => (e.blocks||[]).forEach(b => { if(b.exercise) namen[b.exercise] = true; }));
-  const exList = Object.keys(namen).sort((a,b) => a.localeCompare(b,'de'));
-  if(exList.length){
-    h += '<h2>Übung nachschlagen</h2>'+
-      '<div class="field"><select id="ex-pick" data-chg="expick">'+
-        '<option value="">Übung wählen …</option>'+
-        exList.map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+
-      '</select><div class="hint">Zeigt alle Einheiten mit dieser Übung, dazu die Entwicklung vom ersten bis zum letzten Mal.</div></div>';
-  }
-
-  /* Alle Einheiten */
-  const alle = es.slice().sort((a,b) => a.date < b.date ? 1 : -1);
-  h += '<h2>Alle Einheiten</h2>';
-  if(!alle.length){
-    h += '<div class="empty">Noch keine Einträge.</div>';
-  }else{
-    let letzterMonat = '';
-    h += alle.map(e => {
-      const monat = fromKey(e.date).toLocaleDateString('de-DE',{ month:'long', year:'numeric' });
-      const kopf = monat !== letzterMonat ? '<div class="sec-title">'+esc(monat)+'</div>' : '';
-      letzterMonat = monat;
-      return kopf+'<button class="item itemb" data-detail="'+e.id+'"><span class="txt">'+
-        '<span class="t1">'+esc(e.cat)+'</span>'+
-        '<span class="t2">'+esc(dShort(e.date)+' · '+entrySub(e))+'</span></span>'+
-        '<span class="chev">ansehen ›</span></button>';
-    }).join('');
-    h += '<div class="hint">Antippen zeigt jede Übung mit allen Sätzen und Gewichten.</div>';
-  }
-
-  return h;
-}
-
-function zielHinweis(person, start, jetzt){
-  const d = k => (num(jetzt[k]) != null && num(start[k]) != null) ? num(jetzt[k]) - num(start[k]) : null;
-  if(person === 'sie'){
-    const po = d('po'), ta = d('taille');
-    if(po == null || ta == null) return '';
-    const ok = po >= -0.5 && ta <= 0.5;
-    return '<div class="card" style="margin-top:12px"><div class="ctitle">'+(ok ? 'Auf Kurs' : 'Noch nicht im Zielbild')+'</div>'+
-      '<div class="cmeta">Die entscheidende Kombination ist Po gleich oder größer bei kleinerer Taille. '+
-      'Aktuell Po '+(po>0?'+':'')+fmtNum(po,1)+' cm, Taille '+(ta>0?'+':'')+fmtNum(ta,1)+' cm. '+
-      'Das ist die messbare Version von „straffer" — und sie kann eintreten, während die Waage stillsteht.</div></div>';
-  }
-  const ta = d('taille'), br = d('brust'), os = d('oberL');
-  if(ta == null) return '';
-  const warn = ta > 1.5;
-  return '<div class="card" style="margin-top:12px"><div class="ctitle">'+(warn ? 'Taille wächst mit' : 'Verhältnis passt')+'</div>'+
-    '<div class="cmeta">Brust, Oberschenkel und Arm sollen steigen, die Taille konstant bleiben. '+
-    'Aktuell Taille '+(ta>0?'+':'')+fmtNum(ta,1)+' cm'+
-    (br!=null?', Brust '+(br>0?'+':'')+fmtNum(br,1)+' cm':'')+
-    (os!=null?', Oberschenkel '+(os>0?'+':'')+fmtNum(os,1)+' cm':'')+'. '+
-    (warn ? 'Wenn die Taille mitwächst, ist der Überschuss zu groß.' : '')+'</div></div>';
-}
-
-function kontrollKarte(){
-  if(!S.start) return '';
-  const heute = dkey(new Date());
-  const w = weekOf(heute);
-  const k = KONTROLL.find(x => x.w > 0 && x.w === w);
-  if(!k) return '';
-  const person = pers();
-  const now7 = avgWeight(heute, 7), vor4 = avgWeight(addDays(heute,-28), 7);
-  let txt = '';
-  if(k.w === 4 || k.w === 8){
-    if(now7 && vor4){
-      const rate = (now7.v - vor4.v)/4;
-      if(person === 'er'){
-        const emp = rate < 0.2 ? '+200 kcal, also rund '+fmtNum(NUT.er.kcal+200,0)+' kcal'
-                  : rate > 0.5 ? '−200 kcal, also rund '+fmtNum(NUT.er.kcal-200,0)+' kcal'
-                  : 'Kalorien so lassen';
-        txt = 'Dein Gewichtsschnitt hat sich in vier Wochen um '+(rate*4>0?'+':'')+fmtNum(rate*4,1)+
-              ' kg verändert, das sind '+(rate>0?'+':'')+fmtNum(rate,2)+' kg pro Woche. Regel aus dem Plan: '+emp+'.';
-      }else{
-        txt = 'Regel aus dem Plan: bewegt sich an Taille und Bauch nichts, 150 kcal runter. '+
-              'Fühlt sich das Training schwach an und die Umfänge schrumpfen überall, 150 kcal drauf. '+
-              'Gewichtsschnitt aktuell '+fmtNum(now7.v,1)+' kg gegenüber '+fmtNum(vor4.v,1)+' kg vor vier Wochen.';
-      }
-    }else{
-      txt = 'Für die Kalorienanpassung fehlen tägliche Gewichtsmessungen über die letzten vier Wochen.';
-    }
-  }else{
-    txt = 'Abschluss: alle Umfänge, Fotos und der Gewichtsdurchschnitt im Vergleich zum Start.';
-  }
-  return '<div class="card accent"><div class="tagline">Kontrollpunkt</div>'+
-         '<div class="ctitle">'+esc(k.l)+'</div><div class="cmeta">'+esc(txt)+'</div></div>';
 }
 
 function gewichtChart(){
@@ -1747,6 +1258,175 @@ function gewichtChart(){
   return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+
     '<polyline class="ln" points="'+xy.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')+'" vector-effect="non-scaling-stroke"/>'+
     '</svg><div class="small muted">'+fmtNum(min,1)+' – '+fmtNum(max,1)+' kg · letzte '+pts.length+' Messungen</div>';
+}
+
+/** Alle Übungen mit Gewicht, die mindestens zweimal gemacht wurden — die häufigsten zuerst */
+function kraftListe(){
+  const namen = {};
+  myEntries().forEach(e => (e.blocks||[]).forEach(b => { if(b.exercise) namen[b.exercise] = true; }));
+  return Object.keys(namen).map(n => {
+    const hist = lastSessions(S.profile, null, n, 999);
+    if(hist.length < 2) return null;
+    const w1 = workWeight(hist[hist.length-1].b.sets), w2 = workWeight(hist[0].b.sets);
+    if(w1 == null || w2 == null || w1 <= 0) return null;
+    return { n:n, anz:hist.length, w1:w1, w2:w2, pct:(w2-w1)/w1*100, unit:hist[0].b.unit };
+  }).filter(Boolean).sort((a,b) => b.anz - a.anz);
+}
+
+function renderFortschritt(){
+  const heute = dkey(new Date());
+  const es = myEntries();
+  const monat = es.filter(e => e.date.startsWith(heute.slice(0,7))).length;
+  const now7 = avgWeight(heute, 7);
+
+  let h = '<div class="stats" style="margin-top:18px">'+
+    '<div class="stat"><div class="v">'+monat+'</div><div class="k">Trainings diesen Monat</div></div>'+
+    '<div class="stat"><div class="v">'+(now7 ? fmtNum(now7.v,1)+' kg' : '–')+'</div><div class="k">Gewicht, 7-Tage-Schnitt</div></div>'+
+  '</div>';
+
+  /* Kraft */
+  const kraft = kraftListe();
+  h += '<h2>Kraft</h2>';
+  if(!kraft.length){
+    h += '<div class="empty">Ab dem zweiten Mal je Übung siehst du hier, wie die Gewichte steigen.</div>';
+  }else{
+    h += kraft.slice(0, 6).map(k =>
+      '<button class="item itemb" data-act="exhist" data-n="'+esc(k.n)+'"><span class="txt">'+
+        '<span class="t1">'+esc(k.n)+'</span>'+
+        '<span class="t2">'+fmtNum(k.w1,1)+' → '+fmtNum(k.w2,1)+' '+esc(wLabelOf(k.unit))+' · '+k.anz+'× gemacht</span></span>'+
+        '<span class="chev '+(k.pct>=0?'up':'dn')+'">'+(k.pct>=0?'+':'')+fmtNum(k.pct,0)+' %</span></button>').join('');
+    if(kraft.length > 6){
+      h += '<div class="field" style="margin-top:10px"><select data-chg="expick"><option value="">Weitere Übung ansehen …</option>'+
+        kraft.slice(6).map(k => k.n).sort((a,b) => a.localeCompare(b,'de'))
+          .map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select></div>';
+    }
+  }
+
+  /* Körpergewicht */
+  const g = S.gewicht.find(x => x.profile === S.profile && x.date === heute);
+  const vor4 = avgWeight(addDays(heute,-28), 7);
+  h += '<h2>Körpergewicht</h2>'+
+    '<div class="inline-w">'+
+      '<div class="field"><label for="gw">Heute, morgens nüchtern (kg)</label>'+
+        '<input id="gw" type="text" inputmode="decimal" value="'+esc(g ? String(g.kg).replace('.',',') : '')+'" placeholder="–"></div>'+
+      '<button class="btn btn-primary" data-act="savegw">'+(g?'Ändern':'Speichern')+'</button>'+
+    '</div>';
+  if(now7 && vor4){
+    const d = now7.v - vor4.v;
+    h += '<div class="small muted" style="margin-top:10px">'+(d>0?'+':'')+fmtNum(d,1)+' kg gegenüber vor vier Wochen</div>';
+  }
+  h += gewichtChart();
+
+  /* Umfänge */
+  const ms = myMasse();
+  h += '<h2>Umfänge</h2>';
+  if(ms.length >= 2){
+    const jetzt = ms[0], start = ms[ms.length-1];
+    const rows = MASSE.map(f => {
+      const a = num(start[f.k]), b = num(jetzt[f.k]);
+      if(a == null || b == null) return '';
+      const d = b - a;
+      return '<tr><td>'+esc(f.l)+'</td><td class="r">'+fmtNum(b,1)+' cm <span class="small muted">'+(d>0?'+':'')+fmtNum(d,1)+'</span></td></tr>';
+    }).join('');
+    if(rows) h += '<table class="t"><tbody>'+rows+'</tbody></table>'+
+      '<div class="hint">Veränderung seit '+esc(dShort(start.date))+'</div>';
+  }else if(ms.length === 1){
+    h += '<div class="hint" style="margin-bottom:10px">Eine Messung vom '+esc(dShort(ms[0].date))+'. Ab der zweiten siehst du die Veränderung.</div>';
+  }
+  h += '<button class="btn btn-block" data-act="newmass" style="margin-top:10px">+ Messung eintragen</button>';
+  if(ms.length){
+    h += '<details class="det-plain"><summary>Alle Messungen ('+ms.length+')</summary>'+
+      ms.map(m => {
+        const bits = MASSE.filter(f => m[f.k]).map(f => f.l.replace('Oberschenkel ','OS ')+' '+fmtNum(num(m[f.k]),1));
+        return '<button class="item itemb" data-medit="'+m.id+'"><span class="txt"><span class="t1">'+esc(dShort(m.date))+'</span>'+
+          '<span class="t2">'+esc(bits.join(' · ') || 'Keine Werte')+'</span></span><span class="chev">›</span></button>';
+      }).join('')+'</details>';
+  }
+
+  /* Alle Trainings */
+  const alle = es.slice().sort((a,b) => a.date < b.date ? 1 : -1);
+  h += '<h2>Alle Trainings</h2>';
+  if(!alle.length){
+    h += '<div class="empty">Noch keine Trainings eingetragen.</div>';
+  }else{
+    const zeig = alleZeigen ? alle : alle.slice(0, 10);
+    h += zeig.map(eintragZeile).join('');
+    if(alle.length > zeig.length)
+      h += '<button class="btn-ghost" data-act="showall">Alle '+alle.length+' anzeigen</button>';
+  }
+  return h;
+}
+
+/* ============================================================
+   8 · ANSICHT MEHR
+   ============================================================ */
+
+function repTxt(e){
+  const [lo,hi] = e.reps;
+  const r = lo === hi ? String(lo) : lo+'–'+hi;
+  if(e.time) return r+' Sek.';
+  if(e.perLeg) return r+' pro Bein';
+  if(e.perSide) return r+' pro Seite';
+  return r;
+}
+
+function woZeile(x, mitLoeschen){
+  const meta = x.kind === 'strength'
+    ? (x.imported && x.ort ? (x.ort === 'Zuhause' ? 'Zuhause · ' : 'Studio · ') : '')+exFor(x, pers()).length+' Übungen'
+    : (x.sub || '');
+  const tag = dayOf(x) != null ? ' · '+wdName(dayOf(x)) : '';
+  return '<div class="item"><div class="txt"><div class="t1">'+esc(x.name)+'</div>'+
+    '<div class="t2">'+esc(meta+tag)+'</div></div>'+
+    '<div style="display:flex;gap:12px;flex:none;align-items:center">'+
+      '<button class="btn btn-sm" data-act="woedit" data-id="'+x.id+'">Anpassen</button></div></div>';
+}
+
+function renderMehr(){
+  const person = pers();
+  const heute = dkey(new Date());
+
+  /* Meine Woche */
+  const woche = meineWoche();
+  let h = '<h2>Meine Woche</h2>'+
+    '<div class="hint" style="margin-bottom:4px">Diese Trainings stehen jede Woche auf der Startseite, in dieser Reihenfolge. Gilt nur für '+esc(nameOf(S.profile))+'.</div>';
+  h += woche.length ? woche.map((x,i) =>
+    '<div class="item"><div class="txt"><div class="t1">'+(i+1)+'. '+esc(x.name)+'</div>'+
+      '<div class="t2">'+esc(woMeta(x))+'</div></div>'+
+      '<div style="display:flex;flex:none;align-items:center">'+
+        '<button class="chev" data-act="wmove" data-d="-1" data-id="'+x.id+'" aria-label="nach oben"'+(i===0?' disabled':'')+'>↑</button>'+
+        '<button class="chev" data-act="wmove" data-d="1" data-id="'+x.id+'" aria-label="nach unten"'+(i===woche.length-1?' disabled':'')+'>↓</button>'+
+        '<button class="chev" data-act="wdel" data-id="'+x.id+'" aria-label="aus der Woche nehmen">✕</button>'+
+      '</div></div>').join('')
+    : '<div class="empty">Noch keine Trainings in deiner Woche.</div>';
+  h += '<button class="btn btn-block" data-act="wochewahl" style="margin-top:10px">Woche zusammenstellen</button>';
+
+  /* Eigene Trainings */
+  const eigene = myImported();
+  h += '<h2>Trainings</h2>'+
+    (eigene.length ? eigene.map(x => woZeile(x, true)).join('')
+                   : '<div class="hint" style="margin-bottom:10px">Aus einer Vorlage wie Push, Pull oder Ganzkörper — oder leer, mit Übungen aus dem Katalog.</div>')+
+    '<button class="btn btn-block" data-act="neutraining" style="margin-top:10px">+ Neues Training</button>'+
+    '<button class="btn-ghost" data-act="txtimport">oder aus einer Textdatei übernehmen</button>';
+
+  /* Bisheriger Plan und Zusatz-Trainings, eingeklappt */
+  h += '<div style="height:12px"></div>';
+  const alt = PLAN.workouts.filter(x => (!x.modus || x.modus.indexOf(S.modus) >= 0) && x.for.includes(person));
+  h += '<details class="det-plain"><summary>Bisheriger Plan ('+alt.length+')</summary>'+alt.map(x => woZeile(x, false)).join('')+'</details>';
+  [['Gym','Zusatz im Studio'],['Zuhause','Zusatz zuhause']].forEach(([ort, titel]) => {
+    const list = EXTRA.filter(x => x.ort === ort && x.for.includes(person));
+    if(list.length) h += '<details class="det-plain"><summary>'+esc(titel)+' ('+list.length+')</summary>'+
+      list.map(x => woZeile(x, false)).join('')+'</details>';
+  });
+
+  /* Einstellungen und Daten */
+  h += '<h2>Daten</h2>'+
+    '<button class="item itemb" data-act="export"><span class="txt"><span class="t1">Daten sichern</span>'+
+      '<span class="t2">Als Datei, auch zum Übertragen auf ein anderes Gerät</span></span><span class="chev">›</span></button>'+
+    '<button class="item itemb" data-act="import"><span class="txt"><span class="t1">Sicherung einlesen</span></span><span class="chev">›</span></button>'+
+    '<button class="item itemb" data-act="restore"><span class="txt"><span class="t1">Automatische Sicherungen</span></span><span class="chev">›</span></button>'+
+    '<button class="item itemb" data-act="manage"><span class="txt"><span class="t1">Cardio und eigene Kategorien</span></span><span class="chev">›</span></button>'+
+    '<div class="hint" style="margin-top:18px">Version '+esc(VERSION)+'</div>';
+  return h;
 }
 
 /* ============================================================
@@ -1843,44 +1523,34 @@ function openWorkout(planId, dateKey, short){
 
 function renderWorkout(){
   const w = wo.w;
-  const week = weekOf(wo.date);
-  const blk = week >= 1 && week <= 12 ? blockOf(week) : null;
   const both = Object.keys(wo.drafts).length > 1;
 
   let h = sheetHead(w.name + (wo.short ? ' · Kurzversion' : ''),
-    w.sub + (blk ? ' · Woche '+week+', '+blk.name : ''));
+    w.short || w.ort || '');
 
   if(both){
     h += '<div class="persw">'+ PROFILES.filter(p => wo.drafts[p.id]).map(p =>
       '<button data-wp="'+p.id+'" aria-pressed="'+(wo.active===p.id)+'">'+esc(p.name)+'</button>').join('') +'</div>';
   }
 
-  h += '<div class="field"><label for="wo-date">Datum</label>'+
-       '<input id="wo-date" type="date" value="'+esc(wo.date)+'" data-chg="wodate">'+
-       (wo.date !== dkey(new Date())
-         ? '<div class="hint">Wird für '+esc(dLabel(wo.date))+' eingetragen.</div>' : '')+
-       '</div>';
+  if(wo.date !== dkey(new Date()))
+    h += '<div class="hint" style="margin:-6px 0 12px">Wird für '+esc(dLabel(wo.date))+' eingetragen.</div>';
 
   if(w.warmup && w.warmup.length){
-    h += '<div class="warmup"><strong>Aufwärmen</strong><ul>'+
-         w.warmup.map(x => '<li>'+esc(x)+'</li>').join('')+'</ul></div>';
+    h += '<details class="warmup"><summary><strong>Aufwärmen</strong> <span class="muted">· '+w.warmup.length+' Punkte</span></summary><ul>'+
+         w.warmup.map(x => '<li>'+esc(x)+'</li>').join('')+'</ul></details>';
   }
-  if(w.id === 'free'){
-    h += '<div class="card"><div class="cmeta">Zusatzeinheit außerhalb des Plans. Übungen unten hinzufügen — '+
-         'wo es frühere Einträge gibt, werden Gewicht und Wiederholungen des letzten Mals angezeigt.</div></div>';
-  }
-
-  if(week === 1) h += '<div class="card"><div class="cmeta">Testwoche: Satz für Satz herantasten, bis sich das Gewicht anfühlt wie „noch 3–4 Wiederholungen möglich". Zu leicht ist jetzt richtig.</div></div>';
-  if(week === 7) h += '<div class="card"><div class="cmeta">Deload: die Vorschläge liegen bei 60 % vom letzten Gewicht. Sätze und Wiederholungen bleiben gleich.</div></div>';
 
   h += '<div id="blocks">'+renderBlocks()+'</div>'+
-       '<button class="btn btn-sm" data-act="addex" style="margin-bottom:14px">+ Übung</button>'+
-       '<div class="field"><label for="f-note">Notiz</label><textarea id="f-note" data-wf="note">'+
-         esc(wo.drafts[wo.active].note||'')+'</textarea></div>'+
-       '<button class="btn btn-primary btn-block" data-act="savewo">Training speichern</button>'+
-       (both ? '<div class="hint" style="text-align:center">Gespeichert wird für beide, sofern Werte eingetragen sind.</div>' : '')+
-       '<div class="hint" style="text-align:center;margin-top:6px">Eingaben werden laufend zwischengespeichert — '+
-       'du kannst die App zwischendurch verlassen.</div>';
+       '<button class="btn btn-sm" data-act="addex" style="margin-bottom:18px">+ Übung</button>'+
+       '<div class="grid2">'+
+         '<div class="field"><label for="wo-date">Datum</label>'+
+           '<input id="wo-date" type="date" value="'+esc(wo.date)+'" data-chg="wodate"></div>'+
+         '<div class="field"><label for="f-note">Notiz</label><input id="f-note" type="text" data-wf="note" value="'+
+           esc(wo.drafts[wo.active].note||'')+'"></div>'+
+       '</div>'+
+       '<button class="btn btn-primary btn-block btn-lg" data-act="savewo" style="margin-top:4px">Training speichern</button>'+
+       (both ? '<div class="hint" style="text-align:center">Gespeichert wird für beide, sofern Werte eingetragen sind.</div>' : '');
 
   openSheet(h);
   woSichern();
@@ -1897,19 +1567,12 @@ function renderBlocks(){
     return '<div class="exblock">'+
       '<div class="exhead"><div><span class="name">'+esc(b.exercise)+'</span></div>'+
         (b.rest ? '<span class="rest">'+esc(b.rest)+'</span>' : '')+'</div>'+
-      (t.reps ? '<div class="ziel">Empfehlung: '+b.sets.length+' × '+t.reps+' '+esc(unitLbl)+
+      (t.reps ? '<div class="ziel">'+b.sets.length+' × '+t.reps+' '+esc(unitLbl)+
                 (zielW && !nw ? ' bei '+esc(zielW) : '')+'</div>' : '')+
-      (t.quelle ? '<div class="letzt">'+esc(t.quelle)+'</div>' : '')+
-      (t.naechst ? '<div class="naechst">↗ '+esc(t.naechst)+'</div>' : '')+
-      (t.warnung ? '<div class="warn">'+esc(t.warnung)+'</div>' : '')+
       (t.verlauf && t.verlauf.length
-        ? '<div class="verlauf"><div class="vh">'+
-          (t.fremd ? 'Dieselbe Übung zuletzt in einem anderen Training' : 'Zuletzt')+'</div>'+
-          t.verlauf.map((v,vi) => '<div class="vr'+(vi?'':' neu')+'">'+
-            '<span class="vd">'+esc(dShort(v.date))+'</span>'+
-            '<span class="vs">'+esc(v.txt)+(v.wo ? ' <span class="vw">'+esc(v.wo)+'</span>' : '')+'</span>'+
-          '</div>').join('')+'</div>'
-        : '')+
+        ? '<div class="letzt">Zuletzt '+esc(relDatum(t.verlauf[0].date))+': '+esc(t.verlauf[0].txt)+'</div>'
+        : (t.quelle ? '<div class="letzt">Erstes Mal — Gewicht herantasten</div>' : ''))+
+      (t.warnung ? '<div class="warn">'+esc(t.warnung)+'</div>' : '')+
       '<div class="setlabels'+(nw?' nw':'')+'"><span></span><span>'+esc(unitLbl)+'</span>'+
         (nw?'':'<span>'+esc(wLbl)+'</span>')+'<span></span></div>'+
       b.sets.map((s,si) =>
@@ -1923,7 +1586,7 @@ function renderBlocks(){
       '<div class="exfoot">'+
         '<button class="btn btn-sm" data-act="addset" data-b="'+bi+'">+ Satz</button>'+
         (t.reps ? '<button class="btn btn-sm" data-act="allziel" data-b="'+bi+'">alle = '+t.reps+'</button>' : '')+
-        '<button class="btn-danger btn-sm" data-act="delex" data-b="'+bi+'">Übung raus</button>'+
+        '<button class="btn-danger btn-sm" data-act="delex" data-b="'+bi+'" style="margin-left:auto">Übung raus</button>'+
       '</div></div>';
   }).join('');
 }
@@ -1955,16 +1618,16 @@ function saveWorkout(){
 function allCats(){
   const out = [];
   PLAN.workouts.filter(w => (!w.modus || w.modus.indexOf(S.modus) >= 0) && w.for.includes(pers()))
-    .forEach(w => out.push({ id:'plan:'+w.id, name:w.name, sub:w.sub, group:'Aus dem Plan' }));
+    .forEach(w => out.push({ id:'plan:'+w.id, name:w.name, sub:w.short || w.sub, group:'Aus dem Plan' }));
   EXTRA.filter(w => w.for.includes(pers())).forEach(w => out.push({
     id:'plan:'+w.id, name:w.name,
-    sub: exFor(w, pers()).length+' Übungen · '+exFor(w, pers()).slice(0,2).map(x => x.n).join(', ')+' …',
+    sub: exFor(w, pers()).length+' Übungen',
     group: w.ort === 'Gym' ? 'Zusatz · Gym' : 'Zusatz · Zuhause'
   }));
   myImported().forEach(w => {
     const ex = exFor(w, pers());
     out.push({ id:'plan:'+w.id, name:w.name,
-      sub:(w.plan ? w.plan+' · ' : '')+ex.length+' Übungen · '+ex.slice(0,2).map(x => x.n).join(', ')+(ex.length > 2 ? ' …' : ''),
+      sub:(w.ort ? (w.ort === 'Zuhause' ? 'Zuhause · ' : 'Studio · ') : w.plan ? w.plan+' · ' : '')+ex.length+' Übungen',
       group:'Importiert' });
   });
   S.cardio.forEach(c => out.push({ id:'c:'+c.id, name:c.name, kind:'cardio', group:'Cardio' }));
@@ -1975,16 +1638,21 @@ function allCats(){
 
 function openPicker(){
   const cats = allCats();
-  let html = sheetHead('Was hast du gemacht?', dLabel(selDate));
-  ['Aus dem Plan','Zusatz · Gym','Zusatz · Zuhause','Importiert','Cardio','Weitere'].forEach(g => {
-    const items = cats.filter(c => c.group === g);
+  const pick = c => '<button class="pick" data-cat="'+esc(c.id)+'"><div>'+esc(c.name)+'</div>'+
+      (c.sub ? '<div class="p2">'+esc(c.sub)+'</div>' : '')+'</button>';
+  let html = sheetHead('Training eintragen', 'Das Datum lässt sich im nächsten Schritt ändern');
+  const wIds = meineWoche().map(w => 'plan:'+w.id);
+  const woche = wIds.map(id => cats.find(c => c.id === id)).filter(Boolean);
+  const rest = cats.filter(c => wIds.indexOf(c.id) < 0);
+  if(woche.length) html += '<div class="sec-title">Meine Woche</div>'+woche.map(pick).join('');
+  const eigen = rest.filter(c => c.group === 'Importiert');
+  if(eigen.length) html += '<div class="sec-title">Eigene Trainings</div>'+eigen.map(pick).join('');
+  html += '<div style="height:10px"></div>';
+  [['Aus dem Plan','Bisheriger Plan'],['Zusatz · Gym','Zusatz im Studio'],['Zusatz · Zuhause','Zusatz zuhause'],['Cardio','Cardio'],['Weitere','Sonstiges']].forEach(([g, titel]) => {
+    const items = rest.filter(c => c.group === g);
     if(!items.length) return;
-    html += '<div class="sec-title">'+g+'</div>'+ items.map(c =>
-      '<button class="pick" data-cat="'+esc(c.id)+'"><div>'+esc(c.name)+'</div>'+
-      (c.sub ? '<div class="p2">'+esc(c.sub)+'</div>' : '')+'</button>').join('');
+    html += '<details class="det-plain"><summary>'+esc(titel)+'</summary><div style="padding-bottom:6px">'+items.map(pick).join('')+'</div></details>';
   });
-  html += '<button class="btn btn-block" data-act="newcat" style="margin-top:14px">+ Neue Kategorie</button>'+
-          '<button class="btn-ghost" data-act="txtimport" style="margin-top:6px">Trainings aus Textdatei hinzufügen</button>';
   openSheet(html);
 }
 
@@ -2030,7 +1698,6 @@ function saveEntry(){
   }
   const i = S.entries.findIndex(e => e.id === d.id);
   if(i >= 0) S.entries[i] = d; else S.entries.push(d);
-  selDate = d.date; calMonth = fromKey(d.date); calMonth.setDate(1);
   save(); closeSheet(); render(); toast('Gespeichert');
 }
 
@@ -2054,7 +1721,7 @@ function openEditStrengthAus(st){
   openSheet(sheetHead(wo.w.name, dShort(wo.date))+
     '<div id="blocks">'+renderBlocks()+'</div>'+
     '<button class="btn btn-sm" data-act="addex" style="margin-bottom:14px">+ Übung</button>'+
-    '<div class="field"><label for="f-note">Notiz</label><textarea id="f-note" data-wf="note">'+esc(d.note||'')+'</textarea></div>'+
+    '<div class="field"><label for="f-note">Notiz</label><input id="f-note" type="text" data-wf="note" value="'+esc(d.note||'')+'"></div>'+
     '<button class="btn btn-primary btn-block" data-act="saveedit">Speichern</button>'+
     '<button class="btn-danger btn-block" data-act="delentry2" style="margin-top:10px">Eintrag löschen</button>');
   woSichern();
@@ -2419,32 +2086,23 @@ function saveTxtImport(){
   });
   S.imported = (S.imported || []).concat(neu);
   save(); closeSheet(); render();
-  toast((neu.length === 1 ? '1 Training' : neu.length+' Trainings')+' ergänzt — unter „+ Eintragen" → Importiert');
+  toast((neu.length === 1 ? '1 Training' : neu.length+' Trainings')+' ergänzt — unter Mehr → Eigene Trainings');
 }
 
 function deleteImported(id){
   const w = (S.imported || []).find(x => x.id === id);
   if(!w) return;
-  if(!window.confirm('„'+w.name+'" löschen? Bereits eingetragene Einheiten bleiben erhalten.')) return;
+  if(!window.confirm('„'+w.name+'“ für '+nameOf(w.profile)+' löschen? Bereits eingetragene Trainings bleiben erhalten.')) return;
   S.imported = S.imported.filter(x => x.id !== id);
   const key = modKey(w.id, persOf(w.profile));
   delete S.exOff[key]; delete S.exAdd[key]; delete S.exOrder[key]; delete S.days[w.id];
+  if(S.woche && S.woche[w.profile]) S.woche[w.profile] = S.woche[w.profile].filter(x => x !== w.id);
   save(); render(); toast('Training gelöscht');
 }
 
 /* ============================================================
    13 · SONSTIGE DIALOGE
    ============================================================ */
-
-function openStart(){
-  const d = new Date(); const off = (8 - d.getDay()) % 7 || 7;
-  const vorschlag = S.start || addDays(dkey(d), off);
-  openSheet(sheetHead('Startdatum', 'Der erste Tag von Woche 1')+
-    '<div class="field"><label for="st">Woche 1 beginnt am</label>'+
-      '<input id="st" type="date" value="'+esc(vorschlag)+'"></div>'+
-    '<div class="hint" style="margin-bottom:14px">Am besten ein Montag. Daraus ergeben sich Wochenzählung, Deload in Woche 7 und die Kontrollpunkte.</div>'+
-    '<button class="btn btn-primary btn-block" data-act="savestart">Übernehmen</button>');
-}
 
 /* ============================================================
    11b · VERGANGENE EINHEITEN ANSEHEN
@@ -2514,21 +2172,157 @@ function openExHistory(name){
   openSheet(h);
 }
 
+/* ---- Übungskatalog: Auswahl mit Suche und Muskelgruppen ---- */
+
+let kat = null;   // { ziel:'wo'|'edit', wid, q, g, ort:'Gym'|'Zuhause' }
+
+function openKatalog(ziel, wid){
+  const w = ziel === 'wo' ? wo.w : woById(wid);
+  kat = { ziel:ziel, wid:wid || null, q:'', g:'', ort: w && w.ort === 'Zuhause' ? 'Zuhause' : 'Gym' };
+  renderKatalog();
+}
+
+/** Ort-Umschalter Fitnessstudio / Zuhause, gleiche Optik wie die Personenwahl */
+function ortSchalter(act, aktiv){
+  return '<div class="profiles" style="margin-bottom:12px">'+
+    [['Gym','Fitnessstudio'],['Zuhause','Zuhause']].map(o =>
+      '<button data-act="'+act+'" data-ort="'+o[0]+'" aria-pressed="'+(aktiv === o[0])+'">'+o[1]+'</button>').join('')+
+  '</div>';
+}
+
+/** Übungen, die im Ziel-Training schon drin sind */
+function katVorhanden(){
+  if(kat.ziel === 'wo') return wo.drafts[wo.active].blocks.map(b => b.exercise);
+  return exFor(woById(kat.wid), pers()).map(x => x.n);
+}
+
+function katListe(){
+  const q = kat.q.trim().toLowerCase();
+  const drin = katVorhanden();
+  const list = KATALOG.filter(x =>
+    (kat.ort !== 'Zuhause' || x.home) && (!kat.g || x.g === kat.g) &&
+    (!q || x.n.toLowerCase().indexOf(q) >= 0 || x.g.toLowerCase().indexOf(q) >= 0));
+  if(!list.length) return '<div class="empty">Nichts gefunden'+(kat.ort === 'Zuhause' ? ' für zuhause' : '')+'. Unten kannst du die Übung selbst anlegen.</div>';
+  return list.map(x => {
+    const da = drin.indexOf(x.n) >= 0;
+    return '<button class="item itemb'+(da?' kat-da':'')+'" data-act="katadd" data-n="'+esc(x.n)+'"'+(da?' disabled':'')+'>'+
+      '<span class="txt"><span class="t1">'+esc(x.n)+'</span>'+
+      '<span class="t2">'+esc(x.g)+' · '+x.sets+' × '+esc(repTxt(x))+'</span></span>'+
+      '<span class="chev">'+(da ? '✓' : '+')+'</span></button>';
+  }).join('');
+}
+
+function renderKatalog(){
+  const titel = kat.ziel === 'wo' ? wo.w.name : woById(kat.wid).name;
+  const chips = [['','Alle']].concat(KAT_GRUPPEN.map(g => [g,g]));
+  openSheet('<div class="sheet-head"><div><h3>Übung hinzufügen</h3><div class="s2">'+esc(titel)+'</div></div>'+
+      '<button class="x" data-act="katback" aria-label="Zurück">&times;</button></div>'+
+    ortSchalter('katort', kat.ort)+
+    '<input id="kat-q" type="search" placeholder="Suchen, z. B. Rudern" value="'+esc(kat.q)+'" data-kat="q" autocomplete="off">'+
+    '<div class="chips">'+chips.map(c =>
+      '<button data-act="katg" data-g="'+esc(c[0])+'" aria-pressed="'+(kat.g === c[0])+'">'+esc(c[1])+'</button>').join('')+'</div>'+
+    '<div id="kat-list">'+katListe()+'</div>'+
+    '<button class="btn btn-block" data-act="katown" style="margin-top:14px">Eigene Übung anlegen</button>');
+}
+
+function katZurueck(){
+  const z = kat; kat = null;
+  if(z.ziel === 'wo') renderWorkout(); else openWoEdit(z.wid);
+}
+
+function katHinzufuegen(name){
+  const x = katEx(name); if(!x) return;
+  if(kat.ziel === 'wo'){ openAddEx(katKopie(x)); return; }
+  /* Im Anpassen-Dialog: direkt dauerhaft ergänzen, Katalog bleibt offen für weitere */
+  const wid = kat.wid, key = modKey(wid, pers());
+  if(!allEx(woById(wid), pers()).some(e => e.n === name)) S.exAdd[key] = (S.exAdd[key] || []).concat([katKopie(x)]);
+  if(S.exOff[key]) S.exOff[key] = S.exOff[key].filter(n => n !== name);
+  save();
+  $('#kat-list').innerHTML = katListe();
+  toast('„'+name+'“ hinzugefügt');
+}
+
+/* ---- Woche zusammenstellen ---- */
+
+function openWocheWahl(){
+  const p = pers();
+  const zeile = w => {
+    const drin = inWoche(w.id);
+    return '<button class="item itemb" data-act="wtoggle" data-id="'+w.id+'"><span class="txt">'+
+      '<span class="t1">'+esc(w.name)+'</span><span class="t2">'+esc(woMeta(w))+'</span></span>'+
+      '<span class="chev'+(drin ? ' up' : '')+'">'+(drin ? '✓' : '+')+'</span></button>';
+  };
+  const gruppe = (titel, list) => list.length ? '<div class="sec-title">'+esc(titel)+'</div>'+list.map(zeile).join('') : '';
+  let h = sheetHead('Meine Woche', 'Antippen nimmt ein Training auf oder wieder raus · '+nameOf(S.profile));
+  h += gruppe('Eigene Trainings', myImported());
+  h += '<button class="btn-ghost" data-act="wneu">+ Neues Training erstellen</button>';
+  h += gruppe('Bisheriger Plan', PLAN.workouts.filter(x => (!x.modus || x.modus.indexOf(S.modus) >= 0) && x.for.includes(p)));
+  h += gruppe('Zusatz im Studio', EXTRA.filter(x => x.ort === 'Gym' && x.for.includes(p)));
+  h += gruppe('Zusatz zuhause', EXTRA.filter(x => x.ort === 'Zuhause' && x.for.includes(p)));
+  h += '<button class="btn btn-primary btn-block" data-act="close" style="margin-top:18px">Fertig</button>';
+  const top = $('#sheet').scrollTop;
+  openSheet(h);
+  $('#sheet').scrollTop = top;
+}
+
+/* ---- Neues Training aus Vorlage oder leer ---- */
+
+let nt = { ort:'Gym', beide:true, woche:true };
+function openNeuesTraining(){
+  if($('#nt-both')) nt.beide = $('#nt-both').checked;
+  if($('#nt-woche')) nt.woche = $('#nt-woche').checked;
+  let h = sheetHead('Neues Training', 'Aus einer Vorlage oder leer beginnen');
+  h += ortSchalter('ntort', nt.ort);
+  h += '<div class="chk" style="padding-top:0"><input type="checkbox" id="nt-both"'+(nt.beide ? ' checked' : '')+'>'+
+       '<label for="nt-both">Für Franca und Jonas anlegen</label></div>'+
+       '<div class="chk" style="padding-top:0"><input type="checkbox" id="nt-woche"'+(nt.woche ? ' checked' : '')+'>'+
+       '<label for="nt-woche">In „Meine Woche“ aufnehmen</label></div>';
+  h += '<div class="sec-title">Vorlagen '+(nt.ort === 'Zuhause' ? 'für zuhause' : 'fürs Studio')+'</div>'+
+    VORLAGEN.map((v,i) => v.ort !== nt.ort ? '' :
+    '<button class="pick" data-act="ntvorlage" data-i="'+i+'"><div>'+esc(v.name)+'</div>'+
+    '<div class="p2">'+esc(v.sub)+' · '+v.ex.length+' Übungen</div></button>').join('');
+  h += '<div class="sec-title">Leer beginnen</div>'+
+    '<div class="inline-w"><div class="field"><label for="nt-name">Name</label>'+
+      '<input id="nt-name" type="text" placeholder="z. B. Montag Gym"></div>'+
+    '<button class="btn btn-primary" data-act="ntleer">Anlegen</button></div>';
+  openSheet(h);
+}
+
+function neuesTraining(name, exList, ort){
+  const beide = $('#nt-both') ? $('#nt-both').checked : false;
+  const zurWoche = $('#nt-woche') ? $('#nt-woche').checked : false;
+  const pids = beide ? PROFILES.map(p => p.id) : [S.profile];
+  let meineId = null;
+  pids.forEach(pid => {
+    const taken = (S.imported || []).filter(w => w.profile === pid).map(w => w.name);
+    const w = { id:'imp'+uid(), kind:'strength', imported:true, profile:pid, for:[persOf(pid)],
+      name:txtUnique(name, taken), ort:ort, sub:ort === 'Zuhause' ? 'Eigenes Training · Zuhause' : 'Eigenes Training · Fitnessstudio',
+      plan:'', note:'', warmup:[],
+      src:'', added:dkey(new Date()), ex:exList.map(katKopie) };
+    S.imported = (S.imported || []).concat([w]);
+    if(zurWoche) setWocheFor(pid, wocheIdsFor(pid).concat([w.id]));
+    if(pid === S.profile) meineId = w.id;
+  });
+  save(); render();
+  openWoEdit(meineId);
+  toast(beide ? 'Für beide angelegt' : 'Training angelegt');
+}
+
 /* ---- Training anpassen: Tag verschieben, Übungen tauschen ---- */
 
 function openWoEdit(wid){
   const w = woById(wid), person = pers(), key = modKey(wid, person);
 
   let h = sheetHead(w.name+' anpassen',
-    w.imported ? 'Importiertes Training · gilt nur für '+nameOf(S.profile)
+    w.imported ? 'Eigenes Training · gilt nur für '+nameOf(S.profile)
     : w.kind === 'strength' ? 'Übungen gelten nur für '+nameOf(S.profile)+', der Wochentag für beide.' : w.sub);
 
-  /* Importierte Trainings bleiben ohne festen Tag — nur über „+ Eintragen" */
+  /* Eigene Trainings bleiben ohne festen Tag */
   if(!w.imported) h += '<div class="field"><label for="wd">Wochentag</label>'+
     '<select id="wd" data-chg="setday" data-id="'+wid+'">'+
     '<option value="-1"'+(dayOf(w)==null?' selected':'')+'>kein fester Tag</option>'+
     [1,2,3,4,5,6,0].map(d => '<option value="'+d+'"'+(dayOf(w)===d?' selected':'')+'>'+wdName(d)+'</option>').join('')+
-    '</select><div class="hint">Verschiebt das Training dauerhaft. Für einen einmaligen Tausch reicht es, den Tag im Kalender zu wählen und dort über „+ Eintragen" dieses Training zu erfassen.</div></div>';
+    '</select><div class="hint">Verschiebt das Training dauerhaft. Für einen einmaligen Tausch einfach an dem Tag eintragen.</div></div>';
 
   if(w.kind !== 'strength'){
     openSheet(h + '<button class="btn btn-primary btn-block" data-act="close" style="margin-top:16px">Fertig</button>');
@@ -2550,7 +2344,7 @@ function openWoEdit(wid){
       '<button class="chev" data-act="exoff" data-id="'+wid+'" data-n="'+esc(x.n)+'">raus</button>'+
     '</div></div>').join('') : '<div class="empty">Keine Übungen aktiv.</div>';
 
-  h += '<button class="btn btn-sm" data-act="newex" data-id="'+wid+'" style="margin-top:10px">+ Eigene Übung</button>';
+  h += '<button class="btn btn-block" data-act="katedit" data-id="'+wid+'" style="margin-top:12px">+ Übung hinzufügen</button>';
 
   if(aus.length){
     h += '<div class="sec-title">Rausgenommen</div>'+ aus.map(x =>
@@ -2564,53 +2358,57 @@ function openWoEdit(wid){
 
   h += '<div class="hint" style="margin-top:14px">Bereits erfasste Einträge bleiben unverändert. '+
        'Eine rausgenommene Übung taucht in neuen Trainings nicht mehr auf, ihre Historie bleibt erhalten.</div>'+
-       '<button class="btn btn-primary btn-block" data-act="close" style="margin-top:16px">Fertig</button>';
+       '<button class="btn btn-primary btn-block" data-act="close" style="margin-top:16px">Fertig</button>'+
+       (w.imported ? '<button class="btn-danger btn-block" data-act="impdel" data-id="'+w.id+'" style="margin-top:10px">Training löschen</button>' : '');
   openSheet(h);
 }
 
 /** Übung aus dem laufenden Training heraus hinzufügen oder ersetzen */
-function openAddEx(){
+let addPre = null;   // Vorbelegung aus dem Katalog
+function openAddEx(pre){
+  addPre = pre || null;
+  const v = pre || { n:'', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine' };
+  const uSel = v.noWeight ? 'none' : (v.unit || '');
   const w = wo.w, person = persOf(wo.active);
   const aktiv = wo.drafts[wo.active].blocks.map(b => b.exercise);
   const frei = w.id === 'free';
   const beide = Object.keys(wo.drafts).length > 1;
 
-  openSheet('<div class="sheet-head"><div><h3>Übung hinzufügen</h3>'+
+  const opt = (val, txt) => '<option value="'+val+'"'+(uSel === val ? ' selected' : '')+'>'+txt+'</option>';
+  openSheet('<div class="sheet-head"><div><h3>'+(pre ? esc(pre.n) : 'Eigene Übung')+'</h3>'+
       '<div class="s2">'+esc(w.name)+'</div></div>'+
       '<button class="x" data-act="backwo" aria-label="Zurück zum Training">&times;</button></div>'+
-    '<div class="field"><label for="ae-n">Name</label>'+
-      '<input id="ae-n" type="text" placeholder="z. B. Cable Kickback"></div>'+
+    '<div class="field"'+(pre ? ' hidden' : '')+'><label for="ae-n">Name</label>'+
+      '<input id="ae-n" type="text" placeholder="z. B. Cable Kickback" value="'+esc(v.n)+'"></div>'+
     '<div class="grid2">'+
       '<div class="field"><label for="ae-s">Sätze</label>'+
-        '<input id="ae-s" type="text" inputmode="numeric" value="3"></div>'+
-      '<div class="field"><label for="ae-r">Wdh. von–bis</label>'+
-        '<input id="ae-r" type="text" value="8-12"></div>'+
+        '<input id="ae-s" type="text" inputmode="numeric" value="'+v.sets+'"></div>'+
+      '<div class="field"><label for="ae-r">'+(v.time ? 'Sek.' : 'Wdh.')+' von–bis</label>'+
+        '<input id="ae-r" type="text" value="'+v.reps[0]+'-'+v.reps[1]+'"></div>'+
     '</div>'+
     '<div class="field"><label for="ae-p">Pause</label>'+
-      '<input id="ae-p" type="text" value="90 Sek."></div>'+
+      '<input id="ae-p" type="text" value="'+esc(v.rest)+'"></div>'+
     '<div class="field"><label for="ae-st">Steigerungsschritt</label><select id="ae-st">'+
-      Object.keys(PLAN.steps).map(k => '<option value="'+k+'"'+(k==='maschine'?' selected':'')+'>'+
+      Object.keys(PLAN.steps).map(k => '<option value="'+k+'"'+(k===(v.step||'iso')?' selected':'')+'>'+
         esc(PLAN.steps[k].label)+' · +'+fmtNum(PLAN.steps[k][person],1)+' kg</option>').join('')+
-    '</select><div class="hint">Bestimmt, um wie viel die App das Gewicht erhöht, sobald das obere Ende des Wdh.-Bereichs steht.</div></div>'+
+    '</select></div>'+
     '<div class="field"><label for="ae-u">Gewichtsangabe</label><select id="ae-u">'+
-      '<option value="">in kg</option>'+
-      '<option value="kgSeite">Kurzhanteln · kg je Hantel</option>'+
-      '<option value="kgZusatz">Körpergewicht + Zusatz</option>'+
-      '<option value="none">ohne Gewicht</option>'+
+      opt('', 'in kg')+opt('kgSeite', 'Kurzhanteln · kg je Hantel')+
+      opt('kgZusatz', 'Körpergewicht + Zusatz')+opt('none', 'ohne Gewicht')+
     '</select></div>'+
     (frei ? '' :
       '<div class="field"><label for="ae-rep">Ersetzt eine Übung</label><select id="ae-rep">'+
         '<option value="">nein — kommt zusätzlich dazu</option>'+
         aktiv.map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+
       '</select><div class="hint">Die ersetzte Übung verschwindet aus der Einheit. Ihre bisherigen Einträge bleiben erhalten.</div></div>')+
-    '<div class="chk"><input type="checkbox" id="ae-leg"><label for="ae-leg">Wiederholungen pro Bein bzw. Seite</label></div>'+
+    '<div class="chk"><input type="checkbox" id="ae-leg"'+(v.perLeg || v.perSide ? ' checked' : '')+'><label for="ae-leg">Wiederholungen pro Bein bzw. Seite</label></div>'+
     (frei ? '' :
       '<div class="chk"><input type="checkbox" id="ae-keep" checked>'+
       '<label for="ae-keep">Dauerhaft — auch beim nächsten Mal dabei</label></div>')+
     (beide && !frei ? '<div class="chk"><input type="checkbox" id="ae-both" checked>'+
       '<label for="ae-both">Für Franca und Jonas übernehmen</label></div>' : '')+
     '<button class="btn btn-primary btn-block" data-act="saveaddex" style="margin-top:12px">Hinzufügen</button>');
-  setTimeout(()=> $('#ae-n') && $('#ae-n').focus(), 50);
+  if(!pre) setTimeout(()=> $('#ae-n') && $('#ae-n').focus(), 50);
 }
 
 function openNewEx(wid){
@@ -2656,7 +2454,7 @@ function openNewCat(){
 }
 
 function openManage(){
-  let h = sheetHead('Eigene Kategorien', 'Die Plan-Trainings sind fest und stehen im Plan-Tab.');
+  let h = sheetHead('Cardio und eigene Kategorien');
   h += '<div class="sec-title">Cardio</div>'+
     (S.cardio.map(c => '<div class="item"><div class="txt"><div class="t1">'+esc(c.name)+'</div></div>'+
       '<button class="btn-danger btn-sm" data-act="delcardio" data-id="'+c.id+'">Löschen</button></div>').join('') || '<div class="empty">Keine.</div>')+
@@ -2761,13 +2559,11 @@ function importData(){
    ============================================================ */
 
 $('#main').addEventListener('click', e => {
-  const t = e.target.closest('[data-act],[data-day],[data-mon],[data-edit],[data-detail],[data-medit],[data-foto]');
+  const t = e.target.closest('[data-act],[data-edit],[data-detail],[data-medit]');
   if(!t) return;
 
   if(t.dataset.detail){ openEntryDetail(t.dataset.detail); return; }
 
-  if(t.dataset.mon){ calMonth.setMonth(calMonth.getMonth() + Number(t.dataset.mon)); render(); return; }
-  if(t.dataset.day){ selDate = t.dataset.day; render(); return; }
   if(t.dataset.edit){
     const en = S.entries.find(x => x.id === t.dataset.edit);
     if(!en) return;
@@ -2778,12 +2574,6 @@ $('#main').addEventListener('click', e => {
   if(t.dataset.medit){
     const m = S.masse.find(x => x.id === t.dataset.medit);
     if(m) openMass(JSON.parse(JSON.stringify(m)), false);
-    return;
-  }
-  if(t.dataset.foto){
-    const k = S.profile+'|'+t.dataset.foto;
-    S.fotos[k] = !S.fotos[k]; save(); render();
-    toast(S.fotos[k] ? 'Fotos als erledigt markiert' : 'Haken entfernt');
     return;
   }
 
@@ -2801,8 +2591,9 @@ $('#main').addEventListener('click', e => {
       toast(S.modus === '4' ? 'Vier Einheiten pro Woche' : 'Drei Einheiten pro Woche');
       break;
     case 'woedit': openWoEdit(t.dataset.id); break;
-    case 'setstart': openStart(); break;
-    case 'new': openPicker(); break;
+    case 'new': selDate = dkey(new Date()); openPicker(); break;
+    case 'exhist': openExHistory(t.dataset.n); break;
+    case 'showall': alleZeigen = true; render(); break;
     case 'manage': openManage(); break;
     case 'newmass': openMass({ id:uid(), profile:S.profile, date:dkey(new Date()) }, true); break;
     case 'savegw': {
@@ -2822,6 +2613,18 @@ $('#main').addEventListener('click', e => {
     case 'export': openExport(); break;
     case 'import': openImport(); break;
     case 'txtimport': openTxtImport('', ''); break;
+    case 'neutraining': openNeuesTraining(); break;
+    case 'wochewahl': openWocheWahl(); break;
+    case 'wdel': {
+      setWocheFor(S.profile, wocheIdsFor(S.profile).filter(x => x !== t.dataset.id));
+      save(); render(); break;
+    }
+    case 'wmove': {
+      const l = meineWoche().map(w => w.id), i = l.indexOf(t.dataset.id), j = i + Number(t.dataset.d);
+      if(i < 0 || j < 0 || j >= l.length) break;
+      l.splice(j, 0, l.splice(i, 1)[0]);
+      setWocheFor(S.profile, l); save(); render(); break;
+    }
     case 'impdel': deleteImported(t.dataset.id); break;
   }
 });
@@ -2832,11 +2635,6 @@ $('#main').addEventListener('change', e => {
     e.target.value = '';
     if(n) openExHistory(n);
     return;
-  }
-  if(e.target.dataset.act === 'essen'){
-    const k = S.profile+'|'+dkey(new Date());
-    if(e.target.checked) S.essen[k] = true; else delete S.essen[k];
-    save(); render();
   }
 });
 
@@ -2876,7 +2674,28 @@ $('#sheet').addEventListener('click', e => {
       if(z) d.blocks[bi].sets.forEach(s => s.reps = String(z));
       $('#blocks').innerHTML = renderBlocks(); break;
     }
-    case 'addex': openAddEx(); break;
+    case 'addex': openKatalog('wo'); break;
+    case 'katedit': openKatalog('edit', t.dataset.id); break;
+    case 'katback': katZurueck(); break;
+    case 'katg': kat.g = t.dataset.g; renderKatalog(); break;
+    case 'katadd': katHinzufuegen(t.dataset.n); break;
+    case 'katown': { const z = kat; kat = null; if(z.ziel === 'wo') openAddEx(null); else openNewEx(z.wid); break; }
+    case 'ntvorlage': { const v = VORLAGEN[Number(t.dataset.i)]; neuesTraining(v.name, v.ex.map(katEx).filter(Boolean), v.ort); break; }
+    case 'ntort': nt.ort = t.dataset.ort; openNeuesTraining(); break;
+    case 'wtoggle': {
+      const id = t.dataset.id, l = wocheIdsFor(S.profile);
+      setWocheFor(S.profile, l.indexOf(id) >= 0 ? l.filter(x => x !== id) : l.concat([id]));
+      save(); render(); openWocheWahl(); break;
+    }
+    case 'wneu': openNeuesTraining(); break;
+    case 'impdel': closeSheet(); deleteImported(t.dataset.id); break;
+    case 'katort': kat.ort = t.dataset.ort; kat.g = ''; renderKatalog(); break;
+    case 'ntleer': {
+      const n = $('#nt-name').value.trim();
+      if(!n){ toast('Bitte einen Namen eingeben'); $('#nt-name').focus(); return; }
+      neuesTraining(n, [], nt.ort);
+      break;
+    }
     case 'backwo': renderWorkout(); break;
     case 'saveaddex': {
       const w = wo.w;
@@ -2889,7 +2708,8 @@ $('#sheet').addEventListener('click', e => {
       const u = $('#ae-u').value;
       const ex = { n:name, sets:sets, reps:reps, rest:$('#ae-p').value.trim() || '90 Sek.', step:$('#ae-st').value };
       if(u === 'none') ex.noWeight = true; else if(u) ex.unit = u;
-      if($('#ae-leg').checked) ex.perLeg = true;
+      if($('#ae-leg').checked){ if(addPre && addPre.perSide) ex.perSide = true; else ex.perLeg = true; }
+      if(addPre && addPre.n === name && addPre.time) ex.time = true;
 
       const ersetzt = $('#ae-rep').value;
       const dauerhaft = $('#ae-keep') ? $('#ae-keep').checked : false;
@@ -2958,19 +2778,12 @@ $('#sheet').addEventListener('click', e => {
       }
       break;
 
-    case 'savestart': {
-      const v = $('#st').value;
-      if(!v){ toast('Bitte ein Datum wählen'); return; }
-      S.start = v; save(); closeSheet(); render(); toast('Startdatum gesetzt');
-      break;
-    }
-
     case 'newcat': openNewCat(); break;
     case 'savecat': {
       const name = $('#nc-name').value.trim();
       if(!name){ toast('Bitte einen Namen eingeben'); return; }
       S.custom.push({ id:uid(), name:name, kind:$('#nc-kind').value });
-      save(); openPicker(); toast('Kategorie angelegt');
+      save(); openManage(); toast('Kategorie angelegt');
       break;
     }
     case 'addcardio': {
@@ -3117,6 +2930,7 @@ $('#sheet').addEventListener('change', e => {
 
 $('#sheet').addEventListener('input', e => {
   const el = e.target;
+  if(el.dataset.kat === 'q' && kat){ kat.q = el.value; $('#kat-list').innerHTML = katListe(); return; }
   if(el.dataset.sf && wo){
     wo.drafts[wo.active].blocks[Number(el.dataset.b)].sets[Number(el.dataset.s)][el.dataset.sf] = el.value;
     woSichern();
@@ -3136,10 +2950,8 @@ $('#sheet').addEventListener('input', e => {
 function render(){
   renderHead();
   $('#main').innerHTML =
-    view === 'cal'  ? renderCal()  :
-    view === 'body' ? renderBody() :
-    view === 'plan' ? renderPlan() :
-    view === 'essen'? renderEssen() : renderDash();
+    view === 'fortschritt' ? renderFortschritt() :
+    view === 'mehr'        ? renderMehr()        : renderHeute();
 }
 
 render();

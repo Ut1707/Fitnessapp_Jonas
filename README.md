@@ -1,153 +1,70 @@
-# 12 Wochen — Jonas & Franca
+# Training — Jonas & Franca
 
-Trainings-Tracker für den 12-Wochen-Plan. Eine einzelne HTML-Datei, keine
+Trainings-Tracker mit selbst zusammengestellter Trainingswoche. Eine einzelne HTML-Datei, keine
 Installation, keine Cloud. Alle Daten liegen im `localStorage` des Geräts.
 
-**Öffnen:** `index.html` doppelklicken.
-
-**Start von Woche 1:** 01.08.2026, änderbar im Plan-Tab.
-
-## Trainingswoche
-
-Umschaltbar im Plan-Tab, jederzeit und ohne Datenverlust:
-
-| | 4 Einheiten (Standard) | 3 Einheiten |
-|---|---|---|
-| 1 | Unterkörper B · Kniebeuge-Tag · ~60 Min | Unterkörper B · ~75 Min |
-| 2 | Oberkörper 1 · Grundübungen · ~50 Min | Oberkörper · ~70 Min |
-| 3 | Unterkörper A · Hip-Thrust-Tag · ~55 Min | Unterkörper A · ~70 Min |
-| 4 | Oberkörper 2 · Ergänzung · ~55 Min | — |
-
-Im Vierer mischt jeder Oberkörpertag Zug und Druck, damit Rücken, Brust und
-Schultern zweimal pro Woche drankommen. Das Wochenvolumen ist in beiden
-Varianten gleich, nur anders verteilt.
-
-**Keine festen Wochentage.** Der Kalender zeigt die Einheiten der laufenden
-Woche als Liste mit Erledigt-Stand — abgearbeitet wird, wann es passt. Die
-Reihenfolge ist ein Vorschlag; zwischen den beiden Beintagen sollte ein Tag
-liegen. Wer eine Einheit doch fest auf einen Wochentag legen will, macht das
-unter Plan → Anpassen. Volleyball und Beach bleiben auf Montag und Donnerstag.
-
-Beim Wechsel zwischen Vierer und Dreier bleiben Gewichte und Progression
-erhalten — die App findet die Übung auch in einem anderen Training wieder.
+**Online:** https://ut1707.github.io/Fitnessapp_Jonas/ · **Lokal:** `index.html` doppelklicken.
 
 ## Aufbau
 
-Oben zwischen `Franca` und `Jonas` umschalten — getrennte Datensätze, beide
-sehen die Einträge des anderen.
+Oben zwischen `Franca` und `Jonas` umschalten, unten drei Tabs:
 
-- **Kalender** — die Einheiten dieser Woche mit Erledigt-Stand, Gewicht des Tages,
-  Ernährungshaken, Monatsübersicht
-- **Körper** — Umfänge nach Plan, Kontrollpunkte Start / Woche 4 / 8 / 12
-- **Plan** — Wochenaufteilung, alle Trainings, Progression, Blöcke, Messanleitung
-- **Essen** — Zielwerte, Beispieltag, Proteinliste, Timing, Schlaf, Supplements,
-  Anpassungsregel und der Tageshaken mit Wochenquote
-- **Auswertung** — Wochenfortschritt, Beineinheiten, Gewichtstrend, Umfänge, Kraftzuwachs
+- **Heute** — das nächste offene Training aus „Meine Woche“ mit einem Knopf zum Starten,
+  darunter die restlichen Einheiten, „Anderes Training eintragen“ und die letzten drei Einträge
+- **Fortschritt** — Kraftentwicklung je Übung, Körpergewicht, Umfänge, alle Trainings
+- **Mehr** — Meine Woche, eigene Trainings, bisheriger Plan und Zusatz-Trainings, Sicherungen
+
+## Meine Woche
+
+Jede Person stellt sich unter Mehr → `Woche zusammenstellen` selbst zusammen, welche Trainings
+jede Woche anstehen: eigene, Vorlagen, der bisherige Plan oder Zusatz-Trainings. Reihenfolge mit
+↑ ↓, rausnehmen mit ✕. Solange nichts gewählt wurde, gilt der bisherige Plan als Vorschlag.
+Die Woche läuft von Montag bis Sonntag, der Erledigt-Stand setzt sich jeden Montag zurück.
+Neue Trainings landen auf Wunsch direkt in der Woche.
 
 ## Trainingseingabe
 
-Der Plan füllt das Formular vor. Für jede Übung berechnet die App aus dem Log
-das Zielgewicht und die Ziel-Wiederholungen nach Doppelprogression:
+Für jede Übung schlägt die App Sätze, Wiederholungen und Gewicht vor (Doppelprogression):
 
 - alle Sätze erreicht, oberes Ende des Bereichs noch offen → eine Wiederholung mehr
 - oberes Ende erreicht → Gewicht plus Steigerungsschritt, Wiederholungen zurück auf das untere Ende
 - zwei Wochen keine zusätzliche Wiederholung → Hinweis, Vorschlag minus 10 %
-- Woche 7 → automatisch 60 % vom letzten Gewicht (Deload)
-- Woche 1 → keine Vorschläge, stattdessen der Startbereich aus dem Plan
 
-Das Gewicht ist vorbelegt, die Wiederholungen stehen als Vorgabe im Feld —
-`alle = 8` füllt sie mit einem Tipp. Bei gemeinsamen Einheiten schaltet der
-Umschalter oben im Formular zwischen beiden Personen um, gespeichert wird für
-beide getrennt.
+Das Gewicht ist vorbelegt, `alle = 8` füllt die Wiederholungen mit einem Tipp. Darunter steht,
+was beim letzten Mal geschafft wurde. Bei gemeinsamen Einheiten schaltet der Umschalter im
+Formular zwischen beiden Personen um, gespeichert wird für beide getrennt.
 
-## Anpassen
+## Übungskatalog und neue Trainings
 
-Im Plan-Tab hat jedes Training einen `Anpassen`-Knopf:
+107 Übungen, sortiert nach Brust, Rücken, Schultern, Arme, Beine, Po und Rumpf, mit Suche.
+Oben umschalten zwischen **Fitnessstudio** (alle Übungen) und **Zuhause** (42 Übungen ohne Geräte,
+höchstens Rucksack, Wasserflasche, Stuhl oder Miniband). Bei einem Heim-Training steht der
+Katalog automatisch auf Zuhause. Der Katalog öffnet sich überall, wo eine Übung
+dazukommt: im laufenden Training über `+ Übung` und unter Mehr → Anpassen.
+Sätze, Wiederholungen, Pause und Steigerungsschritt sind sinnvoll vorbelegt.
 
-- **Wochentag ändern** — verschiebt das Training dauerhaft
-- **Übungen** — rausnehmen, zurückholen, Reihenfolge ändern, eigene hinzufügen
-  (mit Sätzen, Wiederholungsbereich, Steigerungsschritt und Gewichtsart)
+Mehr → `+ Neues Training` legt ein Training aus einer Vorlage an oder leer zum Selbstbefüllen,
+wahlweise für beide. Auch hier oben Fitnessstudio oder Zuhause:
 
-Übungsänderungen gelten pro Person, der Wochentag für beide. Bereits erfasste
-Einträge bleiben unverändert.
-
-**Zusätzliche Einheiten:** über `+ Eintragen` lässt sich jedes Plan-Training an
-jedem Tag erfassen, dazu `Freies Krafttraining` für Einheiten außerhalb des
-Plans und eigene Cardio-Arten.
+- **Fitnessstudio:** Push, Pull, Beine, Oberkörper, Unterkörper, Ganzkörper A/B, Po-Fokus, Schultern & Arme, Rumpf
+- **Zuhause:** Ganzkörper, Oberkörper, Beine & Po, Po, Bauch, Kurzhantel-Ganzkörper
 
 ## Trainings aus Textdatei
 
-Im Plan-Tab unter **Eigene Trainings** (oder im Kalender unter `+ Eintragen`):
-`+ Trainings aus Textdatei` liest eine `.txt`-Datei oder eingefügten Text.
-Geschrieben wird wie im Notizbuch — eine Überschrift pro Training, darunter eine
-Übung pro Zeile:
-
-    Trainingsplan Sommer
+Mehr → `+ Trainings aus Textdatei` liest eine `.txt`-Datei oder eingefügten Text —
+eine Überschrift pro Training, darunter eine Übung pro Zeile:
 
     Tag 1 – Push
-    Aufwärmen: 5 Min Rudergerät, Bandzug
     - Bankdrücken 4x8-10 Pause 2 Min
     - Seitheben 3 Sätze à 15 Wdh
     - Plank 3x45 Sek
 
-Erkannt werden `4x8-10`, `3 Sätze à 12`, `12 Wdh x 3 Sätze`, Sekunden und Minuten,
-`Pause 90s`, `60kg` und `pro Bein`/`pro Seite`. Eine erste Zeile ohne Übungen wird
-zum Plan-Namen. Vor dem Übernehmen zeigt eine Vorschau, was erkannt wurde und welche
-Zeilen nicht zugeordnet werden konnten. Beispiel: `beispiel-trainings.txt`.
-
-Importierte Trainings gelten nur für die gerade gewählte Person, kommen zu den
-bestehenden dazu und zählen nicht zur Wochenliste — sie stehen unter `+ Eintragen`
-in der Gruppe **Importiert**. Anpassen und Löschen im Plan-Tab; bereits erfasste
-Einheiten bleiben beim Löschen erhalten. Die Sicherung enthält sie mit.
-
-Tests für den Parser: `node --test 'tests/*.test.mjs'`
-
-## Abweichungen vom Ausgangsplan
-
-- Kniebeugen-Tag auf Dienstag, Hip-Thrust-Tag auf Freitag (Erholung nach dem Beach)
-- **Dienstag und Freitag sind für beide identisch** — gleiche Übungen, gleiche
-  Reihenfolge, nur die Gewichte unterscheiden sich
-- Beinstrecker durch Abduktion ersetzt, Hip Thrust 8–12 statt 6–10,
-  Beinbeuger auf 4 Sätze
-- Zug-Block dienstags (Klimmzüge/Latzug, Rudern) und Druck-Block freitags
-  (Bankdrücken, Schulterdrücken) — bringt den Oberkörper bei beiden auf
-  zweimal pro Woche
-- Sie: Donnerstag mit Bizeps, Trizeps und Po-Block am Ende
-- Er: Sonntag ist ein vollwertiger Oberkörpertag statt Bodyweight-Zirkel,
-  mit Schrägbankdrücken für 10 Brustsätze pro Woche
-- Ernährung: bei ihm Kontrolle des Gewichtstrends ab Woche 2, an Volleyballtagen
-  300–400 kcal mehr; Schlaf als eigener Punkt ergänzt
-
-### Wochenvolumen nach den Änderungen
-
-| Muskel | Franca | Jonas |
-|---|---|---|
-| Gesäß | ~17 Sätze, 3× | ~14 Sätze, 2× |
-| Quadrizeps | 13, 2× | 13, 2× |
-| Beinbeuger | 8,5, 2× | 8,5, 2× |
-| Rücken | 12, 2× | 13, 2× |
-| Brust | 6, 2× | 10, 2× |
-| Schultern | 9, 2× | 9, 2× |
+Beispiel: `beispiel-trainings.txt`. Tests für den Parser: `node --test 'tests/*.test.mjs'`
 
 ## Datensicherheit
 
-- **Laufendes Training** wird bei jeder Eingabe zwischengespeichert. Die App
-  darf verlassen, geschlossen oder vom System entladen werden — beim nächsten
-  Start bietet der Kalender „Weitermachen" an.
-- **Automatische Tagessicherung**, die letzten fünf werden behalten. Im
-  Plan-Tab unter „Automatische Sicherungen" einsehbar und zurückholbar.
-- **Beschädigter Speicher** führt nie zu einem stillen Neustart mit leeren
-  Daten: die App greift auf die letzte Sicherung zurück, und wenn es keine
-  gibt, wird das Speichern blockiert und der beschädigte Rohtext aufgehoben.
-- **Jeder Schreibvorgang wird zurückgelesen.** Schlägt er fehl, erscheint eine
-  Warnung statt eines stillen Datenverlusts.
-
-## Sicherung
-
-Im Plan-Tab unten: `Daten sichern` schreibt eine JSON-Datei, `Sicherung einlesen`
-holt sie zurück. Auch der Weg, Daten zwischen Handy und Rechner zu übertragen.
-Ohne Sicherung sind die Daten weg, wenn der Browser-Speicher gelöscht wird.
-
----
-
-`index_alt.html` ist die ursprüngliche App vor dem Umbau.
+- Ein laufendes Training wird bei jeder Eingabe zwischengespeichert; die Startseite bietet „Weitermachen“ an.
+- Jeden Tag eine automatische Sicherung, die letzten fünf werden behalten (Mehr → Automatische Sicherungen).
+- Beschädigter Speicher führt nie zu einem stillen Neustart mit leeren Daten.
+- Mehr → `Daten sichern` schreibt eine JSON-Datei — auch der Weg, Daten zwischen Geräten zu übertragen.
+  Ohne Sicherung sind die Daten weg, wenn der Browser-Speicher gelöscht wird.
