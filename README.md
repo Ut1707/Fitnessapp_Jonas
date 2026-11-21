@@ -34,9 +34,15 @@ Das Gewicht ist vorbelegt, `alle = 8` füllt die Wiederholungen mit einem Tipp. 
 was beim letzten Mal geschafft wurde. Bei gemeinsamen Einheiten schaltet der Umschalter im
 Formular zwischen beiden Personen um, gespeichert wird für beide getrennt.
 
+## Push · Pull · Legs
+
+Fertiger 3er-Split fürs Studio, nach einem Reel von andreasthiemexnn, mit je 3 Sätzen:
+**Push** (Brust, Schultern, Trizeps), **Pull** (Rücken, hintere Schulter, Bizeps; ergänzt um Latzug)
+und **Beine & Core**. Unter Mehr → `Woche zusammenstellen` ganz oben auswählbar.
+
 ## Übungskatalog und neue Trainings
 
-107 Übungen, sortiert nach Brust, Rücken, Schultern, Arme, Beine, Po und Rumpf, mit Suche.
+111 Übungen, sortiert nach Brust, Rücken, Schultern, Arme, Beine, Po und Rumpf, mit Suche.
 Oben umschalten zwischen **Fitnessstudio** (alle Übungen) und **Zuhause** (42 Übungen ohne Geräte,
 höchstens Rucksack, Wasserflasche, Stuhl oder Miniband). Bei einem Heim-Training steht der
 Katalog automatisch auf Zuhause. Der Katalog öffnet sich überall, wo eine Übung

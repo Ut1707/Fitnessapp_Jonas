@@ -393,6 +393,36 @@ const PLAN = {
    ------------------------------------------------------------ */
 
 const EXTRA = [
+  { id:'xPush', kind:'strength', ort:'Gym', ppl:true, name:'Push', sub:'Push-Pull-Legs · Brust, Schultern, Trizeps',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Schrägbankdrücken Maschine', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine' },
+    { n:'Brustpresse', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine' },
+    { n:'Schulterdrücken Maschine', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine' },
+    { n:'Seitheben Maschine', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Trizepsdrücken Seil', sets:3, reps:[10,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Trizepsstrecken über Kopf Kabel', sets:3, reps:[10,15], rest:'60 Sek.', step:'maschine' }
+  ]},
+
+  { id:'xPull', kind:'strength', ort:'Gym', ppl:true, name:'Pull', sub:'Push-Pull-Legs · Rücken, hintere Schulter, Bizeps',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Latzug breit', sets:3, reps:[8,12], rest:'2 Min.', step:'maschine' },
+    { n:'Rudern breit Maschine', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine' },
+    { n:'Rudern Kabel eng', sets:3, reps:[8,12], rest:'90 Sek.', step:'maschine' },
+    { n:'Reverse Flys Maschine', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Bizepscurl Kabel', sets:3, reps:[10,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Hammercurl Kurzhantel', sets:3, reps:[10,12], rest:'60 Sek.', step:'kh', unit:'kgSeite' }
+  ]},
+
+  { id:'xLegs', kind:'strength', ort:'Gym', ppl:true, name:'Beine & Core', sub:'Push-Pull-Legs · Beine, Po, Bauch',
+    for:['sie','er'], warmup:[], ex:[
+    { n:'Beinpresse', sets:3, reps:[8,12], rest:'2 Min.', step:'presse' },
+    { n:'Rumänisches Kreuzheben', sets:3, reps:[8,10], rest:'2 Min.', step:'grund' },
+    { n:'Beinstrecker Maschine', sets:3, reps:[10,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Beinbeuger liegend', sets:3, reps:[10,12], rest:'90 Sek.', step:'maschine' },
+    { n:'Adduktion Maschine', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Crunch Maschine', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' }
+  ]},
+
   { id:'xPoGym', kind:'strength', ort:'Gym', name:'Po', sub:'Zusatz · Gym',
     for:['sie','er'], warmup:[], ex:[
     { n:'Kniebeuge Langhantel', sets:4, reps:[10,12], rest:'2 Min.', step:'grund' },
@@ -484,6 +514,7 @@ const KAT_ROH = {
     'Schrägbankdrücken Langhantel|3|8-10|2 Min.|lh',
     'Schrägbankdrücken Kurzhantel|3|10-12|90 Sek.|kh',
     'Brustpresse|3|10-12|90 Sek.|m',
+    'Schrägbankdrücken Maschine|3|8-12|2 Min.|m',
     'Butterfly Maschine|3|12-15|60 Sek.|m',
     'Cable Fly (mittlere Höhe)|3|12-15|60 Sek.|m',
     'Fliegende Kurzhantel|3|12-15|60 Sek.|kh',
@@ -500,6 +531,7 @@ const KAT_ROH = {
     'Rudern Langhantel|3|8-12|90 Sek.|lh',
     'Rudern Kabel eng|3|8-12|90 Sek.|m',
     'Rudern Maschine|3|10-12|90 Sek.|m',
+    'Rudern breit Maschine|3|8-12|90 Sek.|m',
     'Rudern Kurzhantel einarmig|3|10-12|60 Sek.|kh S',
     'T-Bar-Rudern|3|8-12|90 Sek.|lh',
     'Kreuzheben|3|5-8|3 Min.|lh',
@@ -518,6 +550,7 @@ const KAT_ROH = {
     'Arnold Press|3|10-12|90 Sek.|kh',
     'Seitheben|3|12-15|60 Sek.|kh',
     'Seitheben Kabel|3|12-15|60 Sek.|m S',
+    'Seitheben Maschine|3|12-15|60 Sek.|m',
     'Face Pull|3|12-15|60 Sek.|m',
     'Reverse Flys Maschine|3|12-15|60 Sek.|m',
     'Reverse Flys Kurzhantel|3|12-15|60 Sek.|kh',
@@ -588,6 +621,7 @@ const KAT_ROH = {
     'Pallof Press|3|12-12|45 Sek.|i S',
     'Hanging Leg Raise|3|10-15|60 Sek.|nw',
     'Cable Crunch|3|12-15|60 Sek.|m',
+    'Crunch Maschine|3|12-15|60 Sek.|m',
     'Ab Wheel|3|8-12|60 Sek.|nw',
     'Plank|3|30-60|45 Sek.|nw t H',
     'Seitstütz|3|20-45|45 Sek.|nw t S H',
@@ -696,7 +730,7 @@ const KEY        = 'ff_v2';
 const KEY_WO     = 'ff_wo';       // laufendes, noch nicht gespeichertes Training
 const KEY_BAK    = 'ff_bak';      // automatische Tagessicherungen
 const KEY_RESCUE = 'ff_rescue';   // unlesbarer Stand, zur Rettung aufgehoben
-const VERSION = '2026-11-20 · 17';   // wird bei jeder Änderung hochgezählt
+const VERSION = '2026-11-21 · 18';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
@@ -1535,8 +1569,8 @@ function renderMehr(){
   h += '<div style="height:12px"></div>';
   const alt = PLAN.workouts.filter(x => (!x.modus || x.modus.indexOf(S.modus) >= 0) && x.for.includes(person));
   h += '<details class="det-plain"><summary>Bisheriger Plan ('+alt.length+')</summary>'+alt.map(x => woZeile(x, false)).join('')+'</details>';
-  [['Gym','Zusatz im Studio'],['Zuhause','Zusatz zuhause']].forEach(([ort, titel]) => {
-    const list = EXTRA.filter(x => x.ort === ort && x.for.includes(person));
+  [['PPL','Push · Pull · Legs'],['Gym','Zusatz im Studio'],['Zuhause','Zusatz zuhause']].forEach(([ort, titel]) => {
+    const list = EXTRA.filter(x => (ort === 'PPL' ? x.ppl : !x.ppl && x.ort === ort) && x.for.includes(person));
     if(list.length) h += '<details class="det-plain"><summary>'+esc(titel)+' ('+list.length+')</summary>'+
       list.map(x => woZeile(x, false)).join('')+'</details>';
   });
@@ -1745,7 +1779,7 @@ function allCats(){
   EXTRA.filter(w => w.for.includes(pers())).forEach(w => out.push({
     id:'plan:'+w.id, name:w.name,
     sub: exFor(w, pers()).length+' Übungen',
-    group: w.ort === 'Gym' ? 'Zusatz · Gym' : 'Zusatz · Zuhause'
+    group: w.ppl ? 'PPL' : w.ort === 'Gym' ? 'Zusatz · Gym' : 'Zusatz · Zuhause'
   }));
   myImported().forEach(w => {
     const ex = exFor(w, pers());
@@ -1771,7 +1805,7 @@ function openPicker(){
   const eigen = rest.filter(c => c.group === 'Importiert');
   if(eigen.length) html += '<div class="sec-title">Eigene Trainings</div>'+eigen.map(pick).join('');
   html += '<div style="height:10px"></div>';
-  [['Aus dem Plan','Bisheriger Plan'],['Zusatz · Gym','Zusatz im Studio'],['Zusatz · Zuhause','Zusatz zuhause'],['Cardio','Cardio'],['Weitere','Sonstiges']].forEach(([g, titel]) => {
+  [['PPL','Push · Pull · Legs'],['Aus dem Plan','Bisheriger Plan'],['Zusatz · Gym','Zusatz im Studio'],['Zusatz · Zuhause','Zusatz zuhause'],['Cardio','Cardio'],['Weitere','Sonstiges']].forEach(([g, titel]) => {
     const items = rest.filter(c => c.group === g);
     if(!items.length) return;
     html += '<details class="det-plain"><summary>'+esc(titel)+'</summary><div style="padding-bottom:6px">'+items.map(pick).join('')+'</div></details>';
@@ -2379,8 +2413,9 @@ function openWocheWahl(){
   let h = sheetHead('Meine Woche', 'Antippen nimmt ein Training auf oder wieder raus · '+nameOf(S.profile));
   h += gruppe('Eigene Trainings', myImported());
   h += '<button class="btn-ghost" data-act="wneu">+ Neues Training erstellen</button>';
+  h += gruppe('Push · Pull · Legs', EXTRA.filter(x => x.ppl && x.for.includes(p)));
   h += gruppe('Bisheriger Plan', PLAN.workouts.filter(x => (!x.modus || x.modus.indexOf(S.modus) >= 0) && x.for.includes(p)));
-  h += gruppe('Zusatz im Studio', EXTRA.filter(x => x.ort === 'Gym' && x.for.includes(p)));
+  h += gruppe('Zusatz im Studio', EXTRA.filter(x => !x.ppl && x.ort === 'Gym' && x.for.includes(p)));
   h += gruppe('Zusatz zuhause', EXTRA.filter(x => x.ort === 'Zuhause' && x.for.includes(p)));
   h += '<button class="btn btn-primary btn-block" data-act="close" style="margin-top:18px">Fertig</button>';
   const top = $('#sheet').scrollTop;
