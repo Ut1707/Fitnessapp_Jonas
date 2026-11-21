@@ -40,6 +40,18 @@ Fertiger 3er-Split fürs Studio, nach einem Reel von andreasthiemexnn, mit je 3 
 **Push** (Brust, Schultern, Trizeps), **Pull** (Rücken, hintere Schulter, Bizeps; ergänzt um Latzug)
 und **Beine & Core** (Jonas mit Wadenheben, Franca mit Hip Thrust). Unter Mehr → `Woche zusammenstellen` ganz oben auswählbar.
 
+## HIIT zuhause
+
+Für Tage ohne Gym, auf der Startseite unter „Kein Gym heute?“. Ca. 27 Minuten ohne Geräte:
+2 Min. Aufwärmen, dann 8 Übungen im Zirkel (Kniebeugen, Liegestütze, Ausfallschritte,
+Mountain Climber, Glute Bridge, Burpees, Plank mit Schultertippen, Hampelmann), 3 Runden mit
+1 Min. Rundenpause. Vollbild-Timer mit Countdown, Piepton, Vibration (Android) und Pause.
+
+Sechs Stufen: 30/30 → 35/25 → 40/20 Sekunden Übung/Pause, ab Stufe 4 schwerere Varianten
+(Sprungkniebeugen, Burpees mit Sprung …), dann 45/15 und 50/10. Wer eine Stufe in einer Woche
+zweimal schafft, ist in der nächsten Woche automatisch eine Stufe höher. Nach dem Training
+„Zu leicht“ oder „Zu schwer“ verschiebt die Stufe sofort; von Hand mit − und +.
+
 ## Übungskatalog und neue Trainings
 
 111 Übungen, sortiert nach Brust, Rücken, Schultern, Arme, Beine, Po und Rumpf, mit Suche.

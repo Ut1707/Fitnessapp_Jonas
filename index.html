@@ -145,6 +145,30 @@ button.itemb .chev{align-self:center}
 .mg-bar span{display:block;height:100%;background:var(--accent);border-radius:4px}
 .mg-v{width:28px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
 .tipp{margin-top:14px;padding:12px 14px;background:var(--accent-soft);border-radius:var(--radius);font-size:14px;line-height:1.45}
+/* HIIT */
+.hstufe{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);text-align:center}
+.hstufe .btn{min-width:44px;min-height:44px;font-size:20px}
+.hs-v{font-size:18px;font-weight:600}.hs-k{font-size:13px;color:var(--muted);margin-top:2px}
+.hliste{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.hl{display:flex;gap:12px;padding:9px 14px;border-top:1px solid var(--line);font-size:15px}
+.hl:first-child{border-top:0}.hl span{width:44px;flex:none;color:var(--muted);font-variant-numeric:tabular-nums}
+.hiit{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:var(--bg);
+  padding:calc(14px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom))}
+.hiit.open{display:flex}
+.hiit.h-arbeit{background:var(--accent);color:#fff}
+.hiit.h-arbeit .btn{background:rgba(255,255,255,.18);color:#fff;border-color:transparent}
+.hiit.h-arbeit .btn-primary{background:#fff;color:var(--accent)}
+.hiit.h-arbeit .h-bar{background:rgba(255,255,255,.25)}.hiit.h-arbeit .h-bar span{background:#fff}
+.h-top{display:flex;justify-content:space-between;font-size:14px;opacity:.85;font-variant-numeric:tabular-nums}
+.h-bar{height:6px;border-radius:3px;background:var(--line);margin-top:10px;overflow:hidden}
+.h-bar span{display:block;height:100%;background:var(--accent)}
+.h-mitte{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
+.h-label{font-size:20px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.9}
+.h-zahl{font-size:min(38vw,190px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.h-name{font-size:24px;font-weight:600;margin-top:8px}
+.h-tipp{font-size:15px;opacity:.8;max-width:340px;line-height:1.4;margin-top:4px}
+.h-knoepfe{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:10px;align-items:stretch}
+.h-knoepfe .btn{min-height:56px}
 .chart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .chart .pt{fill:var(--accent)}
 table.t{width:100%;border-collapse:collapse;font-size:14px}
@@ -220,6 +244,7 @@ table.t td.r{text-align:right;white-space:nowrap}
 
 <main class="wrap" id="main"></main>
 <div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+<div class="hiit" id="hiit"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -731,7 +756,7 @@ const KEY        = 'ff_v2';
 const KEY_WO     = 'ff_wo';       // laufendes, noch nicht gespeichertes Training
 const KEY_BAK    = 'ff_bak';      // automatische Tagessicherungen
 const KEY_RESCUE = 'ff_rescue';   // unlesbarer Stand, zur Rettung aufgehoben
-const VERSION = '2026-11-21 · 19';   // wird bei jeder Änderung hochgezählt
+const VERSION = '2026-11-21 · 20';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
@@ -749,6 +774,7 @@ function defaults(){
               {id:'c4',name:'Rudern'}, {id:'c5',name:'Walken'} ],
     custom: [],
     woche: {},            // profilId -> Trainings-IDs „Meine Woche“, in Reihenfolge
+    hiit: {},             // profilId -> { stufe, seit } für HIIT zuhause
     imported: []          // aus Textdateien übernommene Trainings: { id, profile, for, name, plan, ex, … }
   };
 }
@@ -1266,6 +1292,230 @@ function wocheKarte(){
   return h;
 }
 
+/* ============================================================
+   HIIT ZUHAUSE — Intervalltraining ohne Geräte, ca. 28 Min.
+   8 Übungen im Zirkel, 3 Runden. Steigerung über 6 Stufen:
+   erst mehr Arbeit/weniger Pause, dann schwerere Varianten.
+   ============================================================ */
+
+const HIIT_UEB = [
+  { n:'Kniebeugen',             s:'Sprungkniebeugen',             tipp:'Hüfte nach hinten, Knie nach außen, so tief es sauber geht' },
+  { n:'Liegestütze',            s:'Liegestütze, Füße erhöht',     tipp:'Körper gerade wie ein Brett. Auf den Knien ist völlig okay' },
+  { n:'Ausfallschritte im Wechsel', s:'Sprung-Ausfallschritte',   tipp:'Hinteres Knie fast bis zum Boden, Oberkörper aufrecht' },
+  { n:'Mountain Climber',       s:'Mountain Climber über Kreuz',  tipp:'Hüfte unten halten, Knie zügig zur Brust' },
+  { n:'Glute Bridge',           s:'Einbeinige Glute Bridge',      tipp:'Oben den Po fest anspannen. Einbeinig: zur Hälfte Seite wechseln' },
+  { n:'Burpees ohne Sprung',    s:'Burpees mit Sprung',           tipp:'Gleichmäßiges Tempo, lieber sauber als hektisch' },
+  { n:'Plank mit Schultertippen', s:'Plank auf und ab',           tipp:'Hüfte ruhig halten, nicht hin und her schaukeln' },
+  { n:'Hampelmann',             s:'Skater-Sprünge',               tipp:'Locker auf den Fußballen, Arme mitnehmen' }
+];
+/* arbeit/pause in Sekunden, schwer = schwerere Variante */
+const HIIT_STUFEN = [
+  { arbeit:30, pause:30, schwer:false },
+  { arbeit:35, pause:25, schwer:false },
+  { arbeit:40, pause:20, schwer:false },
+  { arbeit:40, pause:20, schwer:true  },
+  { arbeit:45, pause:15, schwer:true  },
+  { arbeit:50, pause:10, schwer:true  }
+];
+const HIIT_RUNDEN = 3, HIIT_WARM = 120, HIIT_RUNDENPAUSE = 60;
+
+/** Aktuelle Stufe; steigt automatisch, wenn letzte Woche mind. 2× auf dieser Stufe trainiert wurde */
+function hiitStufe(){
+  S.hiit = S.hiit || {};
+  const montag = laufendeWoche(dkey(new Date())).von;
+  let st = S.hiit[S.profile];
+  if(!st){ st = S.hiit[S.profile] = { stufe:1, seit:montag }; return { st:st, neu:false }; }
+  if(st.seit < montag && st.stufe < HIIT_STUFEN.length){
+    const n = myEntries().filter(e => e.kind === 'hiit' && e.hiitStufe === st.stufe && e.date >= st.seit && e.date < montag).length;
+    if(n >= 2){ st.stufe++; st.seit = montag; st.hoch = montag; save(); }
+  }
+  return { st:st, neu:st.hoch === montag };
+}
+function hiitMinuten(){ return Math.round(hiitPhasen(1).reduce((a,p) => a + p.dauer, 0)/60); }
+function hiitName(u, stufe){ return HIIT_STUFEN[stufe-1].schwer ? u.s : u.n; }
+
+function hiitKarte(){
+  const st = hiitStufe().st;
+  return '<div class="worow" style="margin-top:16px"><div class="wotxt"><div class="won">Kein Gym heute? HIIT zuhause</div>'+
+    '<div class="wom">ca. '+hiitMinuten()+' Min. · ohne Geräte · Stufe '+st.stufe+'</div></div>'+
+    '<button class="btn btn-sm" data-act="hiit">Ansehen</button></div>';
+}
+
+function openHiit(){
+  const r = hiitStufe(), st = r.st, cfg = HIIT_STUFEN[st.stufe-1];
+  const montag = laufendeWoche(dkey(new Date())).von;
+  const dieseW = myEntries().filter(e => e.kind === 'hiit' && e.date >= montag).length;
+  const aufStufe = myEntries().filter(e => e.kind === 'hiit' && e.hiitStufe === st.stufe && e.date >= st.seit).length;
+  let h = sheetHead('HIIT zuhause', 'ca. '+hiitMinuten()+' Min. · 8 Übungen · '+HIIT_RUNDEN+' Runden');
+  if(r.neu) h += '<div class="tipp" style="margin:0 0 14px">Neue Woche, neue Stufe! Du bist jetzt auf Stufe '+st.stufe+'.</div>';
+  h += '<div class="hstufe"><button class="btn btn-sm" data-act="hiitminus" aria-label="Leichter"'+(st.stufe<=1?' disabled':'')+'>−</button>'+
+    '<div><div class="hs-v">Stufe '+st.stufe+' <span class="muted">von '+HIIT_STUFEN.length+'</span></div>'+
+    '<div class="hs-k">'+cfg.arbeit+' Sek. Übung · '+cfg.pause+' Sek. Pause'+(cfg.schwer?' · schwere Varianten':'')+'</div></div>'+
+    '<button class="btn btn-sm" data-act="hiitplus" aria-label="Schwerer"'+(st.stufe>=HIIT_STUFEN.length?' disabled':'')+'>+</button></div>';
+  h += '<div class="sec-title">Ablauf</div>'+
+    '<div class="hliste"><div class="hl"><span>2 Min.</span>Aufwärmen</div>'+
+    HIIT_UEB.map((u,i) => '<div class="hl"><span>'+(i+1)+'</span>'+esc(hiitName(u, st.stufe))+'</div>').join('')+
+    '<div class="hl"><span>×'+HIIT_RUNDEN+'</span>Runden, dazwischen 1 Min. Pause</div></div>';
+  h += '<div class="small muted" style="margin:12px 0 4px">Diese Woche '+dieseW+'× gemacht. '+
+    (st.stufe < HIIT_STUFEN.length
+      ? 'Schaffst du Stufe '+st.stufe+' diese Woche zweimal ('+Math.min(aufStufe,2)+'/2), geht es nächste Woche eine Stufe hoch.'
+      : 'Höchste Stufe erreicht. Ziel: in jeder Übung ein paar Wiederholungen mehr.')+'</div>';
+  h += '<button class="btn btn-primary btn-block btn-lg" data-act="hiitgo" style="margin-top:14px">Los geht’s</button>';
+  openSheet(h);
+}
+function hiitStufeSetzen(d){
+  const st = hiitStufe().st;
+  st.stufe = Math.max(1, Math.min(HIIT_STUFEN.length, st.stufe + d)); st.hoch = null;
+  st.seit = laufendeWoche(dkey(new Date())).von;
+  save(); openHiit(); render();
+}
+
+/* ---- Timer ---- */
+let hz = null;   // { phasen, i, ende, pause, stufe, start, tick, ton, lock, zuletzt }
+
+function hiitPhasen(stufe){
+  const cfg = HIIT_STUFEN[stufe-1], p = [];
+  p.push({ typ:'warm', dauer:HIIT_WARM, name:'Aufwärmen', tipp:'Auf der Stelle gehen, Arme kreisen, ein paar lockere Kniebeugen' });
+  for(let r = 1; r <= HIIT_RUNDEN; r++){
+    HIIT_UEB.forEach((u,i) => {
+      p.push({ typ:'arbeit', dauer:cfg.arbeit, name:hiitName(u, stufe), tipp:u.tipp, runde:r, nr:i+1 });
+      const letzte = i === HIIT_UEB.length-1;
+      if(letzte && r === HIIT_RUNDEN) return;
+      p.push({ typ:'pause', dauer:(letzte ? HIIT_RUNDENPAUSE : cfg.pause), name:letzte ? 'Rundenpause' : 'Pause', runde:r, nr:i+1 });
+    });
+  }
+  return p;
+}
+
+function hiitStart(){
+  const stufe = hiitStufe().st.stufe;
+  closeSheet();
+  let ton = null;
+  try{ ton = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+  hz = { phasen:hiitPhasen(stufe), i:0, stufe:stufe, start:Date.now(), ton:ton, pause:null, lock:null, zuletzt:-1 };
+  hz.ende = Date.now() + hz.phasen[0].dauer*1000;
+  try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { if(hz) hz.lock = l; }).catch(() => {}); }catch(e){}
+  $('#hiit').classList.add('open');
+  hz.tick = setInterval(hiitTick, 200);
+  hiitRender();
+}
+
+function piep(freq, ms){
+  if(!hz || !hz.ton) return;
+  try{
+    const o = hz.ton.createOscillator(), g = hz.ton.createGain();
+    o.frequency.value = freq; o.connect(g); g.connect(hz.ton.destination);
+    g.gain.setValueAtTime(0.25, hz.ton.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, hz.ton.currentTime + ms/1000);
+    o.start(); o.stop(hz.ton.currentTime + ms/1000);
+  }catch(e){}
+}
+
+function hiitTick(){
+  if(!hz || hz.pause != null) return;
+  const now = Date.now();
+  let gewechselt = false;
+  while(now >= hz.ende){
+    hz.i++; gewechselt = true;
+    if(hz.i >= hz.phasen.length){ hiitFertig(); return; }
+    hz.ende += hz.phasen[hz.i].dauer*1000;
+  }
+  const rest = Math.ceil((hz.ende - now)/1000);
+  if(gewechselt){
+    const ph = hz.phasen[hz.i];
+    piep(ph.typ === 'arbeit' ? 880 : 520, ph.typ === 'arbeit' ? 450 : 300);
+    try{ if(navigator.vibrate) navigator.vibrate(ph.typ === 'arbeit' ? [200,80,200] : 300); }catch(e){}
+  }else if(rest <= 3 && rest >= 1 && rest !== hz.zuletzt){
+    piep(660, 120);
+  }
+  hz.zuletzt = rest;
+  hiitRender();
+}
+
+function hiitRender(){
+  const ph = hz.phasen[hz.i];
+  const now = hz.pause != null ? hz.pause : Date.now();
+  const rest = Math.max(0, Math.ceil((hz.ende - now)/1000));
+  const naechste = hz.phasen.slice(hz.i+1).find(p => p.typ === 'arbeit');
+  const gesamt = hz.phasen.reduce((a,p) => a + p.dauer, 0);
+  const vorbei = hz.phasen.slice(0, hz.i).reduce((a,p) => a + p.dauer, 0) + (ph.dauer - rest);
+  const label = ph.typ === 'arbeit' ? 'Los!' : ph.typ === 'warm' ? 'Aufwärmen' : ph.name;
+  const titel = ph.typ === 'arbeit' ? ph.name : (naechste ? 'Gleich: '+naechste.name : 'Gleich geschafft');
+  const tipp = ph.typ === 'arbeit' ? ph.tipp : ph.typ === 'warm' ? ph.tipp : (naechste ? naechste.tipp : '');
+  $('#hiit').className = 'hiit open h-'+ph.typ;
+  $('#hiit').innerHTML =
+    '<div class="h-top"><span>'+(ph.runde ? 'Runde '+ph.runde+'/'+HIIT_RUNDEN+' · Übung '+ph.nr+'/'+HIIT_UEB.length : 'Stufe '+hz.stufe)+'</span>'+
+      '<span>noch '+fmtDur(gesamt - vorbei)+'</span></div>'+
+    '<div class="h-bar"><span style="width:'+(vorbei/gesamt*100).toFixed(1)+'%"></span></div>'+
+    '<div class="h-mitte">'+
+      '<div class="h-label">'+esc(hz.pause != null ? 'Pausiert' : label)+'</div>'+
+      '<div class="h-zahl">'+rest+'</div>'+
+      '<div class="h-name">'+esc(titel)+'</div>'+
+      (tipp ? '<div class="h-tipp">'+esc(tipp)+'</div>' : '')+
+    '</div>'+
+    '<div class="h-knoepfe">'+
+      '<button class="btn" data-h="stop">Beenden</button>'+
+      '<button class="btn btn-primary btn-lg" data-h="pause">'+(hz.pause != null ? 'Weiter' : 'Pause')+'</button>'+
+      '<button class="btn" data-h="skip">Weiter ›</button>'+
+    '</div>';
+}
+
+function hiitAufraeumen(){
+  if(!hz) return;
+  clearInterval(hz.tick);
+  try{ if(hz.lock) hz.lock.release(); }catch(e){}
+  try{ if(hz.ton) hz.ton.close(); }catch(e){}
+}
+
+function hiitFertig(){
+  hiitAufraeumen();
+  piep(990, 600);
+  const min = Math.round((Date.now() - hz.start)/60000);
+  hz.fertig = min;
+  $('#hiit').className = 'hiit open h-fertig';
+  $('#hiit').innerHTML = '<div class="h-mitte"><div class="h-label">Geschafft!</div>'+
+    '<div class="h-name" style="margin-top:6px">HIIT Stufe '+hz.stufe+' · '+min+' Min.</div>'+
+    '<div class="h-tipp">Wie war’s? Ein Tipp speichert das Training.</div></div>'+
+    '<div class="h-knoepfe h-wahl">'+
+      '<button class="btn" data-h="leicht">Zu leicht</button>'+
+      '<button class="btn btn-primary btn-lg" data-h="passt">Genau richtig</button>'+
+      '<button class="btn" data-h="schwer">Zu schwer</button>'+
+    '</div>';
+}
+
+function hiitSpeichern(gefuehl){
+  const cfg = HIIT_STUFEN[hz.stufe-1];
+  const txt = { leicht:'zu leicht', passt:'genau richtig', schwer:'zu schwer' }[gefuehl];
+  S.entries.push({ id:uid(), profile:S.profile, date:dkey(new Date()), kind:'hiit', cat:'HIIT zuhause',
+    hiitStufe:hz.stufe, duration:Math.max(1, hz.fertig)*60,
+    note:'Stufe '+hz.stufe+' · '+cfg.arbeit+'/'+cfg.pause+' · '+txt });
+  const st = hiitStufe().st;
+  let msg = 'Gespeichert';
+  if(gefuehl === 'leicht' && st.stufe < HIIT_STUFEN.length){ st.stufe++; st.seit = laufendeWoche(dkey(new Date())).von; msg = 'Gespeichert · nächstes Mal Stufe '+st.stufe; }
+  if(gefuehl === 'schwer' && st.stufe > 1){ st.stufe--; st.seit = laufendeWoche(dkey(new Date())).von; msg = 'Gespeichert · nächstes Mal Stufe '+st.stufe; }
+  save();
+  $('#hiit').className = 'hiit'; $('#hiit').innerHTML = ''; hz = null;
+  render(); toast(msg);
+}
+
+$('#hiit').addEventListener('click', e => {
+  const t = e.target.closest('[data-h]'); if(!t || !hz) return;
+  const a = t.dataset.h;
+  if(a === 'pause'){
+    if(hz.pause != null){ hz.ende += Date.now() - hz.pause; hz.pause = null; }
+    else hz.pause = Date.now();
+    hiitRender();
+  }else if(a === 'skip'){
+    if(hz.pause != null){ hz.ende += Date.now() - hz.pause; hz.pause = null; }
+    hz.ende = Date.now(); hiitTick();
+  }else if(a === 'stop'){
+    if(!confirm('Training beenden? Es wird nicht gespeichert.')) return;
+    hiitAufraeumen(); $('#hiit').className = 'hiit'; $('#hiit').innerHTML = ''; hz = null;
+  }else if(a === 'leicht' || a === 'passt' || a === 'schwer'){
+    hiitSpeichern(a);
+  }
+});
+
 function renderHeute(){
   const heute = dkey(new Date());
   let h = speicherKarte() + offenesTrainingKarte() + wocheKarte();
@@ -1278,6 +1528,7 @@ function renderHeute(){
       (erledigt ? '' : '<button class="btn btn-sm" data-act="startwo" data-id="'+x.id+'">Eintragen</button>')+'</div>';
   });
 
+  h += hiitKarte();
   h += '<button class="btn btn-block" data-act="new" style="margin-top:16px">Anderes Training eintragen</button>';
 
   const letzte = myEntries().slice().sort((a,b) => a.date < b.date ? 1 : -1).slice(0, 3);
@@ -2774,6 +3025,7 @@ $('#main').addEventListener('click', e => {
     case 'txtimport': openTxtImport('', ''); break;
     case 'neutraining': openNeuesTraining(); break;
     case 'wochewahl': openWocheWahl(); break;
+    case 'hiit': openHiit(); break;
     case 'wdel': {
       setWocheFor(S.profile, wocheIdsFor(S.profile).filter(x => x !== t.dataset.id));
       save(); render(); break;
@@ -2821,6 +3073,9 @@ $('#sheet').addEventListener('click', e => {
 
   switch(t.dataset.act){
     case 'close': if(wo) closeWorkoutSheet(); else closeSheet(); break;
+    case 'hiitminus': hiitStufeSetzen(-1); break;
+    case 'hiitplus': hiitStufeSetzen(1); break;
+    case 'hiitgo': hiitStart(); break;
 
     case 'addset': d.blocks[bi].sets.push({ reps:'', weight:d.blocks[bi].sets[0] ? d.blocks[bi].sets[0].weight : '' });
       $('#blocks').innerHTML = renderBlocks(); break;
