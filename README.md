@@ -38,7 +38,7 @@ Formular zwischen beiden Personen um, gespeichert wird für beide getrennt.
 
 Fertiger 3er-Split fürs Studio, nach einem Reel von andreasthiemexnn, mit je 3 Sätzen:
 **Push** (Brust, Schultern, Trizeps), **Pull** (Rücken, hintere Schulter, Bizeps; ergänzt um Latzug)
-und **Beine & Core**. Unter Mehr → `Woche zusammenstellen` ganz oben auswählbar.
+und **Beine & Core** (Jonas mit Wadenheben, Franca mit Hip Thrust). Unter Mehr → `Woche zusammenstellen` ganz oben auswählbar.
 
 ## Übungskatalog und neue Trainings
 

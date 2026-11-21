@@ -417,9 +417,10 @@ const EXTRA = [
     for:['sie','er'], warmup:[], ex:[
     { n:'Beinpresse', sets:3, reps:[8,12], rest:'2 Min.', step:'presse' },
     { n:'Rumänisches Kreuzheben', sets:3, reps:[8,10], rest:'2 Min.', step:'grund' },
+    { n:'Hip Thrust Langhantel', sets:3, reps:[8,12], rest:'2 Min.', step:'grund', for:['sie'] },
     { n:'Beinstrecker Maschine', sets:3, reps:[10,15], rest:'60 Sek.', step:'maschine' },
     { n:'Beinbeuger liegend', sets:3, reps:[10,12], rest:'90 Sek.', step:'maschine' },
-    { n:'Adduktion Maschine', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' },
+    { n:'Wadenheben', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine', for:['er'] },
     { n:'Crunch Maschine', sets:3, reps:[12,15], rest:'60 Sek.', step:'maschine' }
   ]},
 
@@ -730,7 +731,7 @@ const KEY        = 'ff_v2';
 const KEY_WO     = 'ff_wo';       // laufendes, noch nicht gespeichertes Training
 const KEY_BAK    = 'ff_bak';      // automatische Tagessicherungen
 const KEY_RESCUE = 'ff_rescue';   // unlesbarer Stand, zur Rettung aufgehoben
-const VERSION = '2026-11-21 · 18';   // wird bei jeder Änderung hochgezählt
+const VERSION = '2026-11-21 · 19';   // wird bei jeder Änderung hochgezählt
 
 function defaults(){
   return {
